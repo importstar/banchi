@@ -1,0 +1,11 @@
+/env
+/venv
+*.pyc
+*.cfg
+__pycache__
+node_modules
+*.egg-*
+.vscode
+*.brython.js
+babel.sh
+geojsons

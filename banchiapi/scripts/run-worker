@@ -1,0 +1,2 @@
+#!/bin/sh -e
+APP_ENV=dev banchai-worker

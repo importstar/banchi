@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "banchaiapi"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.92.0"
+uvicorn = "^0.20.0"
+mongoengine = "^0.26.0"
+python-jose = "^3.3.0"
+loguru = "^0.6.0"
+pydantic =  { version = "^1.9", extras = ["dotenv"] }
+passlib = "^1.7.4"
+email-validator = "^1.2.1"
+Pillow = "^9.1.0"
+python-multipart = "^0.0.5"
+rq = "^1.10.1"
+httpx = "^0.24.0"
+
+[tool.poetry.scripts]
+banchai-worker = "banchaiapi.worker.worker_rq:main"
+
+[tool.poetry.group.dev.dependencies]
+openapi-python-client = "0.14.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

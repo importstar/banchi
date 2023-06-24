@@ -1,0 +1,97 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    container_name: banchai-staging-mongodb
+    volumes:
+      - ../staging/banchai/mongodb/data/db:/data/db
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    networks:
+      - default
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis
+    container_name: banchai-staging-redis
+    volumes:
+      - ../staging/banchai/redis/data:/data
+    restart: always
+    networks:
+      - default
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  api:
+    build: ./backend
+    image: banchai-staging-api-image
+    container_name: banchai-staging-api
+    volumes:
+      # - ../deployment:/deployment
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 9019:9000
+    links:
+      - mongodb
+    networks:
+      - default
+    restart: always
+    env_file:
+      - ./backend/.env
+      # environment:
+      # REZOURCE_SETTINGS: backend/.env
+    command: /venv/bin/gunicorn -w 2 --threads 5 --bind 0.0.0.0:9000 --worker-class uvicorn.workers.UvicornWorker --timeout 600 --keep-alive 10 "banchaiapi.main:get_application()"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  worker:
+    build: ./backend
+    image: banchai-staging-api-image
+    container_name: banchai-staging-worker
+    volumes:
+      # - ../deployment:/deployment
+      - /etc/localtime:/etc/localtime:ro
+    links:
+      - redis
+    networks:
+      - default
+    restart: always
+    env_file:
+      - backend/.env
+    command: /venv/bin/banchai-worker
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    build: ./clients
+    image: banchai-staging-web-image
+    container_name: banchai-staging-web
+    volumes:
+      - ../staging:/deployment
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 9018:9000
+    networks:
+      - default
+    restart: always
+    environment:
+      REZOURCE_SETTINGS: /app/banchai-production.cfg
+    command: /venv/bin/gunicorn -w 2 --keep-alive 10 --timeout 1200 --bind 0.0.0.0:9000 "banchai.web:create_app()"
+    extra_hosts:
+      - "api.smartprapa.com:103.212.37.35"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  default:
