@@ -9,10 +9,10 @@ from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 
 import typing
 
-from banchaiapi import models
-from banchaiapi.core import security, deps
-from banchaiapi.core.config import settings
-from banchaiapi.schemas.users import TokenInResponse
+from banchiapi import models
+from banchiapi.core import security, deps
+from banchiapi.core.config import settings
+from banchiapi.schemas.users import TokenInResponse
 import datetime
 
 router = APIRouter(prefix="/auth", tags=["authentication"])

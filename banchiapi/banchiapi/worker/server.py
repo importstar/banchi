@@ -9,7 +9,7 @@ import os
 import redis
 from rq import Worker, Queue, Connection, SimpleWorker
 
-from banchaiapi import models
+from banchiapi import models
 
 import logging
 
@@ -25,6 +25,7 @@ listen = ["default"]
 #     server = WorkerServer(settings)
 
 #     return server
+
 
 class BillbahtWorker(SimpleWorker):
     def __init__(self, *args, **kwargs):

@@ -2,17 +2,17 @@ import sys
 import mongoengine as me
 
 # import pandas as pd
-from banchaiapi import models
+from banchiapi import models
 import datetime
 
 
 def create_user_admin():
     print("start create admin")
-    organization = models.Organization(
+    space = models.Space(
         name="admin", slogan="", tax_id="0905564002794", code="000", phone="0819693002"
     )
-    organization.save()
-    division = models.Division(name="admin", code="000", organization=organization)
+    space.save()
+    division = models.Division(name="admin", code="000", space=space)
     division.save()
     user = models.User(
         email="admin@example.com",
@@ -24,7 +24,7 @@ def create_user_admin():
         roles=["user", "admin"],
         birthday=datetime.datetime.now(),
         division=division,
-        organization=organization,
+        space=space,
     )
 
     user.set_password("p@ssw0rd")

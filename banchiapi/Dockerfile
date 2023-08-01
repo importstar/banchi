@@ -21,10 +21,10 @@ RUN $PYTHON -m poetry config virtualenvs.create false && $PYTHON -m poetry insta
 
 WORKDIR /app
 COPY poetry.lock pyproject.toml /app/
-COPY banchaiapi/worker/ /app/banchaiapi/worker/
+COPY banchiapi/worker/ /app/banchiapi/worker/
 RUN $PYTHON -m poetry config virtualenvs.create false && $PYTHON -m poetry install --no-interaction --only main
 
 COPY . /app
 
 # EXPOSE 9000
-# ENTRYPOINT [ "/venv/bin/gunicorn",  "-w", "5", "--threads", "5", "--bind", "0.0.0.0:9000", "--worker-class", "uvicorn.workers.UvicornWorker", "--timeout", "600", "--keep-alive", "10", "banchaiapi.main:get_application"]
+# ENTRYPOINT [ "/venv/bin/gunicorn",  "-w", "5", "--threads", "5", "--bind", "0.0.0.0:9000", "--worker-class", "uvicorn.workers.UvicornWorker", "--timeout", "600", "--keep-alive", "10", "banchiapi.main:get_application"]

@@ -1,11 +1,11 @@
 from functools import lru_cache
 from typing import Dict, Type
 
-from banchaiapi.core.settings.app import AppSettings
-from banchaiapi.core.settings.base import AppEnvTypes, BaseAppSettings
-from banchaiapi.core.settings.development import DevAppSettings
-from banchaiapi.core.settings.production import ProdAppSettings
-from banchaiapi.core.settings.test import TestAppSettings
+from banchiapi.core.settings.app import AppSettings
+from banchiapi.core.settings.base import AppEnvTypes, BaseAppSettings
+from banchiapi.core.settings.development import DevAppSettings
+from banchiapi.core.settings.production import ProdAppSettings
+from banchiapi.core.settings.test import TestAppSettings
 
 environments: Dict[AppEnvTypes, Type[AppSettings]] = {
     AppEnvTypes.dev: DevAppSettings,

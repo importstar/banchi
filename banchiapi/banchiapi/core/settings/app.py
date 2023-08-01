@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Tuple
 
 from loguru import logger
 
-from banchaiapi.core.logging import InterceptHandler
-from banchaiapi.core.settings.base import BaseAppSettings
+from banchiapi.core.logging import InterceptHandler
+from banchiapi.core.settings.base import BaseAppSettings
 
 
 class AppSettings(BaseAppSettings):
@@ -17,11 +17,12 @@ class AppSettings(BaseAppSettings):
     TITLE: str = "Billbaht"
     VERSION: str = "0.0.1"
 
-    MONGODB_DB: str = "banchaidb"
-    MONGODB_HOST: str = "localhost"
-    MONGODB_PORT: int = 27017
-    MONGODB_USERNAME: str = ""
-    MONGODB_PASSWORD: str = ""
+    MONGODB_URI: str = "mongodb://localhost/banchidb"
+    # MONGODB_DB: str = "banchaidb"
+    # MONGODB_HOST: str = "localhost"
+    # MONGODB_PORT: int = 27017
+    # MONGODB_USERNAME: str = ""
+    # MONGODB_PASSWORD: str = ""
 
     REZOURCE_BASE_API_URL: str = ""
     REZOURCE_USERNAME: str = ""

@@ -2,7 +2,7 @@ from .server import WorkerServer
 
 
 def create_server():
-    from banchaiapi.core import config
+    from banchiapi.core import config
 
     settings = config.get_app_settings()
     server = WorkerServer(settings)

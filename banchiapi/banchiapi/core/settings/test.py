@@ -2,7 +2,7 @@ import logging
 
 from pydantic import SecretStr
 
-from banchaiapi.core.settings.app import AppSettings
+from banchiapi.core.settings.app import AppSettings
 
 
 class TestAppSettings(AppSettings):

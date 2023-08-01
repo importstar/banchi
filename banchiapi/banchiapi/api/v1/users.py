@@ -4,15 +4,15 @@ from starlette.status import (
     HTTP_404_NOT_FOUND,
     HTTP_409_CONFLICT,
 )
-from banchaiapi.schemas.users import (
+from banchiapi.schemas.users import (
     UserInResponse,
     UserInRegister,
     UserChangePassword,
     UserInUpdate,
     ListUserInResponse,
 )
-from banchaiapi.core import deps
-from banchaiapi import models
+from banchiapi.core import deps
+from banchiapi import models
 from loguru import logger
 
 
@@ -237,15 +237,15 @@ def set_status(
 
 
 @router.put(
-    "/{user_id}/set_organization",
+    "/{user_id}/set_space",
     response_model=UserInResponse,
     response_model_by_alias=False,
-    name="user:set_organization",
+    name="user:set_space",
 )
-def set_organization(
+def set_space(
     request: Request,
     user_id: str,
-    organization_id: str,
+    space_id: str,
     action: str,
     current_user: models.User = Depends(deps.get_current_user),
 ):
@@ -258,16 +258,16 @@ def set_organization(
         )
     if action == "add":
         try:
-            organization = models.Organization.objects.get(id=organization_id)
+            space = models.Space.objects.get(id=space_id)
         except Exception:
             raise HTTPException(
                 status_code=HTTP_404_NOT_FOUND,
-                detail="Not found this organization",
+                detail="Not found this space",
             )
-        user.update(organization=organization)
+        user.update(space=space)
     elif action == "remove":
         user.update(division=None)
-        user.update(organization=None)
+        user.update(space=None)
 
     user.reload()
     # request_log = deps.create_logs(

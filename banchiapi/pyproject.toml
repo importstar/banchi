@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "banchaiapi"
+name = "banchiapi"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
@@ -20,7 +20,7 @@ rq = "^1.10.1"
 httpx = "^0.24.0"
 
 [tool.poetry.scripts]
-banchai-worker = "banchaiapi.worker.worker_rq:main"
+banchai-worker = "banchiapi.worker.worker_rq:main"
 
 [tool.poetry.group.dev.dependencies]
 openapi-python-client = "0.14.1"

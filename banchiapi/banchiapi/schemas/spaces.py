@@ -20,7 +20,7 @@ class Address(BaseEmbeddedSchema):
     zipcode: str | None  # รหัสไปรษณีย์
 
 
-class BaseOrganization(BaseModel):
+class BaseSpace(BaseModel):
     name: str = Field(..., example="ชื่อองค์กร")
     code: str = Field(..., example="รหัสองค์กร")
     tax_id: str | None = Field(..., example="เลขผู้เสียภาษี")
@@ -29,7 +29,7 @@ class BaseOrganization(BaseModel):
     address: Address
 
 
-class OrganizationAuthorizedSignatoryInResponse(BaseAuthorizedSignatory):
+class SpaceAuthorizedSignatoryInResponse(BaseAuthorizedSignatory):
     uid: PyObjectId | None = Field(default_factory=PyObjectId, alias="_id")
 
     class Config:
@@ -38,20 +38,20 @@ class OrganizationAuthorizedSignatoryInResponse(BaseAuthorizedSignatory):
         json_encoders = {ObjectId: str}
 
 
-class OrganizationInResponse(BaseSchema, BaseOrganization):
-    authorized_signatories: list[OrganizationAuthorizedSignatoryInResponse]
+class SpaceInResponse(BaseSchema, BaseSpace):
+    authorized_signatories: list[SpaceAuthorizedSignatoryInResponse]
 
 
-class OrganizationInCreate(BaseOrganization):
-    authorized_signatories: list[OrganizationAuthorizedSignatoryInResponse]
+class SpaceInCreate(BaseSpace):
+    authorized_signatories: list[SpaceAuthorizedSignatoryInResponse]
 
 
-class OrganizationInUserResponse(BaseSchema):
+class SpaceInUserResponse(BaseSchema):
     name: str = Field(..., example="ชื่อองค์กร")
 
 
-class ListOrganizationInResponse(BaseSchema):
-    organizations: list[OrganizationInResponse]
+class ListSpaceInResponse(BaseSchema):
+    spaces: list[SpaceInResponse]
     count: int
     current_page: int = 0
     total_page: int = 0

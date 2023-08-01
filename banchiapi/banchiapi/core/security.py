@@ -3,7 +3,7 @@ from typing import Any, Union
 
 from jose import jwt
 
-from banchaiapi.core.config import settings
+from banchiapi.core.config import settings
 
 ALGORITHM = "HS256"
 

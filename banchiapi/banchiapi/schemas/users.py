@@ -3,35 +3,34 @@ import datetime
 from pydantic import BaseModel, EmailStr, Field
 
 from .base import BaseEmbeddedSchema, BaseSchema
-from .divisions import DivisionInUserResponse
-from .organizations import OrganizationInUserResponse
+from .spaces import SpaceInUserResponse
 
 
 class UserAddress(BaseEmbeddedSchema):
     address: str | None  # บ้านเลขที่
-    building: str| None  # อาคาร
-    floor: str| None  # ชั้น
-    moo: str| None  # หมู่
-    village: str| None  # หมู่บ้าน
-    alley: str| None  # ซอย
-    road: str| None  # ถนน
-    subdistrict: str| None  # ตำบล
-    district: str| None  # อำเภอ
-    province: str| None  # จังหวัด
-    zipcode: str| None  # รหัสไปรษณีย์
+    building: str | None  # อาคาร
+    floor: str | None  # ชั้น
+    moo: str | None  # หมู่
+    village: str | None  # หมู่บ้าน
+    alley: str | None  # ซอย
+    road: str | None  # ถนน
+    subdistrict: str | None  # ตำบล
+    district: str | None  # อำเภอ
+    province: str | None  # จังหวัด
+    zipcode: str | None  # รหัสไปรษณีย์
 
 
 class BaseUser(BaseModel):
-    email: str| None
-    username: str| None
-    title_name: str| None
-    first_name: str| None
-    last_name: str| None
-    phone: str| None
+    email: str | None
+    username: str | None
+    title_name: str | None
+    first_name: str | None
+    last_name: str | None
+    phone: str | None
     address: UserAddress
-    citizen_id: str| None
-    birthday: datetime.datetime | None 
-    employee_id: str| None
+    citizen_id: str | None
+    birthday: datetime.datetime | None
+    employee_id: str | None
 
 
 class UserInLogin(BaseModel):
@@ -70,9 +69,8 @@ class TokenInResponse(BaseModel):
 class UserInResponse(BaseSchema, BaseUser):
     username: str
     roles: list[str]
-    division: DivisionInUserResponse | None = Field(None, alias="DivisionInUserResponse")
-    organization: OrganizationInUserResponse | None = Field(None, alias="OrganizationInUserResponse")
-    last_login_date: datetime.datetime 
+    space: SpaceInUserResponse | None = Field(None, alias="SpaceInUserResponse")
+    last_login_date: datetime.datetime
     employee_id: str | None
 
 
@@ -81,6 +79,7 @@ class ListUserInResponse(BaseSchema):
     count: int
     current_page: int = 0
     total_page: int = 0
+
 
 class UserInAutoCreate(BaseUser):
     pass
