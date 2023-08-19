@@ -14,7 +14,7 @@ class AppSettings(BaseAppSettings):
     OPENAPI_PREFIX: str = ""
     OPENAPI_URL: str = "/openapi.json"
     REDOC_URL: str = "/redoc"
-    TITLE: str = "Billbaht"
+    TITLE: str = "Banchi"
     VERSION: str = "0.0.1"
 
     MONGODB_URI: str = "mongodb://localhost/banchidb"
@@ -34,7 +34,7 @@ class AppSettings(BaseAppSettings):
 
     SECRET_KEY: str = "secret"
 
-    API_PREFIX: str = "/api"
+    API_PREFIX: str = ""
 
     JWT_TOKEN_PREFIX: str = "Token"
 

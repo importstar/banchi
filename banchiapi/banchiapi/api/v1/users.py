@@ -1,16 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
-from starlette.status import (
-    HTTP_401_UNAUTHORIZED,
-    HTTP_404_NOT_FOUND,
-    HTTP_409_CONFLICT,
-)
-from banchiapi.schemas.users import (
-    UserInResponse,
-    UserInRegister,
-    UserChangePassword,
-    UserInUpdate,
-    ListUserInResponse,
-)
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from banchiapi import schemas
 from banchiapi.core import deps
 from banchiapi import models
 from loguru import logger
@@ -19,7 +8,7 @@ from loguru import logger
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.get("/me", response_model_by_alias=False, response_model=UserInResponse)
+@router.get("/me", response_model_by_alias=False, response_model=schemas.users.User)
 def get_me(current_user: models.User = Depends(deps.get_current_user)):
     return current_user
 
@@ -38,7 +27,7 @@ def get_me_check_password(
 @router.get(
     "/{user_id}",
     response_model_by_alias=False,
-    response_model=UserInResponse,
+    response_model=schemas.users.User,
 )
 def get_user(
     user_id: str,
@@ -48,7 +37,7 @@ def get_user(
         user = models.User.objects.get(id=user_id)
     except Exception:
         raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Not found this user",
         )
     return user
@@ -57,7 +46,7 @@ def get_user(
 @router.get(
     "/",
     response_model_by_alias=False,
-    response_model=ListUserInResponse,
+    response_model=schemas.users.UserList,
 )
 def get_users(
     first_name: str = "",
@@ -116,7 +105,7 @@ def get_users(
     else:
         total_page = (count // limit) + 1
 
-    return ListUserInResponse(
+    return schemas.users.UserList(
         users=list(users),
         count=count,
         current_page=current_page,
@@ -126,32 +115,35 @@ def get_users(
 
 @router.post(
     "/create",
-    response_model=UserInResponse,
+    # response_model=schemas.users.User,
     response_model_by_alias=False,
     name="user:create",
 )
-def create(user_register: UserInRegister):
-    user = models.User.objects(username=user_register.username).first()
+async def create(user_register: schemas.users.RegisteredUser) -> schemas.users.User:
+    user = await models.User.find_one(models.User.username == user_register.username)
+
     if user:
         raise HTTPException(
-            status_code=HTTP_409_CONFLICT,
+            status_code=status.HTTP_409_CONFLICT,
             detail="This username is exists.",
         )
+
     user = models.User(**user_register.dict())
-    user.set_password(user_register.password)
-    user.save()
+    await user.set_password(user_register.password)
+    await user.insert()
+
     return user
 
 
 @router.put(
     "/{user_id}/change_password",
-    response_model=UserInResponse,
+    response_model=schemas.users.User,
     response_model_by_alias=False,
     name="user:change_password",
 )
 def change_password(
     user_id: str,
-    password_update: UserChangePassword,
+    password_update: schemas.users.ChangedPassword,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     try:
@@ -174,14 +166,14 @@ def change_password(
 
 @router.put(
     "/{user_id}/update",
-    response_model=UserInResponse,
+    response_model=schemas.users.User,
     response_model_by_alias=False,
     name="user:update",
 )
 def update(
     request: Request,
     user_id: str,
-    user_update: UserInUpdate,
+    user_update: schemas.users.UpdatedUser,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     try:
@@ -209,7 +201,7 @@ def update(
 
 @router.put(
     "/{user_id}/set_status",
-    response_model=UserInResponse,
+    response_model=schemas.users.User,
     response_model_by_alias=False,
     name="user:set_status",
 )
@@ -238,7 +230,7 @@ def set_status(
 
 @router.put(
     "/{user_id}/set_space",
-    response_model=UserInResponse,
+    response_model=schemas.users.User,
     response_model_by_alias=False,
     name="user:set_space",
 )
@@ -280,7 +272,7 @@ def set_space(
 
 @router.put(
     "/{user_id}/set_division",
-    response_model=UserInResponse,
+    response_model=schemas.users.User,
     response_model_by_alias=False,
     name="user:set_division",
 )
@@ -321,7 +313,7 @@ def set_division(
 
 @router.put(
     "/{user_id}/set_role",
-    response_model=UserInResponse,
+    response_model=schemas.users.User,
     response_model_by_alias=False,
     name="user:set_role",
 )

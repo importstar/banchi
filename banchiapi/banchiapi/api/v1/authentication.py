@@ -1,18 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 from fastapi.security import (
     HTTPAuthorizationCredentials,
     HTTPBasicCredentials,
     HTTPBearer,
     OAuth2PasswordRequestForm,
 )
-from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_404_NOT_FOUND
 
 import typing
 
 from banchiapi import models
 from banchiapi.core import security, deps
 from banchiapi.core.config import settings
-from banchiapi.schemas.users import TokenInResponse
+from banchiapi import schemas
 import datetime
 
 router = APIRouter(prefix="/auth", tags=["authentication"])
@@ -27,7 +26,7 @@ def token(
     basic_credentials: typing.Optional[HTTPBasicCredentials] = Depends(
         deps.reusable_oauth2
     ),
-) -> TokenInResponse:
+) -> schemas.users.Token:
     failed_auth = HTTPException(
         status_code=400, detail="Incorrect username or password"
     )
@@ -63,23 +62,25 @@ def token(
 async def authentication(
     form_data: OAuth2PasswordRequestForm = Depends(),
     name="auth:login",
-) -> TokenInResponse:
-    user = models.User.objects(username=form_data.username).first()
+) -> schemas.users.Token:
+    user = await models.User.find_one(models.User.username == form_data.username)
+
     if not user:
-        user = models.User.objects(email=form_data.username).first()
+        user = models.User.find_one(models.User.email == form_data.email)
+
     if not user:
         raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
+
     if not user.verify_password(form_data.password):
         raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
     user.update(last_login_date=datetime.datetime.now())
-    user.reload()
-    return TokenInResponse(
+    return schemas.users.Token(
         access_token=security.create_access_token(
             str(user.id),
             data={"issued_at": int(round(user.last_login_date.timestamp() * 1000))},

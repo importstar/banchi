@@ -8,7 +8,7 @@ from loguru import logger
 from .. import models
 from . import security
 
-reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
+reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
 
 def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User:

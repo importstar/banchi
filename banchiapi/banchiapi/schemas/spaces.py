@@ -25,33 +25,16 @@ class BaseSpace(BaseModel):
     code: str = Field(..., example="รหัสองค์กร")
     tax_id: str | None = Field(..., example="เลขผู้เสียภาษี")
     phone: str | None = Field(..., example="เบอร์โทรศัพท์")
-    slogan: str | None = Field(..., example="คำขวัญ")
     address: Address
 
 
-class SpaceAuthorizedSignatoryInResponse(BaseAuthorizedSignatory):
-    uid: PyObjectId | None = Field(default_factory=PyObjectId, alias="_id")
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        json_encoders = {ObjectId: str}
+class SpaceList(BaseSchema, BaseSpace):
+    pass
 
 
-class SpaceInResponse(BaseSchema, BaseSpace):
-    authorized_signatories: list[SpaceAuthorizedSignatoryInResponse]
+class Space(BaseSchema, BaseSpace):
+    pass
 
 
-class SpaceInCreate(BaseSpace):
-    authorized_signatories: list[SpaceAuthorizedSignatoryInResponse]
-
-
-class SpaceInUserResponse(BaseSchema):
-    name: str = Field(..., example="ชื่อองค์กร")
-
-
-class ListSpaceInResponse(BaseSchema):
-    spaces: list[SpaceInResponse]
-    count: int
-    current_page: int = 0
-    total_page: int = 0
+class CreatedSpace(BaseSpace):
+    pass

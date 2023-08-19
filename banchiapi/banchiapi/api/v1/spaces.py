@@ -1,29 +1,16 @@
 import datetime
 import io
 
-from fastapi import APIRouter, Depends, HTTPException, Response
-from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, HTTP_400_BAD_REQUEST
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from loguru import logger
 from banchiapi import models
+from banchiapi import schemas
 from banchiapi.core import deps
-from banchiapi.schemas.spaces import (
-    SpaceInResponse,
-    SpaceInCreate,
-    ListSpaceInResponse,
-)
-from banchiapi.schemas.system_settings import (
-    AuthorizedSignatoryInCreate,
-    AuthorizedSignatoryInUpdate,
-)
 
 router = APIRouter(prefix="/spaces", tags=["space"])
 
 
-@router.get(
-    "/",
-    response_model_by_alias=False,
-    response_model=ListSpaceInResponse,
-)
+@router.get("/", response_model_by_alias=False, response_model=schemas.spaces.SpaceList)
 def get_spaces(
     name: str = "",
     current_user: models.User = Depends(deps.get_current_user),
@@ -75,10 +62,10 @@ def get_spaces(
 @router.post(
     "/create",
     response_model_by_alias=False,
-    response_model=SpaceInResponse,
+    response_model=schemas.spaces.Space,
 )
 def create_space(
-    space: SpaceInCreate,
+    space: schemas.spaces.Space,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     db_space = models.Space.objects(name=space.name, status="active").first()
@@ -106,7 +93,7 @@ def create_space(
 @router.get(
     "/{space_id}",
     response_model_by_alias=False,
-    response_model=SpaceInResponse,
+    response_model=schemas.spaces.Space,
 )
 def get_space(
     space_id: str,
@@ -125,11 +112,11 @@ def get_space(
 @router.put(
     "/{space_id}/update",
     response_model_by_alias=False,
-    response_model=SpaceInResponse,
+    response_model=schemas.spaces.Space,
 )
 def update_space(
     space_id: str,
-    space: SpaceInCreate,
+    space: schemas.spaces.CreatedSpace,
     current_user: models.User = Depends(deps.get_current_user),
 ):
     db_space = models.Space.objects(id=space_id).first()
@@ -163,7 +150,7 @@ def update_space(
 @router.delete(
     "/{space_id}/delete",
     response_model_by_alias=False,
-    response_model=SpaceInResponse,
+    response_model=schemas.spaces.Space,
 )
 def delete_space(
     space_id: str,
@@ -173,7 +160,7 @@ def delete_space(
         db_space = models.Space.objects.get(id=space_id)
     except Exception:
         raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Not found this space",
         )
     db_space.update(status="disactive", updated_date=datetime.datetime.now())
@@ -184,94 +171,4 @@ def delete_space(
     for division in divisions:
         division.status = "disactive"
         division.save()
-    return db_space
-
-
-@router.post(
-    "/{space_id}/create_authorized_signatory",
-    response_model_by_alias=False,
-    response_model=SpaceInResponse,
-)
-def create_space_authorized_signatory(
-    space_id: str,
-    authorized_signatory: AuthorizedSignatoryInCreate,
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    db_space = models.Space.objects(id=space_id).first()
-    if not db_space:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail="Not Found this space.",
-        )
-
-    signature = models.AuthorizedSignatory()
-    signature.first_name = authorized_signatory.first_name
-    signature.last_name = authorized_signatory.last_name
-    signature.role = authorized_signatory.role
-    signature.instead = authorized_signatory.instead
-    db_space.authorized_signatories.append(signature)
-    db_space.updated_date = datetime.datetime.now()
-    db_space.save()
-
-    return db_space
-
-
-@router.delete(
-    "/{space_id}/delete_authorized_signatory/{authorized_signatory_id}",
-    response_model_by_alias=False,
-    response_model=SpaceInResponse,
-)
-def delete_space_authorized_signatory(
-    space_id: str,
-    authorized_signatory_id: str,
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    db_space = models.Space.objects(id=space_id).first()
-    if not db_space:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail="Not Found this space.",
-        )
-
-    for authorized_signatory in db_space.authorized_signatories:
-        if str(authorized_signatory.uid) == authorized_signatory_id:
-            db_space.authorized_signatories.remove(authorized_signatory)
-            break
-
-    db_space.updated_date = datetime.datetime.now()
-    db_space.save()
-
-    return db_space
-
-
-@router.put(
-    "/{space_id}/update_authorized_signatory/{authorized_signatory_id}",
-    response_model_by_alias=False,
-    response_model=SpaceInResponse,
-)
-def update_space_authorized_signatory(
-    space_id: str,
-    authorized_signatory_id: str,
-    authorized_signatory: AuthorizedSignatoryInUpdate,
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    db_space = models.Space.objects(id=space_id).first()
-    if not db_space:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail="Not Found this space.",
-        )
-    authorized_signatory_dict = authorized_signatory.dict()
-    set_dict = {
-        f"set__authorized_signatories__S__{k}": v
-        for k, v in authorized_signatory_dict.items()
-        if v is not None
-    }
-    authorized_signatory = models.Space.objects(
-        id=space_id, authorized_signatories__uid=authorized_signatory_id
-    )
-    authorized_signatory.update(**set_dict)
-    db_space.save()
-    db_space.reload()
-
     return db_space

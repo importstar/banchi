@@ -20,6 +20,7 @@ async def init_router(application, settings):
 
     for router in routers:
         logger.debug(f"{router.tags}")
+        # application.include_router(router, prefix=f"{settings.API_PREFIX}")
         application.include_router(router, prefix=f"{settings.API_PREFIX}")
 
 

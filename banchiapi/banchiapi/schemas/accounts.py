@@ -25,9 +25,9 @@ class BaseAccount(BaseModel):
     currency: str = Field(..., example="THB")
 
 
-class AccountInResponse(BaseSchema, BaseAccount):
+class Account(BaseSchema, BaseAccount):
     pass
 
 
-class AccountInCreate(BaseAccount):
+class CreatedAccount(BaseAccount):
     pass

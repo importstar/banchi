@@ -26,7 +26,8 @@ class BeanieClient:
         self.client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
 
         await beanie.init_beanie(
-            database=self.client.db_name, document_models=await gather_documents()
+            database=self.client.get_default_database(),
+            document_models=await gather_documents(),
         )
 
 
