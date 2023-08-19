@@ -12,8 +12,10 @@ class BaseUser(BaseModel):
     last_name: str = Field(example="Lastname")
 
 
-class User(BaseModel):
-    pass
+class User(BaseSchema, BaseUser):
+    last_login_date: datetime.datetime | None = Field(
+        example="2023-01-01T00:00:00.000000"
+    )
 
 
 class UserList(BaseModel):

@@ -1,4 +1,4 @@
-from banchiapi.schemas.users import BaseUser
+from banchiapi.schemas import users
 
 from beanie import Document, Indexed
 
@@ -7,7 +7,7 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-class User(BaseUser, Document):
+class User(users.User, Document):
     password: str
 
     class Settings:

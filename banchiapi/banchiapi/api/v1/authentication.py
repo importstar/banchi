@@ -66,7 +66,7 @@ async def authentication(
     user = await models.User.find_one(models.User.username == form_data.username)
 
     if not user:
-        user = models.User.find_one(models.User.email == form_data.email)
+        user = models.User.find_one(models.User.email == form_data.username)
 
     if not user:
         raise HTTPException(
@@ -74,12 +74,14 @@ async def authentication(
             detail="Incorrect username or password",
         )
 
-    if not user.verify_password(form_data.password):
+    if not await user.verify_password(form_data.password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
         )
-    user.update(last_login_date=datetime.datetime.now())
+
+    user.last_login_date = datetime.datetime.now()
+    await user.save()
     return schemas.users.Token(
         access_token=security.create_access_token(
             str(user.id),
