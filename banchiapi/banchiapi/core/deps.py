@@ -11,7 +11,7 @@ from . import security
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
 
-def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User:
+async def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User:
     try:
         payload = jwt.decode(
             token, security.settings.SECRET_KEY, algorithms=[security.ALGORITHM]
@@ -22,13 +22,14 @@ def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User:
             detail="Could not validate credentials",
         )
 
-    user = models.User.objects(id=payload.get("sub")).first()
+    user = await models.User.get(payload.get("sub"))
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+
     return user
 
 
-def get_current_active_user(
+async def get_current_active_user(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if current_user.status != "active":
@@ -36,7 +37,7 @@ def get_current_active_user(
     return current_user
 
 
-def get_current_active_superuser(
+async def get_current_active_superuser(
     current_user: models.User = Depends(get_current_user),
 ) -> models.User:
     if "admin" not in current_user.roles:
@@ -46,7 +47,7 @@ def get_current_active_superuser(
     return current_user
 
 
-def create_logs(action, request, current_user):
+async def create_logs(action, request, current_user):
     request_log = models.RequestLog(
         user=current_user,
         ip_address=request.client.host,
