@@ -11,7 +11,7 @@ from . import security
 reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
 
-async def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User:
+async def get_current_user(token: str = Depends(reusable_oauth2)) -> models.users.User:
     try:
         payload = jwt.decode(
             token, security.settings.SECRET_KEY, algorithms=[security.ALGORITHM]
@@ -22,7 +22,7 @@ async def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User
             detail="Could not validate credentials",
         )
 
-    user = await models.User.get(payload.get("sub"))
+    user = await models.users.User.get(payload.get("sub"))
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -30,16 +30,16 @@ async def get_current_user(token: str = Depends(reusable_oauth2)) -> models.User
 
 
 async def get_current_active_user(
-    current_user: models.User = Depends(get_current_user),
-) -> models.User:
+    current_user: models.users.User = Depends(get_current_user),
+) -> models.users.User:
     if current_user.status != "active":
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
 async def get_current_active_superuser(
-    current_user: models.User = Depends(get_current_user),
-) -> models.User:
+    current_user: models.users.User = Depends(get_current_user),
+) -> models.users.User:
     if "admin" not in current_user.roles:
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
@@ -61,7 +61,7 @@ class RoleChecker:
     def __init__(self, *allowed_roles: list[str]):
         self.allowed_roles = allowed_roles
 
-    def __call__(self, user: models.User = Depends(get_current_active_user)):
+    def __call__(self, user: models.users.User = Depends(get_current_active_user)):
         for role in user.roles:
             if role in self.allowed_roles:
                 return
@@ -73,7 +73,7 @@ class DivisionChecker:
     def __init__(self, *allowed_divisions: list[str]):
         self.allowed_divisions = allowed_divisions
 
-    def __call__(self, user: models.User = Depends(get_current_active_user)):
+    def __call__(self, user: models.users.User = Depends(get_current_active_user)):
         if user.division not in self.allowed_divisions:
             logger.debug(
                 f"User with division {user.division} not in {self.allowed_divisions}"

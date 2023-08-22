@@ -21,11 +21,9 @@ class Address(BaseEmbeddedSchema):
 
 
 class BaseSpace(BaseModel):
-    name: str = Field(..., example="ชื่อองค์กร")
-    code: str = Field(..., example="รหัสองค์กร")
-    tax_id: str | None = Field(..., example="เลขผู้เสียภาษี")
-    phone: str | None = Field(..., example="เบอร์โทรศัพท์")
-    address: Address
+    name: str = Field(..., example="Space Name")
+    code: str | None = Field(..., example="Space Code")
+    tax_id: str | None = Field(..., example="Text ID")
 
 
 class SpaceList(BaseSchema, BaseSpace):

@@ -13,7 +13,7 @@ router = APIRouter(prefix="/spaces", tags=["space"])
 @router.get("/", response_model_by_alias=False, response_model=schemas.spaces.SpaceList)
 def get_spaces(
     name: str = "",
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
     current_page: int = 1,
     limit: int = 50,
 ):
@@ -62,29 +62,34 @@ def get_spaces(
 @router.post(
     "/create",
     response_model_by_alias=False,
-    response_model=schemas.spaces.Space,
 )
 def create_space(
-    space: schemas.spaces.Space,
-    current_user: models.User = Depends(deps.get_current_user),
-):
-    db_space = models.Space.objects(name=space.name, status="active").first()
+    space: schemas.spaces.CreatedSpace,
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> schemas.spaces.Space:
+    db_space = models.spaces.Space.find_one(
+        models.spaces.Space.name == space.name, models.spaces.Space.status == "active"
+    )
     if db_space:
         raise HTTPException(
-            status_code=HTTP_409_CONFLICT,
+            status_code=status.HTTP_409_CONFLICT,
             detail="There are already space name",
         )
-    db_space = models.Space.objects(code=space.code, status="active").first()
+
+    db_space = models.spaces.Space.find_one(
+        models.spaces.Space.code == space.code, models.spaces.Space.status == "active"
+    )
     if db_space:
         raise HTTPException(
-            status_code=HTTP_409_CONFLICT,
+            status_code=status.HTTP_409_CONFLICT,
             detail="There are already space code",
         )
 
     data = space.dict()
-    db_space = models.Space(**data)
+    db_space = models.spaces.Space(**data)
     db_space.created_date = datetime.datetime.now()
     db_space.updated_date = datetime.datetime.now()
+    db_space.owner = current_user
     db_space.save()
 
     return db_space
@@ -97,7 +102,7 @@ def create_space(
 )
 def get_space(
     space_id: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
         db_space = models.Space.objects.get(id=space_id)
@@ -117,7 +122,7 @@ def get_space(
 def update_space(
     space_id: str,
     space: schemas.spaces.CreatedSpace,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     db_space = models.Space.objects(id=space_id).first()
     if not db_space:
@@ -154,7 +159,7 @@ def update_space(
 )
 def delete_space(
     space_id: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
         db_space = models.Space.objects.get(id=space_id)

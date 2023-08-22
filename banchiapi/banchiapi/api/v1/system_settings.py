@@ -23,7 +23,7 @@ router = APIRouter(prefix="/system_settings", tags=["system_settings"])
 def create_system_setting(
     request: Request,
     system_setting: SystemSettingInCreate,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     db_system_setting = models.SystemSetting.objects().first()
     if db_system_setting:
@@ -68,7 +68,7 @@ def update_system_setting(
     request: Request,
     system_setting_id: str,
     system_setting: SystemSettingInCreate,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     db_system_setting = models.SystemSetting.objects(id=system_setting_id).first()
     if not db_system_setting:
@@ -98,7 +98,7 @@ def upload_logo_system_setting(
     system_setting_id: str,
     files: UploadFile | None = None,
     # request: Request = None,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     db_system_setting = models.SystemSetting.objects(id=system_setting_id).first()
     if not db_system_setting:
@@ -158,7 +158,7 @@ def get_logo_system_setting(
 )
 def delete_logo_system_setting(
     system_setting_id: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     db_system_setting = models.SystemSetting.objects(id=system_setting_id).first()
     if not db_system_setting:

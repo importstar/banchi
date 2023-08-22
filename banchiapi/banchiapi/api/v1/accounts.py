@@ -19,7 +19,7 @@ router = APIRouter(prefix="/accounts", tags=["account"])
 )
 def get_spaces(
     name: str = "",
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
     current_page: int = 1,
     limit: int = 50,
 ):
@@ -72,7 +72,7 @@ def get_spaces(
 )
 def create_space(
     space: schemas.spaces.Space,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     db_space = models.Space.objects(name=space.name, status="active").first()
     if db_space:
@@ -103,7 +103,7 @@ def create_space(
 )
 def get_space(
     space_id: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
         db_space = models.Space.objects.get(id=space_id)
@@ -123,7 +123,7 @@ def get_space(
 def update_space(
     space_id: str,
     space: schemas.spaces.CreatedSpace,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     db_space = models.Space.objects(id=space_id).first()
     if not db_space:
@@ -160,7 +160,7 @@ def update_space(
 )
 def delete_space(
     space_id: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
         db_space = models.Space.objects.get(id=space_id)

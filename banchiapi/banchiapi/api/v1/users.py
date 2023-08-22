@@ -9,7 +9,7 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/me", response_model_by_alias=False, response_model=schemas.users.User)
-def get_me(current_user: models.User = Depends(deps.get_current_user)):
+def get_me(current_user: models.users.User = Depends(deps.get_current_user)):
     return current_user
 
 
@@ -19,7 +19,7 @@ def get_me(current_user: models.User = Depends(deps.get_current_user)):
     response_model=bool,
 )
 def get_me_check_password(
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     return current_user.is_use_citizen_id_as_password()
 
@@ -31,10 +31,10 @@ def get_me_check_password(
 )
 def get_user(
     user_id: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        user = models.User.objects.get(id=user_id)
+        user = models.users.User.objects.get(id=user_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -54,7 +54,7 @@ def get_users(
     citizen_id: str = "",
     current_page: int = 1,
     limit: int = 50,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     users = []
     count = 0
@@ -64,7 +64,7 @@ def get_users(
         if users:
             users = users.filter(first_name__contains=first_name)
         elif not is_search:
-            users = models.User.objects(first_name__contains=first_name).order_by(
+            users = models.users.User.objects(first_name__contains=first_name).order_by(
                 "-created_date"
             )
         is_search = True
@@ -73,7 +73,7 @@ def get_users(
         if users:
             users = users.filter(last_name__contains=last_name)
         elif not is_search:
-            users = models.User.objects(last_name__contains=last_name).order_by(
+            users = models.users.User.objects(last_name__contains=last_name).order_by(
                 "-created_date"
             )
         is_search = True
@@ -82,7 +82,7 @@ def get_users(
         if users:
             users = users.filter(citizen_id__contains=citizen_id)
         elif not is_search:
-            users = models.User.objects(citizen_id__contains=citizen_id).order_by(
+            users = models.users.User.objects(citizen_id__contains=citizen_id).order_by(
                 "-created_date"
             )
         is_search = True
@@ -92,9 +92,9 @@ def get_users(
         users = users.skip((current_page - 1) * limit).limit(limit)
 
     elif not is_search:
-        count = models.User.objects().count()
+        count = models.users.User.objects().count()
         users = (
-            models.User.objects()
+            models.users.User.objects()
             .order_by("-created_date")
             .skip((current_page - 1) * limit)
             .limit(limit)
@@ -120,7 +120,9 @@ def get_users(
     name="user:create",
 )
 async def create(user_register: schemas.users.RegisteredUser) -> schemas.users.User:
-    user = await models.User.find_one(models.User.username == user_register.username)
+    user = await models.users.User.find_one(
+        models.users.User.username == user_register.username
+    )
 
     if user:
         raise HTTPException(
@@ -128,7 +130,7 @@ async def create(user_register: schemas.users.RegisteredUser) -> schemas.users.U
             detail="This username is exists.",
         )
 
-    user = models.User(**user_register.dict())
+    user = models.users.User(**user_register.dict())
     await user.set_password(user_register.password)
     await user.insert()
 
@@ -144,10 +146,10 @@ async def create(user_register: schemas.users.RegisteredUser) -> schemas.users.U
 def change_password(
     user_id: str,
     password_update: schemas.users.ChangedPassword,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        user = models.User.objects.get(id=user_id)
+        user = models.users.User.objects.get(id=user_id)
     except Exception:
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND,
@@ -174,10 +176,10 @@ def update(
     request: Request,
     user_id: str,
     user_update: schemas.users.UpdatedUser,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        user = models.User.objects.get(id=user_id)
+        user = models.users.User.objects.get(id=user_id)
     except Exception:
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND,
@@ -209,10 +211,10 @@ def set_status(
     request: Request,
     user_id: str,
     status: str = "active",
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        user = models.User.objects.get(id=user_id)
+        user = models.users.User.objects.get(id=user_id)
     except Exception:
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND,
@@ -239,10 +241,10 @@ def set_space(
     user_id: str,
     space_id: str,
     action: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        user = models.User.objects.get(id=user_id)
+        user = models.users.User.objects.get(id=user_id)
     except Exception:
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND,
@@ -281,10 +283,10 @@ def set_division(
     user_id: str,
     division_id: str,
     action: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        user = models.User.objects.get(id=user_id)
+        user = models.users.User.objects.get(id=user_id)
     except Exception:
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND,
@@ -322,10 +324,10 @@ def set_role(
     user_id: str,
     role: str,
     action: str,
-    current_user: models.User = Depends(deps.get_current_user),
+    current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        user = models.User.objects.get(id=user_id)
+        user = models.users.User.objects.get(id=user_id)
     except Exception:
         raise HTTPException(
             status_code=HTTP_404_NOT_FOUND,

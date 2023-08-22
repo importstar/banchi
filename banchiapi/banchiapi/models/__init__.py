@@ -9,7 +9,8 @@ DocType = TypeVar("DocType", bound=beanie.Document)
 
 
 # must remove after understand flow
-from .users import User
+from . import users
+from . import spaces
 
 
 async def gather_documents() -> Sequence[Type[DocType]]:

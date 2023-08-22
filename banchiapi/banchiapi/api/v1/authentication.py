@@ -63,10 +63,12 @@ async def authentication(
     form_data: OAuth2PasswordRequestForm = Depends(),
     name="auth:login",
 ) -> schemas.users.Token:
-    user = await models.User.find_one(models.User.username == form_data.username)
+    user = await models.users.User.find_one(
+        models.users.User.username == form_data.username
+    )
 
     if not user:
-        user = models.User.find_one(models.User.email == form_data.username)
+        user = models.users.User.find_one(models.users.User.email == form_data.username)
 
     if not user:
         raise HTTPException(

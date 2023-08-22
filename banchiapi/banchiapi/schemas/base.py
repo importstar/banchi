@@ -19,7 +19,7 @@ class PyObjectId(ObjectId):
 
 
 class BaseSchema(BaseModel):
-    id: PyObjectId | None = Field(default_factory=PyObjectId, alias="_id")
+    id: PyObjectId | None = Field(default_factory=PyObjectId, alias="_id", example="0")
 
     class Config:
         orm_mode = True

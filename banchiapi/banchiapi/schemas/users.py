@@ -5,7 +5,7 @@ from pydantic import BaseModel, EmailStr, Field
 from .base import BaseEmbeddedSchema, BaseSchema
 
 
-class BaseUser(BaseModel):
+class BaseUser:
     email: str = Field(example="admin@email.local")
     username: str = Field(example="admin")
     first_name: str = Field(example="Firstname")
@@ -18,7 +18,7 @@ class User(BaseSchema, BaseUser):
     )
 
 
-class UserList(BaseModel):
+class UserList(BaseSchema):
     pass
 
 
@@ -37,11 +37,11 @@ class ResetedPassword(BaseModel):
     citizen_id: str
 
 
-class RegisteredUser(BaseUser):
+class RegisteredUser(BaseUser, BaseSchema):
     password: str = Field(example="password")
 
 
-class UpdatedUser(BaseUser):
+class UpdatedUser(BaseUser, BaseSchema):
     roles: list[str]
 
 
