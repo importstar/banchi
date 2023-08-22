@@ -5,14 +5,14 @@ from pydantic import BaseModel, EmailStr, Field
 from .base import BaseEmbeddedSchema, BaseSchema
 
 
-class BaseUser:
+class BaseUser(BaseModel):
     email: str = Field(example="admin@email.local")
     username: str = Field(example="admin")
     first_name: str = Field(example="Firstname")
     last_name: str = Field(example="Lastname")
 
 
-class User(BaseSchema, BaseUser):
+class User(BaseUser, BaseSchema):
     last_login_date: datetime.datetime | None = Field(
         example="2023-01-01T00:00:00.000000"
     )
@@ -37,7 +37,7 @@ class ResetedPassword(BaseModel):
     citizen_id: str
 
 
-class RegisteredUser(BaseUser, BaseSchema):
+class RegisteredUser(BaseUser):
     password: str = Field(example="password")
 
 

@@ -9,6 +9,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class User(schemas.users.User, Document):
     password: str
+    roles: list[str] = ["user"]
 
     class Settings:
         name = "users"
