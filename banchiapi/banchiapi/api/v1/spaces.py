@@ -87,9 +87,8 @@ def create_space(
 
     data = space.dict()
     db_space = models.spaces.Space(**data)
-    db_space.created_date = datetime.datetime.now()
-    db_space.updated_date = datetime.datetime.now()
     db_space.owner = current_user
+    db_space.updated_by = current_user
     db_space.save()
 
     return db_space
