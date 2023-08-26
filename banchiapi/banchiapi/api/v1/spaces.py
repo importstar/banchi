@@ -10,53 +10,16 @@ from banchiapi.core import deps
 router = APIRouter(prefix="/spaces", tags=["space"])
 
 
-@router.get("/", response_model_by_alias=False, response_model=schemas.spaces.SpaceList)
-def get_spaces(
-    name: str = "",
+@router.get("/", response_model_by_alias=False)
+async def get_spaces(
     current_user: models.users.User = Depends(deps.get_current_user),
-    current_page: int = 1,
-    limit: int = 50,
-):
-    spaces = []
-    count = 0
-    is_search = False
+) -> list[schemas.spaces.Space]:
+    spaces = await models.spaces.Space.find(
+        models.spaces.Space.status == "active"
+    ).to_list()
 
-    if name:
-        if spaces:
-            spaces = spaces.filter(name__contains=name)
-        elif not is_search:
-            spaces = models.Space.objects(
-                name__contains=name, status="active"
-            ).order_by("-created_date")
-
-        is_search = True
-    if spaces:
-        count = spaces.count()
-        spaces = spaces.skip((current_page - 1) * limit).limit(limit)
-
-    elif not is_search:
-        # count = models.WaterBill.objects().count()
-        # water_bills = (
-        #     models.WaterBill.objects().skip((current_page - 1) * limit).limit(limit)
-        # )
-        count = models.Space.objects(status="active").count()
-        spaces = (
-            models.Space.objects(status="active")
-            .order_by("-created_date")
-            .skip((current_page - 1) * limit)
-            .limit(limit)
-        )
-
-    if count % limit == 0 and count // limit > 0:
-        total_page = count // limit
-    else:
-        total_page = (count // limit) + 1
-    return ListSpaceInResponse(
-        count=count,
-        spaces=list(spaces),
-        current_page=current_page,
-        total_page=total_page,
-    )
+    print(spaces)
+    return spaces
 
 
 @router.post(
