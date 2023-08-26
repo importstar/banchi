@@ -63,11 +63,11 @@ def get_spaces(
     "/create",
     response_model_by_alias=False,
 )
-def create_space(
+async def create_space(
     space: schemas.spaces.CreatedSpace,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
-    db_space = models.spaces.Space.find_one(
+    db_space = await models.spaces.Space.find_one(
         models.spaces.Space.name == space.name, models.spaces.Space.status == "active"
     )
     if db_space:
@@ -76,7 +76,7 @@ def create_space(
             detail="There are already space name",
         )
 
-    db_space = models.spaces.Space.find_one(
+    db_space = await models.spaces.Space.find_one(
         models.spaces.Space.code == space.code, models.spaces.Space.status == "active"
     )
     if db_space:
@@ -86,10 +86,11 @@ def create_space(
         )
 
     data = space.dict()
+    data["owner"] = current_user
+    data["updated_by"] = current_user
     db_space = models.spaces.Space(**data)
-    db_space.owner = current_user
-    db_space.updated_by = current_user
-    db_space.save()
+    print("->", db_space.dict())
+    await db_space.insert()
 
     return db_space
 
