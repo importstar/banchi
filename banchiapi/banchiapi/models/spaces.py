@@ -1,6 +1,7 @@
 from banchiapi import schemas
+from typing import Optional
 
-from beanie import Document, Indexed
+from beanie import Document, Indexed, Link
 from pydantic import Field
 
 from . import users
@@ -9,9 +10,13 @@ import datetime
 
 
 class Space(schemas.spaces.Space, Document):
+    name: str
     created_date: datetime.datetime = Field(default=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default=datetime.datetime.now)
-    owner: users.User
+    owner: Link[users.User]
+    updated_by: Link[users.User]
+
+    strtus: str = Field(default="active")
 
     class Settings:
         name = "spaces"

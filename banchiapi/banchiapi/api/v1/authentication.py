@@ -68,7 +68,9 @@ async def authentication(
     )
 
     if not user:
-        user = models.users.User.find_one(models.users.User.email == form_data.username)
+        user = await models.users.User.find_one(
+            models.users.User.email == form_data.username
+        )
 
     if not user:
         raise HTTPException(

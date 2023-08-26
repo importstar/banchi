@@ -26,11 +26,14 @@ class BaseSpace(BaseModel):
     tax_id: str | None = Field(..., example="Text ID")
 
 
-class SpaceList(BaseSchema, BaseSpace):
-    pass
-
-
 class Space(BaseSchema, BaseSpace):
+    status: str = Field(
+        default="active",
+        example="active",
+    )
+
+
+class SpaceList(BaseSchema, BaseSpace):
     pass
 
 

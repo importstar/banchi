@@ -1,6 +1,9 @@
+import datetime
+
 from banchiapi import schemas
 
 from beanie import Document, Indexed
+from pydantic import Field
 
 from passlib.context import CryptContext
 
@@ -10,6 +13,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class User(schemas.users.User, Document):
     password: str
     roles: list[str] = ["user"]
+
+    register_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     class Settings:
         name = "users"
