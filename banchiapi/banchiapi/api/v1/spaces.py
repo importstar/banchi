@@ -18,7 +18,6 @@ async def get_spaces(
         models.spaces.Space.status == "active"
     ).to_list()
 
-    print(spaces)
     return spaces
 
 
