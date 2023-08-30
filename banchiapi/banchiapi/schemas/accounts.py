@@ -30,4 +30,9 @@ class Account(BaseSchema, BaseAccount):
 
 
 class CreatedAccount(BaseAccount):
+    parent_id: str = Field(..., example="0")
+    space_id: str = Field(..., example="0")
+
+
+class AccountList(BaseAccount):
     pass

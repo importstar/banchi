@@ -15,39 +15,39 @@ router = APIRouter(prefix="/accounts", tags=["account"])
 @router.get(
     "/",
     response_model_by_alias=False,
-    response_model=schemas.spaces.SpaceList,
+    response_model=schemas.accounts.AccountList,
 )
-def get_spaces(
+def get_accounts(
     name: str = "",
     current_user: models.users.User = Depends(deps.get_current_user),
     current_page: int = 1,
     limit: int = 50,
 ):
-    spaces = []
+    accounts = []
     count = 0
     is_search = False
 
     if name:
-        if spaces:
-            spaces = spaces.filter(name__contains=name)
+        if accounts:
+            accounts = accounts.filter(name__contains=name)
         elif not is_search:
-            spaces = models.Space.objects(
+            accounts = models.Account.objects(
                 name__contains=name, status="active"
             ).order_by("-created_date")
 
         is_search = True
-    if spaces:
-        count = spaces.count()
-        spaces = spaces.skip((current_page - 1) * limit).limit(limit)
+    if accounts:
+        count = accounts.count()
+        accounts = accounts.skip((current_page - 1) * limit).limit(limit)
 
     elif not is_search:
         # count = models.WaterBill.objects().count()
         # water_bills = (
         #     models.WaterBill.objects().skip((current_page - 1) * limit).limit(limit)
         # )
-        count = models.Space.objects(status="active").count()
-        spaces = (
-            models.Space.objects(status="active")
+        count = models.Account.objects(status="active").count()
+        accounts = (
+            models.Account.objects(status="active")
             .order_by("-created_date")
             .skip((current_page - 1) * limit)
             .limit(limit)
@@ -57,9 +57,9 @@ def get_spaces(
         total_page = count // limit
     else:
         total_page = (count // limit) + 1
-    return ListSpaceInResponse(
+    return ListAccountInResponse(
         count=count,
-        spaces=list(spaces),
+        accounts=list(accounts),
         current_page=current_page,
         total_page=total_page,
     )
@@ -68,113 +68,117 @@ def get_spaces(
 @router.post(
     "/create",
     response_model_by_alias=False,
-    response_model=schemas.spaces.Space,
+    response_model=schemas.accounts.Account,
 )
-def create_space(
-    space: schemas.spaces.Space,
+def create_account(
+    account: schemas.accounts.CreatedAccount,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
-    db_space = models.Space.objects(name=space.name, status="active").first()
-    if db_space:
+    db_account = models.Account.objects(name=account.name, status="active").first()
+    if db_account:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="There are already space name",
+            detail="There are already account name",
         )
-    db_space = models.Space.objects(code=space.code, status="active").first()
-    if db_space:
+    db_account = models.Account.objects(code=account.code, status="active").first()
+    if db_account:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="There are already space code",
+            detail="There are already account code",
         )
 
-    data = space.dict()
-    db_space = models.Space(**data)
-    db_space.created_date = datetime.datetime.now()
-    db_space.updated_date = datetime.datetime.now()
-    db_space.save()
+    data = account.dict()
+    db_account = models.Account(**data)
+    db_account.created_date = datetime.datetime.now()
+    db_account.updated_date = datetime.datetime.now()
+    db_account.save()
 
-    return db_space
+    return db_account
 
 
 @router.get(
-    "/{space_id}",
+    "/{account_id}",
     response_model_by_alias=False,
-    response_model=schemas.spaces.Space,
+    response_model=schemas.accounts.Account,
 )
-def get_space(
-    space_id: str,
+def get_account(
+    account_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        db_space = models.Space.objects.get(id=space_id)
+        db_account = models.Account.objects.get(id=account_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this space",
+            detail="Not found this account",
         )
-    return db_space
+    return db_account
 
 
 @router.put(
-    "/{space_id}/update",
+    "/{account_id}/update",
     response_model_by_alias=False,
-    response_model=schemas.spaces.Space,
+    response_model=schemas.accounts.Account,
 )
-def update_space(
-    space_id: str,
-    space: schemas.spaces.CreatedSpace,
+def update_account(
+    account_id: str,
+    account: schemas.accounts.CreatedAccount,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
-    db_space = models.Space.objects(id=space_id).first()
-    if not db_space:
+    db_account = models.Account.objects(id=account_id).first()
+    if not db_account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Not found this system setting",
         )
-    db_spaces = models.Space.objects(name=space.name, status="active", id__ne=space_id)
-    if db_spaces:
+    db_accounts = models.Account.objects(
+        name=account.name, status="active", id__ne=account_id
+    )
+    if db_accounts:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="There are already space name",
+            detail="There are already account name",
         )
-    db_spaces = models.Space.objects(code=space.code, status="active", id__ne=space_id)
-    if db_spaces:
+    db_accounts = models.Account.objects(
+        code=account.code, status="active", id__ne=account_id
+    )
+    if db_accounts:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="There are already space code",
+            detail="There are already account code",
         )
 
-    data = space.dict()
-    db_space.update(**data)
+    data = account.dict()
+    db_account.update(**data)
 
-    db_space.updated_date = datetime.datetime.now()
-    db_space.save()
-    db_space.reload()
-    return db_space
+    db_account.updated_date = datetime.datetime.now()
+    db_account.save()
+    db_account.reload()
+    return db_account
 
 
 @router.delete(
-    "/{space_id}/delete",
+    "/{account_id}/delete",
     response_model_by_alias=False,
-    response_model=schemas.spaces.Space,
+    response_model=schemas.accounts.Account,
 )
-def delete_space(
-    space_id: str,
+def delete_account(
+    account_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
     try:
-        db_space = models.Space.objects.get(id=space_id)
+        db_account = models.Account.objects.get(id=account_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this space",
+            detail="Not found this account",
         )
-    db_space.update(status="disactive", updated_date=datetime.datetime.now())
-    db_space.reload()
-    db_space.save()
+    db_account.update(status="disactive", updated_date=datetime.datetime.now())
+    db_account.reload()
+    db_account.save()
 
-    divisions = models.Division.objects(space=db_space, status="active")
+    divisions = models.Division.objects(account=db_account, status="active")
     for division in divisions:
         division.status = "disactive"
         division.save()
-    return db_space
+    return db_account
