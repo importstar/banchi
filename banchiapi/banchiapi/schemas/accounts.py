@@ -19,7 +19,10 @@ smallest_fractions = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
 class BaseAccount(BaseModel):
     name: str = Field(..., example="Account Name")
-    type: str = Field(..., example="asset")
+    type: str = Field(
+        ...,
+        example="asset",
+    )
     smallest_fraction: float = Field(..., example=0.1)
     parent_id: str = Field(..., example="parent_id")
     currency: str = Field(..., example="THB")
@@ -30,9 +33,9 @@ class Account(BaseSchema, BaseAccount):
 
 
 class CreatedAccount(BaseAccount):
-    parent_id: str = Field(..., example="0")
+    parent_id: str = Field(..., example="null")
     space_id: str = Field(..., example="0")
 
 
-class AccountList(BaseAccount):
-    pass
+class AccountList(BaseSchema):
+    accounts = list[Account]

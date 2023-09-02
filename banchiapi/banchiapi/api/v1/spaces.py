@@ -13,12 +13,13 @@ router = APIRouter(prefix="/spaces", tags=["space"])
 @router.get("/", response_model_by_alias=False)
 async def get_spaces(
     current_user: models.users.User = Depends(deps.get_current_user),
-) -> list[schemas.spaces.Space]:
+) -> schemas.spaces.SpaceList:
     spaces = await models.spaces.Space.find(
         models.spaces.Space.status == "active"
     ).to_list()
+    print("-->", spaces)
 
-    return spaces
+    return dict(spaces=spaces)
 
 
 @router.post(

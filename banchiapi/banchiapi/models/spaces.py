@@ -16,7 +16,5 @@ class Space(schemas.spaces.Space, Document):
     owner: Link[users.User]
     updated_by: Link[users.User]
 
-    strtus: str = Field(default="active")
-
     class Settings:
         name = "spaces"

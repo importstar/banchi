@@ -33,8 +33,8 @@ class Space(BaseSchema, BaseSpace):
     )
 
 
-class SpaceList(BaseSchema, BaseSpace):
-    pass
+class SpaceList(BaseSchema):
+    spaces: list[Space]
 
 
 class CreatedSpace(BaseSpace):
