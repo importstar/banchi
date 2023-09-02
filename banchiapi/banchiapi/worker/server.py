@@ -27,12 +27,12 @@ listen = ["default"]
 #     return server
 
 
-class BillbahtWorker(SimpleWorker):
+class GeneralWorker(SimpleWorker):
     def __init__(self, *args, **kwargs):
         settings = kwargs.pop("settings")
         super().__init__(*args, **kwargs)
 
-        models.init_mongoengine(settings)
+         # models.init_mongoengine(settings)
 
 
 class WorkerServer:
@@ -46,5 +46,5 @@ class WorkerServer:
 
     def run(self):
         with Connection(self.conn):
-            worker = BillbahtWorker(list(map(Queue, listen)), settings=self.settings)
+            worker = GeneralWorker(list(map(Queue, listen)), settings=self.settings)
             worker.work()

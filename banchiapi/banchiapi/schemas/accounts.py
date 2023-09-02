@@ -1,8 +1,9 @@
 from bson import ObjectId
 
+import enum
 from pydantic import BaseModel, Field
 
-from .base import BaseEmbeddedSchema, BaseSchema, PyObjectId
+from .base import BaseEmbeddedSchema, BaseSchema
 from .system_settings import BaseAuthorizedSignatory
 
 account_types = [
@@ -14,7 +15,18 @@ account_types = [
     "stock",
     "multual fund",
 ]
+
 smallest_fractions = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+
+
+class SmallestFractionEnum(float, enum.Enum):
+    f1 = 1
+    f0_1 = 0.1
+    f0_01 = 0.01
+    f0_001 = 0.001
+    f0_0001 = 0.0001
+    f0_00001 = 0.00001
+    f0_000001 = 0.000001
 
 
 class BaseAccount(BaseModel):
@@ -23,7 +35,9 @@ class BaseAccount(BaseModel):
         ...,
         example="asset",
     )
-    smallest_fraction: float = Field(..., example=0.1)
+    smallest_fraction: SmallestFractionEnum = Field(
+        ..., example=SmallestFractionEnum.f0_01
+    )
     parent_id: str = Field(..., example="parent_id")
     currency: str = Field(..., example="THB")
 
@@ -38,4 +52,4 @@ class CreatedAccount(BaseAccount):
 
 
 class AccountList(BaseSchema):
-    accounts = list[Account]
+    accounts: list[Account]

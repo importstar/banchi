@@ -15,9 +15,9 @@ async def get_spaces(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.SpaceList:
     spaces = await models.spaces.Space.find(
-        models.spaces.Space.status == "active"
+        models.spaces.Space.status == "active",
+        models.spaces.Space.owner.id == current_user.id,
     ).to_list()
-    print("-->", spaces)
 
     return dict(spaces=spaces)
 

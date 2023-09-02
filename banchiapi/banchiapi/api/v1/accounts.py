@@ -15,65 +15,22 @@ router = APIRouter(prefix="/accounts", tags=["account"])
 @router.get(
     "/",
     response_model_by_alias=False,
-    response_model=schemas.accounts.AccountList,
 )
-def get_accounts(
-    name: str = "",
+async def get_accounts(
     current_user: models.users.User = Depends(deps.get_current_user),
-    current_page: int = 1,
-    limit: int = 50,
-):
-    accounts = []
-    count = 0
-    is_search = False
-
-    if name:
-        if accounts:
-            accounts = accounts.filter(name__contains=name)
-        elif not is_search:
-            accounts = models.Account.objects(
-                name__contains=name, status="active"
-            ).order_by("-created_date")
-
-        is_search = True
-    if accounts:
-        count = accounts.count()
-        accounts = accounts.skip((current_page - 1) * limit).limit(limit)
-
-    elif not is_search:
-        # count = models.WaterBill.objects().count()
-        # water_bills = (
-        #     models.WaterBill.objects().skip((current_page - 1) * limit).limit(limit)
-        # )
-        count = models.Account.objects(status="active").count()
-        accounts = (
-            models.Account.objects(status="active")
-            .order_by("-created_date")
-            .skip((current_page - 1) * limit)
-            .limit(limit)
-        )
-
-    if count % limit == 0 and count // limit > 0:
-        total_page = count // limit
-    else:
-        total_page = (count // limit) + 1
-    return ListAccountInResponse(
-        count=count,
-        accounts=list(accounts),
-        current_page=current_page,
-        total_page=total_page,
-    )
+) -> schemas.accounts.AccountList:
+    accounts = await models.accounts.Account.find(owner=current_user).to_list()
+    return accounts
 
 
 @router.post(
     "/create",
     response_model_by_alias=False,
-    response_model=schemas.accounts.Account,
 )
-def create_account(
+async def create_account(
     account: schemas.accounts.CreatedAccount,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.accounts.Account:
     db_account = models.Account.objects(name=account.name, status="active").first()
     if db_account:
         raise HTTPException(

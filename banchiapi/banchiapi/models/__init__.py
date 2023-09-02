@@ -7,11 +7,12 @@ import beanie
 
 from . import users
 from . import spaces
+from . import accounts
 
-DocType = TypeVar("DocType", bound=beanie.Document)
+DocumentType = TypeVar("DocumentType", bound=beanie.Document)
 
 
-async def gather_documents() -> Sequence[Type[DocType]]:
+async def gather_documents() -> Sequence[Type[DocumentType]]:
     """Returns a list of all MongoDB document models defined in `models` module."""
 
     class_models = getmembers(sys.modules[__name__], isclass)
@@ -34,7 +35,10 @@ class BeanieClient:
         self.client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
 
         documents = await gather_documents()
-        print("Documents >>>", documents)
+        print("Documents >>>")
+        for document in documents:
+            print(document)
+
         await beanie.init_beanie(
             database=self.client.get_default_database(),
             document_models=documents,

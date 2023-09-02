@@ -1,8 +1,9 @@
 from bson import ObjectId
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, GetJsonSchemaHandler
+from pydantic_core import CoreSchema
 
 
-class PyObjectId(ObjectId):
+class PyObjectId(BaseModel):
     @classmethod
     def __get_validators__(cls):
         yield cls.validate
@@ -14,19 +15,24 @@ class PyObjectId(ObjectId):
         return ObjectId(v)
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
+    def __get_pydantic_json_schema__(
+        cls, core_schema: CoreSchema, handler: GetJsonSchemaHandler
+    ) -> dict[str, any]:
+        json_schema = super().__get_pydantic_json_schema__(core_schema, handler)
+        json_schema = handler.resolve_ref_schema(json_schema)
+        json_schema.update(type="string")
+        return json_schema
 
 
 class BaseSchema(BaseModel):
     id: PyObjectId | None = Field(default_factory=PyObjectId, alias="_id", example="0")
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        populate_by_name = True
         json_encoders = {ObjectId: str}
 
 
 class BaseEmbeddedSchema(BaseModel):
     class Config:
-        orm_mode = True
+        from_attributes = True
