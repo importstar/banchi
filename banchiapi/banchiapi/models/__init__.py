@@ -8,6 +8,7 @@ import beanie
 from . import users
 from . import spaces
 from . import accounts
+from . import transactions
 
 DocumentType = TypeVar("DocumentType", bound=beanie.Document)
 

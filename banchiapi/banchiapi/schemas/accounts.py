@@ -29,8 +29,13 @@ class SmallestFractionEnum(float, enum.Enum):
     f0_000001 = 0.000001
 
 
+class CurrencyEnum(str, enum.Enum):
+    THB = "THB"
+
+
 class BaseAccount(BaseModel):
     name: str = Field(..., example="Account Name")
+    description: str = Field(..., example="Description")
     type: str = Field(
         ...,
         example="asset",
@@ -39,7 +44,7 @@ class BaseAccount(BaseModel):
         ..., example=SmallestFractionEnum.f0_01
     )
     parent_id: str = Field(..., example="parent_id")
-    currency: str = Field(..., example="THB")
+    currency: CurrencyEnum = Field(..., example=CurrencyEnum.THB)
 
 
 class Account(BaseSchema, BaseAccount):
