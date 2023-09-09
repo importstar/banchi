@@ -21,16 +21,16 @@ class Address(BaseModel):
 
 
 class BaseSpace(BaseModel):
-    id: PydanticObjectId = Field(
-        default_factory=PydanticObjectId, alias="_id", example="0"
-    )
-
     name: str = Field(..., example="Space Name")
     code: str | None = Field(..., example="Space Code")
     tax_id: str | None = Field(..., example="Text ID")
 
 
 class Space(BaseSpace):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId, alias="_id", example="0"
+    )
+
     status: str = Field(
         default="active",
         example="active",
