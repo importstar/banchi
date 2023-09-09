@@ -44,67 +44,38 @@ def get_user(
 
 
 @router.get(
-    "/",
+    "",
     response_model_by_alias=False,
-    response_model=schemas.users.UserList,
 )
-def get_users(
+async def get_users(
     first_name: str = "",
     last_name: str = "",
     citizen_id: str = "",
     current_page: int = 1,
     limit: int = 50,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
-    users = []
+) -> schemas.users.UserList:
+    users = models.users.User.find()
     count = 0
-    is_search = False
 
     if first_name:
-        if users:
-            users = users.filter(first_name__contains=first_name)
-        elif not is_search:
-            users = models.users.User.objects(first_name__contains=first_name).order_by(
-                "-created_date"
-            )
-        is_search = True
+        users = users.find(first_name=first_name)
 
     if last_name:
-        if users:
-            users = users.filter(last_name__contains=last_name)
-        elif not is_search:
-            users = models.users.User.objects(last_name__contains=last_name).order_by(
-                "-created_date"
-            )
-        is_search = True
+        users = users.find(last_name=last_name)
 
     if citizen_id:
-        if users:
-            users = users.filter(citizen_id__contains=citizen_id)
-        elif not is_search:
-            users = models.users.User.objects(citizen_id__contains=citizen_id).order_by(
-                "-created_date"
-            )
-        is_search = True
+        users = users.find(citizen_id=citizen_id)
 
-    if users:
-        count = users.count()
-        users = users.skip((current_page - 1) * limit).limit(limit)
-
-    elif not is_search:
-        count = models.users.User.objects().count()
-        users = (
-            models.users.User.objects()
-            .order_by("-created_date")
-            .skip((current_page - 1) * limit)
-            .limit(limit)
-        )
+    count = await users.count()
+    users = users.skip((current_page - 1) * limit).limit(limit)
 
     if count % limit == 0 and count // limit > 0:
         total_page = count // limit
     else:
         total_page = (count // limit) + 1
 
+    users = await users.to_list()
     return schemas.users.UserList(
         users=list(users),
         count=count,
@@ -119,7 +90,9 @@ def get_users(
     response_model_by_alias=False,
     name="user:create",
 )
-async def create(user_register: schemas.users.RegisteredUser) -> schemas.users.User:
+async def create(
+    user_register: schemas.users.RegisteredUser,
+) -> schemas.users.User:
     user = await models.users.User.find_one(
         models.users.User.username == user_register.username
     )

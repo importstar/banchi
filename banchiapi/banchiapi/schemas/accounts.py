@@ -2,9 +2,10 @@ from bson import ObjectId
 
 import enum
 from pydantic import BaseModel, Field
+from beanie import PydanticObjectId
 
-from .base import BaseEmbeddedSchema, BaseSchema
 from .system_settings import BaseAuthorizedSignatory
+
 
 account_types = [
     "asset",
@@ -47,8 +48,10 @@ class BaseAccount(BaseModel):
     currency: CurrencyEnum = Field(..., example=CurrencyEnum.THB)
 
 
-class Account(BaseSchema, BaseAccount):
-    pass
+class Account(BaseAccount):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId, alias="_id", example="0"
+    )
 
 
 class CreatedAccount(BaseAccount):
@@ -56,5 +59,5 @@ class CreatedAccount(BaseAccount):
     space_id: str = Field(..., example="0")
 
 
-class AccountList(BaseSchema):
+class AccountList(BaseModel):
     accounts: list[Account]

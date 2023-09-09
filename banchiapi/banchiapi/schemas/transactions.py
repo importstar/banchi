@@ -1,8 +1,7 @@
 from bson import ObjectId
 
 from pydantic import BaseModel, Field
-
-from .base import BaseEmbeddedSchema, BaseSchema, PyObjectId
+from beanie import PydanticObjectId
 
 from . import accounts
 from . import spaces
@@ -14,7 +13,11 @@ class BaseTransaction(BaseModel):
     currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
 
 
-class Transaction(BaseSchema, BaseTransaction):
+class Transaction(BaseTransaction):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId, alias="_id", example="0"
+    )
+
     transaction_id: str = Field(..., example="0")
     account: accounts.Account = Field(..., example="0")
     sapce: spaces.Space = Field(..., example="0")
@@ -24,7 +27,7 @@ class Transaction(BaseSchema, BaseTransaction):
     )
 
 
-class TransactionList(BaseSchema):
+class TransactionList(BaseModel):
     spaces: list[Transaction]
 
 

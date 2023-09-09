@@ -1,12 +1,12 @@
 from bson import ObjectId
 
 from pydantic import BaseModel, Field
+from beanie import PydanticObjectId
 
-from .base import BaseEmbeddedSchema, BaseSchema, PyObjectId
 from .system_settings import BaseAuthorizedSignatory
 
 
-class Address(BaseEmbeddedSchema):
+class Address(BaseModel):
     address: str | None  # บ้านเลขที่
     building: str | None  # อาคาร
     floor: str | None  # ชั้น
@@ -21,19 +21,23 @@ class Address(BaseEmbeddedSchema):
 
 
 class BaseSpace(BaseModel):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId, alias="_id", example="0"
+    )
+
     name: str = Field(..., example="Space Name")
     code: str | None = Field(..., example="Space Code")
     tax_id: str | None = Field(..., example="Text ID")
 
 
-class Space(BaseSchema, BaseSpace):
+class Space(BaseSpace):
     status: str = Field(
         default="active",
         example="active",
     )
 
 
-class SpaceList(BaseSchema):
+class SpaceList(BaseModel):
     spaces: list[Space]
 
 

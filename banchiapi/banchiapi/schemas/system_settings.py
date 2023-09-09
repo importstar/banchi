@@ -1,7 +1,5 @@
 from pydantic import BaseModel, Field
 
-from .base import BaseSchema, BaseEmbeddedSchema
-
 
 class BaseSystemSetting(BaseModel):
     title_names: list[str]
@@ -11,7 +9,7 @@ class BaseSystemSetting(BaseModel):
     vat: float | None
 
 
-class SystemSettingInResponse(BaseSchema, BaseSystemSetting):
+class SystemSettingInResponse(BaseSystemSetting):
     pass
 
 
