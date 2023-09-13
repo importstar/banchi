@@ -12,17 +12,6 @@ from banchiapi import schemas
 router = APIRouter(prefix="/accounts", tags=["account"])
 
 
-@router.get(
-    "/",
-    response_model_by_alias=False,
-)
-async def get_accounts(
-    current_user: models.users.User = Depends(deps.get_current_user),
-) -> schemas.accounts.AccountList:
-    accounts = await models.accounts.Account.find(owner=current_user).to_list()
-    return accounts
-
-
 @router.post(
     "/create",
     response_model_by_alias=False,

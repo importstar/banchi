@@ -10,7 +10,7 @@ from banchiapi.core import deps
 router = APIRouter(prefix="/spaces", tags=["space"])
 
 
-@router.get("/", response_model_by_alias=False)
+@router.get("", response_model_by_alias=False)
 async def get_spaces(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.SpaceList:

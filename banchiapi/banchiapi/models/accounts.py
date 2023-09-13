@@ -17,3 +17,13 @@ class Account(schemas.accounts.Account, Document):
 
     class Settings:
         name = "accounts"
+
+
+class AccountBook(schemas.accounts.AccountBook, Document):
+    created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    owner: Link[users.User]
+    updated_by: Link[users.User]
+
+    class Settings:
+        name = "account_books"

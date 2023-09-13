@@ -12,8 +12,7 @@ import datetime
 
 
 class Transaction(schemas.transactions.Transaction, Document):
-    account: Link[accounts.Account]
-    space: Link[spaces.Space]
+    account_book: Link[accounts.AccountBook]
 
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)

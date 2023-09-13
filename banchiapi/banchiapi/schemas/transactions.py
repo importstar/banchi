@@ -18,9 +18,7 @@ class Transaction(BaseTransaction):
         default_factory=PydanticObjectId, alias="_id", example="0"
     )
 
-    transaction_id: str = Field(..., example="0")
-    account: accounts.Account = Field(..., example="0")
-    sapce: spaces.Space = Field(..., example="0")
+    account_book: accounts.AccountBook = Field(..., example="0")
     status: str = Field(
         default="active",
         example="active",
