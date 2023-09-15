@@ -3,6 +3,7 @@ from bson import ObjectId
 from pydantic import BaseModel, Field
 from beanie import PydanticObjectId
 
+from . import account_books
 from . import accounts
 from . import spaces
 
@@ -18,7 +19,7 @@ class Transaction(BaseTransaction):
         default_factory=PydanticObjectId, alias="_id", example="0"
     )
 
-    account_book: accounts.AccountBook = Field(..., example="0")
+    account_book: account_books.AccountBook = Field(..., example="0")
     status: str = Field(
         default="active",
         example="active",

@@ -43,11 +43,15 @@ class BaseAccountBook(BaseModel):
     currency: CurrencyEnum = Field(..., example=CurrencyEnum.THB)
 
 
-class AccountBook(BaseAccount):
+class AccountBook(BaseAccountBook):
     id: PydanticObjectId = Field(
         default_factory=PydanticObjectId, alias="_id", example="0"
     )
 
 
-class CreatedAccountBook(BaseAccount):
+class CreatedAccountBook(BaseAccountBook):
     parent_id: str = Field(..., example="null")
+
+
+class AccountBookList(BaseModel):
+    account_books: list[AccountBook]
