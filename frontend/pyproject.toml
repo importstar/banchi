@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "banchi"
+version = "0.1.0"
+description = ""
+authors = ["Thanathip Limna <boatkrap@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+flet = "^0.10.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
