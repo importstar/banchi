@@ -1,0 +1,4 @@
+#!/bin/bash
+
+flet run -d -r -p 8550 -v banchi/cmd/web.py
+
