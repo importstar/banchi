@@ -39,7 +39,6 @@ class BaseAccountBook(BaseModel):
     smallest_fraction: SmallestFractionEnum = Field(
         ..., example=SmallestFractionEnum.f0_01
     )
-    parent_id: str = Field(..., example="parent_id")
     currency: CurrencyEnum = Field(..., example=CurrencyEnum.THB)
 
 
@@ -50,7 +49,8 @@ class AccountBook(BaseAccountBook):
 
 
 class CreatedAccountBook(BaseAccountBook):
-    parent_id: str = Field(..., example="null")
+    parent_id: str | None = Field(..., example=None)
+    account_id: str = Field(..., example="0")
 
 
 class AccountBookList(BaseModel):

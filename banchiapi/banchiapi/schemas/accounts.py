@@ -26,3 +26,7 @@ class Account(BaseAccount):
 
 class CreatedAccount(BaseAccount):
     space_id: str = Field(..., example="0")
+
+
+class AccountList(BaseModel):
+    accounts: list[Account]

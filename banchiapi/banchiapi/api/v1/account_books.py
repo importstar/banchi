@@ -9,7 +9,7 @@ from banchiapi import models
 from banchiapi.core import deps
 from banchiapi import schemas
 
-router = APIRouter(prefix="/account_book-books", tags=["account_book book"])
+router = APIRouter(prefix="/account-books", tags=["account_books"])
 
 
 @router.get(
@@ -22,7 +22,7 @@ async def get_account_books(
     account_books = await models.account_books.AccountBook.find(
         owner=current_user
     ).to_list()
-    return account_books
+    return dict(account_books=account_books)
 
 
 @router.post(
