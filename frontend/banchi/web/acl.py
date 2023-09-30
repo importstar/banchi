@@ -1,7 +1,6 @@
 from flask import redirect, url_for, request
 from flask_login import current_user, LoginManager, login_url
 from werkzeug.exceptions import Forbidden, Unauthorized
-from .. import models
 
 from functools import wraps
 

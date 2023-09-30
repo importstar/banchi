@@ -1,0 +1,23 @@
+<div id="cookie-banner" style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #f8f8f8; padding: 10px; border-top: 1px solid #ddd;">
+    <p>This website uses cookies to ensure you get the best experience on our website. <a href="/privacy-policy">Learn more</a></p>
+    <button id="accept-cookies" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; text-align: center; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">Accept Cookies</button>
+  </div>
+  
+  <script>
+    var cookieBanner = document.getElementById("cookie-banner");
+    var acceptCookiesButton = document.getElementById("accept-cookies");
+  
+    acceptCookiesButton.addEventListener("click", function() {
+      cookieBanner.style.display = "none";
+      // Set a cookie to remember user preference
+      document.cookie = "cookie-consent=true; expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/";
+    });
+  
+    // Check if user has given consent
+    if (document.cookie.indexOf("cookie-consent=true") === -1) {
+      cookieBanner.style.display = "block";
+    } else {
+      cookieBanner.style.display = "none";
+    }
+  </script>
+  

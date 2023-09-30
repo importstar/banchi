@@ -1,0 +1,256 @@
+{% extends '/base/default-dashboard.html' %}
+
+{% block additional_js %}
+<script>
+  $('.ui.big.breadcrumb')[0].parentElement.style.display = "none"
+  
+  const links = document.querySelectorAll('.blinking.link')
+  links.forEach((link, index) => {
+    link.setAttribute('onmouseover', 'this.style.color="#2185d0"');
+    link.setAttribute('onmouseout', 'this.style.color="black"');
+  });
+
+  const secondaryLinks = document.querySelectorAll('.secondary.link')
+  secondaryLinks.forEach((link, index) => {
+    link.setAttribute('onmouseover', 'this.style.color="#4797d4"');
+    link.setAttribute('onmouseout', 'this.style.color="rgba(0,0,0,.4)"');
+  });
+</script>
+
+{% endblock%}
+
+{% block content %}
+  {% set organization = current_user.get_current_organization() %}
+  {% if organization %}
+      <h2 class="ui header" style="color:#4797d4">
+        <img src="{{ organization.get_logo_picture() }}" width="120" height="120" style="object-fit: contain;">
+        <div class="content">
+          <a class="ui header blinking link" href="{{ url_for('organizations.view', organization_id=organization.id) }}">
+            {{ organization.name }}
+          </a>
+          <div class="sub header">{{ organization.description }}</div>
+        </div>        
+      </h2>
+      <div class="ui divider"></div>
+
+      
+      <div class="ui centered mini six cards">
+          <div class="ui dashboard card">
+            <div class="content" style="margin: 0.5em">
+              <div class="header">
+                <span class="ui big psu-deep-blue text">
+                  {{ organization.get_users() | count }}
+                </span>
+                <i class="right floated users large dash icon" style="margin-top: 0.1em; font-size: 42px"></i>
+              </div>
+              <div class="meta">
+                <span class="ui black large text">
+                  {{ _('Member') }}
+                </span>
+              </div>
+              
+            </div>
+            <a class="ui fluid psu-deep-blue button" href="{{ url_for('organizations.view_users', organization_id=organization.id) }}">
+              {{ _("View") }}
+            </a>
+          </div>
+
+          <div class="ui dashboard card">
+              <div class="content" style="margin: 0.5em">
+                <div class="header">
+                  <span class="ui big blue text">
+                    {{ organization.get_classes().count() }}
+                  </span>
+                  <i class="right floated archive large dash icon" style="margin-top: 0.1em; font-size: 42px"></i>
+                </div>
+                <div class="meta">
+                  <span class="ui black large text">
+                    {{ _('Class') }}
+                  </span>
+                </div>
+              </div>
+              <a class="ui fluid blue button" href="{{ url_for('organizations.view_classes', organization_id=organization.id) }}">
+                {{ _("View") }}
+              </a>
+          </div>
+
+        <div class="ui dashboard card">
+          <div class="content" style="margin: 0.5em">
+            <div class="header">
+              <span class="ui big psu-sky-blue text">
+                {{ organization.get_templates().count() }}
+              </span>
+              <i class="right floated id card large dash icon" style="margin-top: 0.1em; font-size: 42px"></i>
+            </div>
+            <div class="meta">
+              <span class="ui black large text">
+                {{ _("Template") }}
+              </span>
+            </div>
+          </div>
+          <a class="ui fluid psu-sky-blue button" href="{{ url_for('organizations.view_templates', organization_id=organization.id) }}">
+            {{ _("View") }}
+          </a>
+        </div>
+
+
+        <div class="ui dashboard card">
+          <div class="content" style="margin: 0.5em">
+            <div class="header">
+              <span class="ui big psu-river-blue text">
+                {{ organization.get_logos().count() }}
+              </span>
+              <i class="right floated brush large dash icon" style="margin-top: 0.1em; font-size: 42px"></i>
+            </div>
+            <div class="meta">
+              <span class="ui black large text">
+                {{ _("Logo") }}
+              </span>
+            </div>
+          </div>
+          <a class="ui fluid psu-river-blue button" href="{{ url_for('organizations.view_logos', organization_id=organization.id) }}">
+            {{ _("View") }}
+          </a>
+        </div>
+
+        <div class="ui dashboard card"">
+          <div class="content" style="margin: 0.5em">
+            <div class="header">
+              <span class="ui big teal text">
+                {{ organization.get_available_quota() }}
+              </span>
+              <i class="right floated money large dash icon" style="margin-top: 0.1em; font-size: 42px"></i>
+            </div>
+            <div class="meta">
+              <span class="ui black large text">
+                {{ _("Quota") }}
+              </span>
+            </div>
+          </div>
+          <a class="ui fluid teal button" href="{{ url_for('organizations.view_list_quotas', organization_id=organization.id) }}">
+            {{ _("View") }}
+          </a>
+        </div>
+              
+        <div class="ui dashboard card"">
+          <div class="content" style="margin: 0.5em">
+            <div class="header">
+              <span class="ui big psu-andaman-blue text">
+                {{ organization.get_certificates() | count }}
+              </span>
+              <i class="right floated certificate large dash icon" style="margin-top: 0.1em; font-size: 42px"></i>
+            </div>
+            <div class="meta">
+              <span class="ui black large text">
+                {{ _("Certificates")}}
+              </span>
+            </div>
+          </div>
+          <a class="ui fluid psu-andaman-blue button" href="{{ url_for('organizations.view_certificates', organization_id=organization.id) }}">
+            {{ _("View") }}
+          </a>
+        </div>
+              
+      </div>
+
+  {% endif %}
+      
+  {% if 'admin' in current_user.roles %}
+    <div class="ui divider"></div>
+    <div class="ui center aligned basic segment">
+      <a class="ui red button" href="{{ url_for('admin.index') }}" style="padding-left: 3em; padding-right: 3em">
+        <i class="user shield icon"></i>
+        {{ _("Admin Dashboard") }}
+      </a>
+    </div>
+  {% endif %}
+
+{% if current_user.has_endorser_role() %}
+  <h2 class="ui horizontal header divider">
+    {{ _("Last Endorsement") }}
+  </h2>
+  {% if not endorsed_classes %}
+  <div class="ui horizontal divider" style="margin: 3em 36% 3em 36%">
+    <span style="color: rgb(172, 172, 172);">
+      {{ _("you don't have any endorsement") }}
+    </span> 
+  </div>
+  {% else %}
+  <div class="ui cards">
+    {% for class_ in endorsed_classes %}
+      {% set job = endorsed_jobs[ class_.id| string] %}
+      {% if job %}
+      <div class="{{ 'red' if job.get_status(refresh=True) == 'failed' }}
+                  {{ 'yellow' if job.get_status(refresh=True) in ['queued', 'started']}}
+                  {{ '' if job.get_status(refresh=True) == 'finished'}}
+                  endorsed-class card">
+      {% else %}
+        <div class="green endorsed-class card">
+      {% endif %}
+          <a class="secondary link" style="color: grey; padding: 0.5em 0 0.5em 1em" href="{{ url_for('organizations.view', organization_id=class_.organization.id) }}">
+            <b>
+              {{ class_.organization.name }}
+            </b>
+          </a>
+          <div class="content"> 
+              <div class="header">
+                <a class="ui header blinking link" href="{{ url_for('classes.view', class_id=class_.id) }}">
+                  {{ class_.name }}
+                </a>
+              </div>
+              <div class="meta">
+                {{ class_.printed_name }}
+              </div>
+              <div class="description three-line-text">
+                {{ class_.get_description() | safe }}
+              </div>
+            </div>
+            <div class="extra content">
+              <div class="ui sub header"><span class="ui grey text">{{ _("Endorser") }}</span></div>
+              {% for key, endorser in class_.endorsers.items() %}
+              <i class="small user icon"></i>{{ endorser.user.first_name }} {{ endorser.user.last_name }} <br>
+            {% endfor %}
+            </div>
+            <div class="extra left aligned content">
+                <div class="ui sub header">{{ _("Status") }}</div>
+                {% if job %}
+                  {% if job.get_status(refresh=True) in ["queued", "started"] %}
+                    <div class="ui label yellow" >{{ job.get_status(refresh=True).title() }}</div>
+                  {% elif job.get_status(refresh=True) in ["failed"] %}
+                    <div class="ui label red" >{{ job.get_status(refresh=True).title() }}</div>
+                  {% else %}
+                    <div class="ui orange label" >{{ job.get_status(refresh=True).title() }}</div>
+                  {% endif %}
+                {% else %}
+                  <div class="ui label green">{{ _("Completed") }}</div>
+                {% endif %}
+            </div>
+          </div>
+      {% endfor %}
+  </div>
+  {% endif %}
+{% endif %}
+
+
+<style>
+  @media (max-width: 1500px) { 
+    .dash.icon {
+      font-size: 30px !important;
+    }
+  }
+
+  @media (max-width: 1300px) { 
+    .dashboard.card {
+      width: 24em !important;
+    }
+    .dash.icon {
+      font-size: 38px !important;
+    }
+  }
+
+</style>
+
+
+
+
+{% endblock %}

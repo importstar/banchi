@@ -1,0 +1,99 @@
+
+<div class="item">
+  <div class="ui basic center aligned fitted segment">
+    <a href="{{ url_for('accounts.index') }}" class="ui image" style="margin-bottom: 0.5em;">
+        {% if current_user.get_picture() %}
+        <img class="ui avatar image" src="{{ current_user.get_picture() }}">
+        {% else %}
+        <i class="user icon"></i>
+        {% endif %}
+    </a>
+    <br>
+    <span class="ui text" style="margin-top: 0.5em">
+      <a style="font-size: small; color: rgba(255,255,255,.9);" href="{{ url_for('accounts.index') }}">
+        {{ current_user.email }}
+      </a>
+    </span> 
+    <br>
+    <span class="ui text" style="margin-top: 0.5em">
+      <a style="font-size: small; color: rgba(255,255,255,.9);" href="{{ url_for('accounts.index') }}">
+        {{ current_user.first_name }} {{ current_user.last_name }}
+      </a>
+    </span> 
+    <br>
+    <span class="ui text" style="margin-top: 0.5em">
+      <a style="font-size: small; color: rgba(255, 224, 150, 0.9);" href="{{ url_for('organizations.view', organization_id=current_user.get_current_organization().id) }}">
+        <b>{{ current_user.get_current_organization().name }}</b>
+      </a>
+    </span> 
+
+  </div>
+</div>
+
+<a class="item" href="{{ url_for('dashboard.index') }}"><i class="icon dashboard"></i>{{ _("Dashboard") }}</a>
+<a class="item" href="{{ url_for('dashboard.show_my_certificates') }}"><i class="icon certificate"></i>{{ _("My Certificate") }}</a>
+{% if current_user.has_endorser_role() %}
+<a class="item" href="{{ url_for('dashboard.show_endorsements') }}"><i class="icon user check"></i>{{ _("Endorses") }}</a>
+{% endif %}
+
+{% set organization = current_user.get_current_organization() %}
+{% if organization %}
+  {% if current_user.has_organization_roles("admin", "staff") %}
+    <div class="sidebar-heading">
+      <i class="icon synagogue"></i>
+      {{ _("Organizations") }}
+    </div>
+    <a class="item" href="{{ url_for('organizations.view', organization_id=organization.id) }}"><i class="home icon"></i>{{ _("Home") }}</a>
+    <a class="item" href="{{ url_for('organizations.view_classes', organization_id=organization.id) }}"><i class="icon archive "></i>{{ _("Classes") }}</a>
+    <a class="item" href="{{ url_for('organizations.view_templates', organization_id=organization.id) }}"><i class="icon id card outline"></i>{{ _("Template") }}</a>
+    <a class="item" href="{{ url_for('organizations.view_logos', organization_id=organization.id) }}"><i class="brush icon"></i>{{ _("Logos") }}</a>
+    <a class="item" href="{{ url_for('organizations.view_list_quotas', organization_id=organization.id) }}"><i class="money icon"></i>{{ _("Quotas") }}</a>
+    <a class="item" href="{{ url_for('organizations.view_certificates', organization_id=organization.id) }}"><i class="certificate icon"></i>{{ _("Certificates") }}</a>
+    <a class="item" href="{{ url_for('organizations.view_email_templates', organization_id=organization.id) }}"><i class="envelope icon"></i>{{ _("Email Template") }}</a>
+    <a class="item" href="{{ url_for('organizations.view_users', organization_id=organization.id) }}"><i class="icon users"></i>{{ _("Users") }}</a>
+    <a class="item" href="{{ url_for('store.index', organization_id=organization.id)}}"><i class="icon shopping cart"></i>{{ _("Store") }}</a>
+    <a class="item" href="{{ url_for('admin.signatures.index') }}"><i class="icon signature file"></i>{{ _("Signature") }}</a>
+  {% endif %}
+{% endif %}
+
+{% if current_user.has_roles('admin') %}
+  <div class="sidebar-heading">
+  <i class="user shield icon"></i>
+    {{ _("Administration") }}
+  </div>
+  <a class="item" href="{{ url_for('admin.index') }}"><i class="icon user shield"></i>{{ _("Admin") }}</a>
+  <a class="item" href="{{ url_for('admin.classes.index') }}"><i class="icon archive "></i>{{ _("Classes") }}</a>
+  <a class="item" href="{{ url_for('admin.templates.index') }}"><i class="icon id card outline"></i>{{ _("Template") }}</a>
+  <a class="item" href="{{ url_for('admin.certificates.index') }}"><i class="icon certificate file"></i>{{ _("Certificates") }}</a>
+  <a class="item" href="{{ url_for('admin.organizations.index') }}"><i class="icon synagogue"></i>{{ _("Organizations") }}</a>
+  <a class="item" href="{{ url_for('admin.certificate_quotas.index') }}"><i class="icon money"></i>{{ _("Quota") }}</a>
+  <a class="item" href="{{ url_for('admin.users.index') }}"><i class="icon users"></i>{{ _("Users") }}</a>
+  <a class="item" href="{{ url_for('admin.endorsers.index') }}"><i class="icon user check"></i>{{ _("Endorsers") }}</a>
+  <a class="item" href="{{ url_for('admin.signatures.index') }}"><i class="icon signature file"></i>{{ _("Signature") }}</a>
+  <a class="item" href="{{ url_for('admin.digital_certificates.index') }}"><i class="icon stamp file"></i>{{ _("Digital Certificate") }}</a>
+{% endif %}
+
+<div class="sidebar-heading">
+<i class="cog icon"></i>
+  {{ _("Settings") }}
+</div>
+<a class="item" href="{{ url_for('accounts.index') }}"><i class="address book icon"></i>{{ _("Account") }}</a>
+<a class="item"
+    href="{{ url_for('site.change_lang', lang_code=g.lang_code) }}">
+      {% if g.lang_code == 'en' %}
+      <i class="flag icon"></i>ภาษาไทย<i class="thailand flag"></i></a>
+      {% else %}
+      </i><i class="flag icon"></i>English<i class="america flag "></i></a>
+      {% endif %}
+</a>
+
+
+<a class="item" href="{{ url_for('accounts.logout') }}"><i class="sign out icon"></i>{{ _("Logout") }}</a>
+
+
+<style>
+  .sidebar-heading {
+    color: grey;
+    margin: 0.5em 0 0 0.5em;
+  }
+</style>

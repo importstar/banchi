@@ -2,8 +2,6 @@ from flask import g, config, session, redirect, url_for, current_app
 from flask_login import current_user, login_user
 from authlib.integrations.flask_client import OAuth
 
-from . import models
-import mongoengine as me
 
 import datetime
 

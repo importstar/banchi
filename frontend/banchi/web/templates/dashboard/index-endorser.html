@@ -1,0 +1,103 @@
+{% extends '/base/default-dashboard.html' %}
+
+{% block additional_js %}
+<script>
+  $('.ui.big.breadcrumb')[0].parentElement.style.display = "none"
+  
+  const links = document.querySelectorAll('.blinking.link')
+  links.forEach((link, index) => {
+    link.setAttribute('onmouseover', 'this.style.color="#2185d0"');
+    link.setAttribute('onmouseout', 'this.style.color="black"');
+  });
+
+  const secondaryLinks = document.querySelectorAll('.secondary.link')
+  secondaryLinks.forEach((link, index) => {
+    link.setAttribute('onmouseover', 'this.style.color="#4797d4"');
+    link.setAttribute('onmouseout', 'this.style.color="rgba(0,0,0,.4)"');
+  });
+</script>
+
+{% endblock%}
+
+{% block content %}
+  {% set organization = current_user.get_current_organization() %}
+  {% if organization %}
+      <h2 class="ui header">
+        <img src="{{ organization.get_logo_picture() }}" width="120" height="120" style="object-fit: contain;">
+        <div class="content">
+            {{ organization.name }}
+          <div class="sub header">{{ organization.description }}</div>
+        </div>        
+      </h2>
+      <div class="ui divider"></div>
+  {% endif %}
+
+  <h2 class="ui horizontal header divider">
+    {{ _("Last Endorsement") }}
+  </h2>
+  {% if not endorsed_classes %}
+  <div class="ui horizontal divider" style="margin: 3em 36% 3em 36%">
+    <span style="color: rgb(172, 172, 172);">
+      {{ _("you don't have any endorsement") }}
+    </span> 
+  </div>
+  {% else %}
+    <div class="ui basic padded segment">
+
+        <div class="ui padded cards">
+        {% for class_ in endorsed_classes %}
+            {% set job = endorsed_jobs[ class_.id| string] %}
+            {% if job %}
+            <div class="{{ 'red' if job.get_status(refresh=True) == 'failed' }}
+                        {{ 'yellow' if job.get_status(refresh=True) in ['queued', 'started']}}
+                        {{ '' if job.get_status(refresh=True) == 'finished'}}
+                        card">
+            {% else %}
+            <div class="green card">
+            {% endif %}
+                <div class="content">
+                    <div class="ui sub header">{{ class_.organization.name }}</div>
+                </div> 
+                <div class="content"> 
+                    <a class="header" href="{{ url_for('classes.view', class_id=class_.id, organization_id=class_.organization.id) }}"> {{ class_.name }}</a>
+                    <div class="meta">{{ class_.printed_name }}</div>
+                    <div class="description three-line-text"> {{ class_.get_description() | safe }}</div>
+                </div>
+                <div class="extra content">
+                    <div class="ui sub header"><span class="ui grey text">{{ _("Endorser") }}</span></div>
+                    {% for key, endorser in class_.endorsers.items() %}
+                    <i class="small user icon"></i>{{ endorser.user.first_name }} {{ endorser.user.last_name }} <br>
+                {% endfor %}
+                </div>
+                <div class="extra left aligned content">
+                    <div class="ui sub header">{{ _("Status") }}</div>
+                    {% if job %}
+                        {% if job.get_status(refresh=True) in ["queued", "started"] %}
+                        <div class="ui label yellow" >{{ job.get_status(refresh=True).title() }}</div>
+                        {% elif job.get_status(refresh=True) in ["failed"] %}
+                        <div class="ui label red" >{{ job.get_status(refresh=True).title() }}</div>
+                        {% else %}
+                        <div class="ui orange label" >{{ job.get_status(refresh=True).title() }}</div>
+                        {% endif %}
+                    {% else %}
+                        <div class="ui label green">{{ _("Completed") }}</div>
+                    {% endif %}
+
+                    <a class="ui left labeled right floated button" target="_blank" href="{{ url_for('classes.view', class_id=class_.id) }}">
+                        <div class="ui basic blue label">
+                            {{ class_.get_certificates_endorsed_by_user(current_user) | count }}
+                        </div>
+                        <div class="ui psu-sky-blue tiny button">
+                        <i class="certificate icon"></i>
+                          {{ _("Certificates") }}
+                        </div>
+                      </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endif %}
+  
+{% endblock %}

@@ -1,0 +1,110 @@
+
+{% macro render_organization_selection_menu(current_user) %}
+    {% if current_user.get_current_organization() %}
+        {% set organization = current_user.get_current_organization() %}
+        {% set logo = organization.get_logo() %}
+        <h1 class="ui right floated header" >
+            <div class="ui right top pointing dropdown">
+                <div class="header" style="font-size: 16px;">
+                    <div class="content" style="text-align: right; margin-right: 0.5em; vertical-align: 0.2em;">
+                        {{ organization.name }}
+                    </div>
+                    <img src="{{ organization.get_logo_picture() }}" style="width: 45px; height: 45px; object-fit: contain">
+                </div>
+                <div class="menu">
+                    <div class="ui center aligned basic segment" style="margin-top: 1em">
+                        <img src="{{ organization.get_logo_picture() }}" style="width: 100px; height: 100px; object-fit: contain">
+                        <br>
+                        <a href="{{ url_for('organizations.view', organization_id=organization.id) }}">
+                            <div class="ui basic segment" style="padding: 0 2em 1em 2em;">
+                                <span class="ui large black text">
+                                    {{ organization.name }} 
+                                </span>
+                            </div>
+                        </a>
+                        <a class="ui small basic floated button" href="{{ url_for('accounts.index') }}">
+                            <i class="small user icon"></i> 
+                            {{ _("Account") }} 
+                        </a>
+                        <a class="ui small basic floated button" href="{{ url_for('accounts.logout') }}">
+                            <i class="sign out icon"></i> 
+                            {{ _("Logout") }}
+                        </a>
+                    </div>
+
+
+                    {% set count = namespace(value=0) %}
+                    {% for org in current_user.organizations %}
+                        {% if org != organization %}
+                            {% if count.value < 1 %}
+                                <div class="ui horizontal divider">{{ _("Your Organization") }}</div>
+                            {% endif %}
+                            
+                            {% set count.value = count.value + 1 %}
+                            <a class="item" href="{{ url_for('accounts.change_organization', organization_id=org.id) }}">
+                                <div class="ui vertically fitted basic segment">
+                                    <div class="ui tiny  header">
+                                        <img src="{{ org.get_logo_picture() }}" width="30" height="30" ">
+                                        <div class="content">
+                                            <span class="ui sub header" style="font-weight: 500 ;">{{ org.name }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                    {% if count.value <= 0 %}
+                        <div class="disabled item">
+                            
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </h1>
+    {% endif %}
+{% endmacro %}
+
+
+{% macro render_organization_dashboard_menu_bar(organization) %}
+    {% set is_admin_URL = 'admin.' %}
+    {% if 'admin' not in request.path %}
+        {% set is_admin_URL = '' %}
+    {% endif %}
+
+    <div class="ui top attached tabular menu">
+        <a class="organization-dash item {{ 'active' if request.endpoint == is_admin_URL + 'organizations.view' or request.endpoint == is_admin_URL + 'organizations.view' }}"
+            href="{{ url_for(is_admin_URL + 'organizations.view', organization_id=organization.id) }}">
+            <i class="home icon"></i>{{ _("Overview") }}
+        </a>
+        <a  class="organization-dash item {{ 'active' if is_admin_URL + 'organizations.view_classes' in request.endpoint }}" 
+            href="{{ url_for(is_admin_URL + 'organizations.view_classes', organization_id=organization.id) }}">
+            <i class="archive icon"></i>{{ _("Classes") }}
+        </a>
+        <a  class="organization-dash item {{ 'active' if is_admin_URL + 'organizations.view_templates' in request.endpoint }}" 
+            href="{{ url_for(is_admin_URL + 'organizations.view_templates', organization_id=organization.id)}}">
+            <i class="id card icon"></i>{{ _("Templates") }}
+        </a>
+        <a  class="organization-dash item {{ 'active' if is_admin_URL + 'organizations.view_logos' in request.endpoint }}" 
+            href="{{ url_for(is_admin_URL + 'organizations.view_logos', organization_id=organization.id)}}">
+            <i class="certificate icon"></i>{{ _("Logos") }}
+        </a>
+        <a  class="organization-dash item {{ 'active' if is_admin_URL + 'organizations.view_list_quotas' in request.endpoint }}" 
+            href="{{ url_for(is_admin_URL + 'organizations.view_list_quotas', organization_id=organization.id)}}">
+            <i class="money icon"></i>{{ _("Quotas") }}
+        </a>
+        <a  class="organization-dash item {{ 'active' if is_admin_URL + 'organizations.view_certificates' in request.endpoint }}" 
+            href="{{ url_for(is_admin_URL + 'organizations.view_certificates', organization_id=organization.id)}}">
+            <i class="certificate icon"></i>{{ _("Certificates") }}
+        </a>
+        <a  class="organization-dash item {{ 'active' if is_admin_URL + 'organizations.view_email_templates' in request.endpoint }}" 
+            href="{{ url_for(is_admin_URL + 'organizations.view_email_templates', organization_id=organization.id)}}">
+            <i class="envelope icon"></i>{{ _("Email Templates") }}
+        </a>
+        <a  class="organization-dash item {{ 'active' if is_admin_URL + 'organizations.view_users' in request.endpoint }}" 
+            href="{{ url_for(is_admin_URL + 'organizations.view_users', organization_id=organization.id, role='all') }}">
+            <i class="users icon"></i>{{ _("Users") }}
+        </a>
+        
+    </div>
+    
+{% endmacro %}

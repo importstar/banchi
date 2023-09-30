@@ -1,0 +1,6 @@
+project_name_override: banchi-client
+package_name_override: banchi_client
+
+# class_overrides:
+#   UserInResponse:
+#     class_name: User

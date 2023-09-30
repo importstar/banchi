@@ -1,0 +1,36 @@
+{% extends "/base/base-layout.html" %}
+{% block body %}
+
+  <header> 
+  {% block header %}
+    {% if request.path == '/' %}
+
+      {% if config.DEFAULT_THEME == 'coe' %}
+        {% include "/base/coe/banner.html" %}
+      {% else %}
+        {% include "/base/diis/banner.html" %}
+      {% endif %}
+
+    {% else %}
+      {% if config.DEFAULT_THEME == 'coe' %}
+        {% include "/base/coe/toolbar.html" %}
+      {% else %}
+        {% include "/base/diis/toolbar.html" %}
+      {% endif %}
+    {% endif %}
+  {% endblock %}
+  </header>
+
+  <div class="container">
+    <main>
+      {% block content %}{% endblock content %}
+    </main>
+
+    {% if config.DEFAULT_THEME == 'coe' %}
+      {% include "/base/coe/footer.html" %}
+    {% else %}
+      {% include "/base/diis/footer.html" %}
+    {% endif %}
+
+  </div>
+{% endblock body %}
