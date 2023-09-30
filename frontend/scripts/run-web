@@ -1,4 +1,3 @@
-#!/bin/bash
+#!/bin/sh
 
-flet run -d -r -p 8550 -v banchi/cmd/web.py
-
+FLASK_ENV=development BANCHI_SETTINGS=$(pwd)/banchi-development.cfg DEBUG=1 banchi-web -H 0.0.0.0 -d
