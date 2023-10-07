@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python banchiapp/cmd/develop_webapp.py
+# python banchiapp/cmd/develop_webapp.py
+flet run -d -r -w -v banchiapp/cmd/develop_webapp.py
