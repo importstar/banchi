@@ -1,12 +1,16 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+
+from typing import Annotated
 from jose import jwt
 from pydantic import ValidationError
 
 from loguru import logger
 
 from .. import models
+from .. import schemas
 from . import security
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
@@ -20,39 +24,25 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        payload = jwt.decode(
+            token, security.settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+        )
+        user_id: str = payload.get("sub")
+        if user_id is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
-    except JWTError:
+        token_data = schemas.users.TokenData(user_id=user_id)
+    except jwt.JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+
+    # user = get_user(fake_users_db, username=token_data.username)
+    user = await models.users.User.get(token_data.user_id)
     if user is None:
         raise credentials_exception
     return user
 
 
-# async def get_current_user(token: str = Depends(reusable_oauth2)) -> models.users.User:
-#     try:
-#         payload = jwt.decode(
-#             token, security.settings.SECRET_KEY, algorithms=[security.ALGORITHM]
-#         )
-#     except (jwt.JWTError, ValidationError):
-#         raise HTTPException(
-#             status_code=status.HTTP_403_FORBIDDEN,
-#             detail="Could not validate credentials",
-#         )
-
-#     user = await models.users.User.get(payload.get("sub"))
-#     if not user:
-#         raise HTTPException(status_code=404, detail="User not found")
-
-#     return user
-
-
 async def get_current_active_user(
-    current_user: Annotated[User, Depends(get_current_user)]
+    current_user: Annotated[models.users.User, Depends(get_current_user)]
     # current_user: models.users.User = Depends(get_current_user),
 ) -> models.users.User:
     if current_user.status != "active":

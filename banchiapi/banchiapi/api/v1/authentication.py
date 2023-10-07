@@ -21,39 +21,25 @@ router = APIRouter(prefix="/auth", tags=["authentication"])
     "/token",
     summary="Get OAuth2 access token",
 )
-def token(
-    form_data: OAuth2PasswordRequestForm = Depends(),
-    basic_credentials: typing.Optional[HTTPBasicCredentials] = Depends(
-        deps.reusable_oauth2
-    ),
+async def login_for_access_token(
+    form_data: typing.Annotated[OAuth2PasswordRequestForm, Depends()],
 ) -> schemas.users.Token:
-    failed_auth = HTTPException(
-        status_code=400, detail="Incorrect username or password"
+    user = await models.users.User.find_one(
+        models.users.User.username == form_data.username
     )
-
-    if form_data.client_id and form_data.client_secret:
-        client_id = form_data.client_id
-        client_secret = form_data.client_secret
-    elif basic_credentials:
-        client_id = basic_credentials.username
-        client_secret = basic_credentials.password
-    else:
-        raise failed_auth
-
-    api_client = get_api_client_by_id(db, client_id)
-    if not api_client or not api_client.enabled:
-        raise failed_auth
-    if not verify_password(client_secret, api_client.hashed_secret):
-        raise failed_auth
-
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = datetime.timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     access_token = create_access_token(
-        data={"sub": f"api_client:{client_id}"}, **token_settings
+        data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
-    return {
-        "access_token": access_token,
-        "token_type": "bearer",
-        "expires_in": int(token_settings["expires_delta"].total_seconds()),
-    }
+    return {"access_token": access_token, "token_type": "bearer"}
 
 
 @router.post(
@@ -86,20 +72,20 @@ async def authentication(
 
     user.last_login_date = datetime.datetime.now()
     await user.save()
+    access_token_expires = datetime.timedelta(
+        minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+    )
     return schemas.users.Token(
         access_token=security.create_access_token(
-            str(user.id),
-            data={"issued_at": int(round(user.last_login_date.timestamp() * 1000))},
+            data={"sub": str(user.id)}, expires_delta=access_token_expires
         ),
         refresh_token=security.create_refresh_token(
-            str(user.id),
-            data={"issued_at": int(round(user.last_login_date.timestamp() * 1000))},
+            data={"sub": str(user.id)}, expires_delta=access_token_expires
         ),
         token_type="Bearer",
         scope="",
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        expires_at=datetime.datetime.now()
-        + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        expires_at=datetime.datetime.now() + access_token_expires,
         issued_at=user.last_login_date,
     )
 

@@ -58,6 +58,10 @@ class Token(BaseModel):
     issued_at: datetime.datetime
 
 
+class TokenData(BaseModel):
+    user_id: str | None = None
+
+
 class ChangedPasswordUser(BaseModel):
     current_password: str
     new_password: str
