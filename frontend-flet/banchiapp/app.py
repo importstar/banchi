@@ -104,3 +104,8 @@ def main(page: flet.Page):
     print("hello >>")
     page.views.append(login)
     page.update()
+
+
+# use for flet run
+if __name__ == "__main__":
+    flet.app(target=main)
