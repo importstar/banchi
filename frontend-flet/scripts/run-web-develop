@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# python banchiapp/cmd/develop_webapp.py
+flet run -d -r -w -v -p 8081 banchiapp/app.py
