@@ -69,7 +69,7 @@ class BaseView(UserControl):
         )
         self.layout = AppLayout(
             self,
-            self.page,
+            # self.page,
             self.store,
             tight=True,
             expand=True,
