@@ -5,8 +5,8 @@ from ..base import base
 class DashboardView(base.BaseView):
     # def __init__(self, page):
     #     super().__init__(page)
-    def __init__(self):
-        super().__init__()
+    def __init__(self, app):
+        super().__init__(app)
 
     # def build(self):
     #     return flet.Container(

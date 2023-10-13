@@ -2,10 +2,12 @@ import flet
 
 
 class Login(flet.UserControl):
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         self.username = flet.TextField(label="Username")
         self.password = flet.TextField(label="Password")
+
+        self.app = app
 
     def build(self):
         return flet.Container(
@@ -34,5 +36,5 @@ class Login(flet.UserControl):
             self.page.update()
 
     def register(self, e):
-        self.page.go("/register")
-        self.page.update()
+        self.app.page.go("/register")
+        self.app.page.update()
