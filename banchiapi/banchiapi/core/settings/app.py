@@ -15,7 +15,7 @@ class AppSettings(BaseAppSettings):
     OPENAPI_URL: str = "/openapi.json"
     REDOC_URL: str = "/redoc"
     TITLE: str = "Banchi"
-    VERSION: str = "0.0.1"
+    VERSION: str = "0.0.2"
 
     MONGODB_URI: str = "mongodb://localhost/banchidb"
     # MONGODB_DB: str = "banchaidb"
