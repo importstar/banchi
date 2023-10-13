@@ -19,25 +19,6 @@ def get_application() -> FastAPI:
     settings.configure_logging()
     application = FastAPI(**settings.fastapi_kwargs)
 
-    def custom_openapi():
-        if application.openapi_schema:
-            return application.openapi_schema
-        openapi_schema = get_openapi(
-            # title="Custom title",
-            openapi_version="3.0.3",
-            # version="2.5.0",
-            # summary="This is a very custom OpenAPI schema",
-            # description="Here's a longer description of the custom **OpenAPI** schema",
-            routes=application.routes,
-            title=settings.fastapi_kwargs["title"],
-            version=settings.fastapi_kwargs["version"],
-        )
-        # print("--->", app.openapi_schema)
-        application.openapi_schema = openapi_schema
-        return application.openapi_schema
-
-    application.openapi = custom_openapi
-
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.ALLOWED_HOSTS,
