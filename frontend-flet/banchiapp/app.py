@@ -2,7 +2,7 @@ import flet
 
 try:
     from . import views
-except Example as e:
+except Exception as e:
     import views
 
 
@@ -48,6 +48,8 @@ class BanchiApp:
         self.page.views.clear()
         print("-->", route)
         views.register_views(self)
+        if self.page.route == "/":
+            self.page.go("/login")
 
         self.page.update()
 
