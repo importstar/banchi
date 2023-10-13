@@ -25,6 +25,7 @@ def generate(
     #
 
     path = pathlib.Path(f"{name}-client")
+    print('check', path, path.exists())
     if not path.exists():
         print("Generate Clinet")
         # os.system(
@@ -34,7 +35,7 @@ def generate(
     else:
         print("Update Clinet")
         os.system(
-            f"openapi-python-client update --path {openapi_json} --config {config}"
+            f"openapi-python-client update --url {url} --config {config}"
         )
         # os.system(f'openapi-python-client update --url {url} --config {config}')
 
@@ -46,7 +47,7 @@ def generate(
 
 if __name__ == "__main__":
     generate(
-        "banchiapi",
+        "banchi",
         "http://localhost:8000/openapi.json",
         "config/banchi-client-generator.yml",
     )

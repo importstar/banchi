@@ -46,7 +46,7 @@ async def login_for_access_token(
     "/login",
 )
 async def authentication(
-    form_data: OAuth2PasswordRequestForm = Depends(),
+    form_data: typing.Annotated[OAuth2PasswordRequestForm, Depends()],
     name="auth:login",
 ) -> schemas.users.Token:
     user = await models.users.User.find_one(
@@ -92,7 +92,7 @@ async def authentication(
 
 @router.get("/refresh_token")
 async def refresh_token(
-    credentials: HTTPAuthorizationCredentials = Security(HTTPBearer()),
+    credentials: typing.Annotated[HTTPAuthorizationCredentials, Security(HTTPBearer())],
 ):
     refresh_token = credentials.credentials
 
