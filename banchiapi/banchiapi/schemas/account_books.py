@@ -16,11 +16,11 @@ account_types = [
     "multual fund",
 ]
 
-smallest_fractions = [1, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+smallest_fractions = [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
 
 class SmallestFractionEnum(float, enum.Enum):
-    f1 = 1
+    f1 = 1.0
     f0_1 = 0.1
     f0_01 = 0.01
     f0_001 = 0.001
@@ -36,9 +36,9 @@ class BaseAccountBook(BaseModel):
         ...,
         example="asset",
     )
-    smallest_fraction: SmallestFractionEnum = Field(
-        ..., example=SmallestFractionEnum.f0_01
-    )
+    # smallest_fraction: SmallestFractionEnum = Field(
+    #     ..., example=SmallestFractionEnum.f0_01
+    # )
     currency: CurrencyEnum = Field(..., example=CurrencyEnum.THB)
 
 
