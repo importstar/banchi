@@ -16,7 +16,7 @@ account_types = [
     "multual fund",
 ]
 
-smallest_fractions = [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+# smallest_fractions = [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
 
 class SmallestFractionEnum(float, enum.Enum):
