@@ -1,16 +1,13 @@
+import datetime
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 
-from viyyoor import models
 import mongoengine as me
-from viyyoor.web import acl
+from .. import models
+from .. import acl
 
-from .. import redis_rq
-
-import datetime
 
 module = Blueprint("dashboard", __name__, url_prefix="/dashboard")
-subviews = []
 
 
 def index_admin():

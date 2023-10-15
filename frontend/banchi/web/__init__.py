@@ -2,6 +2,7 @@ import optparse
 
 from flask import Flask
 
+from . import models
 from . import views
 from . import acl
 from . import oauth2
@@ -21,7 +22,6 @@ def create_app():
 
 
 def get_program_options(default_host="127.0.0.1", default_port="8080"):
-
     """
     Takes a flask.Flask instance and runs it. Parses
     command-line flags to configure the app.
