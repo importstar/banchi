@@ -16,6 +16,16 @@ from flask_login import login_user, logout_user, login_required, current_user
 from .. import oauth2
 from .. import forms
 
+from .. import banchi_api_clients
+from .. import models as banchi_web_models
+
+from banchi_client import models
+from banchi_client.api.v1 import (
+    authentication_v1_auth_login_post,
+    get_me_v1_users_me_get,
+)
+
+
 module = Blueprint("accounts", __name__)
 
 
@@ -57,7 +67,11 @@ def login():
 
     oauth_clients = current_app.extensions["authlib.integrations.flask_client"]._clients
 
-    return render_template("/accounts/login.html", oauth_clients=oauth_clients)
+    form = forms.accounts.LoginForm()
+
+    return render_template(
+        "/accounts/login.html", oauth_clients=oauth_clients, form=form
+    )
 
 
 @module.route("/login/<name>")
@@ -75,12 +89,44 @@ def login_oauth(name):
         response = client.facebook.authorize_redirect(redirect_uri)
     elif name == "line":
         response = client.line.authorize_redirect(redirect_uri)
-
     elif name == "psu":
         response = client.psu.authorize_redirect(redirect_uri)
     elif name == "engpsu":
         response = client.engpsu.authorize_redirect(redirect_uri)
     return response
+
+
+@module.route("/auth/banchi", methods=["POST"])
+def authorized_banchi():
+    form = forms.accounts.LoginForm()
+    if not form.validate_on_submit():
+        return redirect("accounts.login")
+
+    username = form.username.data
+    password = form.password.data
+
+    model = (
+        models.body_authentication_v1_auth_login_post.BodyAuthenticationV1AuthLoginPost(
+            username=username, password=password
+        )
+    )
+
+    client = banchi_api_clients.client.get_current_client(is_anonymous=True)
+    response = authentication_v1_auth_login_post.sync(client=client, form_data=model)
+
+    if not response:
+        return redirect(url_for("accounts.login"))
+
+    session["tokens"] = response.to_dict()
+
+    client = banchi_api_clients.client.get_current_client()
+    response = get_me_v1_users_me_get.sync(client=client)
+
+    user = banchi_web_models.users.User(response.to_dict())
+    login_user(user)
+    session["me"] = response.to_dict()
+
+    return redirect(url_for("dashboard.index"))
 
 
 @module.route("/auth/<name>")
@@ -107,169 +153,6 @@ def authorized_oauth(name):
 
     session["oauth_provider"] = name
     return oauth2.handle_authorized_oauth2(remote, token)
-
-
-# @module.route("/authorized-psu")
-# def authorized_psu():
-#     client = oauth2.oauth2_client
-#     AUTHLIB_SSL_VERIFY = current_app.config.get("AUTHLIB_SSL_VERIFY_PSU", False)
-#     try:
-#         token = client.psu.authorize_access_token(verify=AUTHLIB_SSL_VERIFY)
-#     except Exception as e:
-#         return redirect(url_for("accounts.login"))
-
-#     userinfo_response = client.psu.get("userinfo", verify=AUTHLIB_SSL_VERIFY)
-#     userinfo = userinfo_response.json()
-
-#     user = models.User.objects(username=userinfo.get("username")).first()
-
-#     if not user:
-#         user = models.User(
-#             username=userinfo.get("username"),
-#             status="active",
-#         )
-#         if userinfo["username"].isdigit():
-#             user.roles.append("student")
-#         else:
-#             user.roles.append("staff")
-
-#     user.resources[client.psu.name] = userinfo
-
-#     user.email = userinfo.get("email")
-#     user.first_name = userinfo.get("first_name")
-#     user.last_name = userinfo.get("last_name")
-
-#     if userinfo.get("office_name"):
-#         organization_name = userinfo.get("office_name").split(" ")[-1].strip()
-#         organization = models.Organization.objects(name=organization_name).first()
-#         if organization and organization not in user.organizations:
-#             user.organizations.append(organization)
-
-#         if not user.dashboard_setting.organization:
-#             user.dashboard_setting.organization = organization
-#         if not user.dashboard_setting.fiscal_year:
-#             user.dashboard_setting.fiscal_year = (
-#                 models.FiscalYear.objects().order_by("-id").first()
-#             )
-
-#     psu_keys = [
-#         "title_th",
-#         "office_name",
-#         "full_name_th",
-#         "email_verified",
-#         "firt_name",
-#         "campus",
-#         "position",
-#         "department",
-#     ]
-
-#     for key in psu_keys:
-#         if key in userinfo:
-#             user.metadata[key] = userinfo.get(key)
-
-#             if key == "full_name_th":
-#                 name_th = userinfo.get(key).split(" ")
-#                 user.metadata["first_name_th"] = name_th[0]
-#                 user.metadata["last_name_th"] = name_th[-1]
-
-#     user.save()
-
-#     login_user(user)
-
-#     oauth2token = models.OAuth2Token(
-#         name=client.engpsu.name,
-#         user=user,
-#         access_token=token.get("access_token"),
-#         token_type=token.get("token_type"),
-#         refresh_token=token.get("refresh_token", None),
-#         expires=datetime.datetime.fromtimestamp(token.get("expires_in")),
-#     )
-#     oauth2token.save()
-
-#     next_uri = session.get("next", url_for("dashboard.index"))
-
-#     return redirect(next_uri)
-
-
-# @module.route("/authorized-engpsu")
-# def authorized_engpsu():
-#     client = oauth2.oauth2_client
-#     try:
-#         token = client.engpsu.authorize_access_token()
-#     except Exception as e:
-#         print(e)
-#         return redirect(url_for("accounts.login"))
-
-#     userinfo_response = client.engpsu.get("userinfo")
-#     userinfo = userinfo_response.json()
-
-#     user = models.User.objects(
-#         me.Q(username=userinfo.get("username", ""))
-#         | me.Q(email=userinfo.get("email", ""))
-#     ).first()
-
-#     if not user:
-#         user = models.User(
-#             username=userinfo.get("username"),
-#             email=userinfo.get("email"),
-#             first_name=userinfo.get("first_name").title(),
-#             last_name=userinfo.get("last_name").title(),
-#             status="active",
-#         )
-#         user.resources[client.engpsu.name] = userinfo
-#         # if 'staff_id' in userinfo.keys():
-#         #     user.roles.append('staff')
-#         # elif 'student_id' in userinfo.keys():
-#         #     user.roles.append('student')
-#         if userinfo["username"].isdigit():
-#             user.roles.append("student")
-#         elif (
-#             "COE_LECTURERS" in current_app.config
-#             and userinfo["username"] in current_app.config["COE_LECTURERS"]
-#         ):
-#             user.roles.append("lecturer")
-#             user.roles.append("CoE-lecturer")
-#         elif (
-#             "COE_STAFFS" in current_app.config
-#             and userinfo["username"] in current_app.config["COE_STAFFS"]
-#         ):
-#             user.roles.append("staff")
-#             user.roles.append("CoE-staff")
-
-#         else:
-#             user.roles.append("staff")
-
-#         # if userinfo['username'].isdigit():
-#         #     project = models.Project.objects(
-#         #             student_ids=userinfo['username']).first()
-
-#         #     if project and user not in project.owners:
-#         #         project.owners.append(user)
-#         #         project.save()
-#     else:
-#         user.resources[client.engpsu.name] = userinfo
-#         user.last_login_date = datetime.datetime.now()
-
-#     user.save()
-
-#     login_user(user)
-
-#     oauth2token = models.OAuth2Token(
-#         name=client.engpsu.name,
-#         user=user,
-#         access_token=token.get("access_token"),
-#         token_type=token.get("token_type"),
-#         refresh_token=token.get("refresh_token", None),
-#         expires=datetime.datetime.utcfromtimestamp(token.get("expires_in")),
-#     )
-#     oauth2token.save()
-
-#     next_uri = session.get("next", None)
-#     if next_uri:
-#         session.pop("next")
-#         return redirect(next_uri)
-
-#     return redirect(url_for("dashboard.index"))
 
 
 @module.route("/logout")

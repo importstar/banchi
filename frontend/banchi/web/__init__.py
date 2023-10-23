@@ -6,6 +6,7 @@ from . import models
 from . import views
 from . import acl
 from . import oauth2
+from . import banchi_api_clients
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ def create_app():
     views.register_blueprint(app)
     acl.init_acl(app)
     oauth2.init_oauth(app)
+    banchi_api_clients.init_client(app)
 
     return app
 

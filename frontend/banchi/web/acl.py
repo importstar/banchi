@@ -1,8 +1,10 @@
-from flask import redirect, url_for, request
+from flask import redirect, url_for, request, session
 from flask_login import current_user, LoginManager, login_url
 from werkzeug.exceptions import Forbidden, Unauthorized
 
 from functools import wraps
+
+from . import models
 
 login_manager = LoginManager()
 
@@ -24,7 +26,7 @@ def roles_required(*roles):
         @wraps(func)
         def wrapped(*args, **kwargs):
             if not current_user.is_authenticated:
-                raise Forbidden()
+                raise Unauthorized()
 
             for role in roles:
                 if role in current_user.roles:
@@ -38,7 +40,8 @@ def roles_required(*roles):
 
 @login_manager.user_loader
 def load_user(user_id):
-    user = models.User.objects.with_id(user_id)
+    me = session.get("me")
+    user = models.users.User(me)
     return user
 
 

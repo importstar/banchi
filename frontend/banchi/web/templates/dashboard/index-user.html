@@ -12,7 +12,6 @@
 {% endblock%}
 
 {% block content %}
-
 <div class="ui attached left aligned segment">
   <h1 class="ui left aligned header">
     <a href="{{ url_for('accounts.index') }}" class="ui image">
@@ -32,58 +31,7 @@
       </div>
     </div>        
   </h1>
-  
-  <div class="ui huge grey horizontal divider header" style="color:rgb(57, 57, 57); margin: 1em 0 2em 0">
-    <i class="certificate icon" style="font-size: 32px;"></i>
-      {{ _("Certificates") }}
-  </div>
-
-  <div class="ui basic fitted segment middle algined" style="min-height: 80vh">
-    {% if certificates %}
-      <div class="ui four cards">
-          {% for certificate in certificates %}
-            <div class="ui {{loop.index}} loading card">
-              <a class="image" style="text-align: center" href="{{ url_for('certificates.view', certificate_id=certificate.id) }}" target="_blank">
-                <img src="{{ url_for('certificates.download', certificate_id=certificate.id, extension='png') }}"
-                 width="100%"
-                 onload="$('.{{loop.index}}.card')[0].classList.remove('loading')"
-                 >
-              </a>
-              <a class="content" href="{{ url_for('certificates.view', certificate_id=certificate.id) }}" target="_blank">
-                <div class="header">
-                    {{ certificate.class_.name }}
-                </div>
-                <div class="description">
-                  <p><b>{{ _("Issued Date") }}: </b> {{ certificate.get_issued_date_display() }}</p>
-                  {% if 'project_name' in certificate.get_participant().extra %}
-                    <p><b>{{ _("Project") }}: </b> {{ certificate.get_participant().extra['project_name'] }}</p>
-                  {% endif %}
-                  <p>
-                    <div class="three-line-text">
-                      {{ certificate.class_.get_description() | safe }}
-                    </div>
-                  </p>
-                  {% if certificate.class_.instructors %}
-                  <p>
-                    <b>{{ _("Instructor") }} </b><br>
-                    {% for instructor in certificate.class_.instructors %}
-                    <i class="user tie icon"></i>{{ instructor }}<br>
-                    {% endfor %}
-                  </p>
-                  {% endif %}
-                </div>
-              </a>
-            </div>
-          {% endfor %}
-      </div>
-    {% else %}
-      <div class="ui horizontal grey divider" style="max-width: 50vw; margin: 0 auto 0 auto; color: grey">
-        {{ _("You don't have any certificates") }} 
-      </div>
-    {% endif %}
-  </div>
 </div>
-
 
 <style>
   .card {
