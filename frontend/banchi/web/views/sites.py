@@ -1,8 +1,9 @@
-from flask import Blueprint
+from flask import Blueprint, render_template, redirect, url_for
+import datetime
 
-module = Blueprint("sites", __name__)
+module = Blueprint("site", __name__)
 
 
 @module.route("/")
 def index():
-    return {"message": "Hello, Flask!", "success": True}
+    return render_template("/sites/index.html")

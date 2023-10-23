@@ -1,9 +1,6 @@
 {% extends "/base/base-layout.html" %}
-{% import '/base/organization-renderer.html' as org_renderer %}
 
-{% block title %}
-  {{ self.dashboard_title() }}
-{% endblock %}
+{% block title %}{{ config.get('APP_TITLE') }} Dashboard{% endblock %}
 
 {% block default_head %}
   <style type="text/css">
@@ -43,7 +40,7 @@
     .footer {
       border-top: 1px solid #DDDDDD !important;
       box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.08) inset !important;
-      /* background-color: #FAFAFA !important;*/
+      background-color: #FAFAFA !important;
       margin-top: 30px !important;
     }
 
@@ -59,7 +56,7 @@
       padding-bottom: 10px !important;
     }
 
-    @media only screen and (max-width: 1050px) {
+    @media only screen and (max-width: 1180px) {
       .toc {
         display: none !important;
       }
@@ -76,12 +73,19 @@
       }
       .fixed.menu > .container {
         width: 100% !important;
+        /*
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        max-width: none !important;
+        */
+      }
     }
 
   </style>
 
   <script type="text/javascript">
-  $(document).ready(function() {
+  $(document)
+  .ready(function() {
 
       $('.left.sidebar.menu')
         .sidebar('attach events', '.launch.icon.item', 'show')
@@ -101,33 +105,21 @@
 
 
 {% block body %}
-
 {# begin slide menu #}
-{#
-{% if config.DEFAULT_THEME == 'coe' %}
-  xxx
-  {% include "/base/coe/toolbar-dashboard.html" with context %}
-{% else %}
-  {% include "/base/diis/toolbar-dashboard.html" with context %}
-{% endif %}
-#}
-
-
-<div class="ui vertical inverted sidebar large menu left viyyoor-background-color">
-  {% include "/base/toolbar-dashboard.html" with context %}
+<div class="ui vertical inverted sidebar large menu left">
+   {% include "/base/toolbar-dashboard.html" with context %}
 </div>
-
 {# end slide menu #}
 
 {# begin top bar mobile #}
-<div class="ui fixed inverted main menu viyyoor-background-color">
+<div class="ui fixed inverted main menu">
   <div class="ui container">
     <a class="launch icon item">
       <i class="content icon"></i>
     </a>
 
     <div class="item">
-      {% block dashboard_title %}{{ config.get('APP_TITLE') }} Dashboard{% endblock %}
+      {% block dashboard_title %}Dashboard{% endblock %}
     </div>
   </div>
 </div>
@@ -138,8 +130,8 @@
 
     {# begin default left side toc #}
     <div class="toc">
-      <div class="ui vertical inverted large menu viyyoor-background-color">
-      {% include "/base/toolbar-dashboard.html" with context %}
+      <div class="ui vertical inverted large menu">
+        {% include "/base/toolbar-dashboard.html" with context %}
       </div>
     </div>
     {# end default left side toc #}
@@ -149,37 +141,39 @@
       <header>
         <div class="ui vertical dividing segment">
           <div class="introduction">
-            <div class="ui basic segment" style="padding-bottom: 3.5em">
-              <h1 class="ui left floated header">{{ self.dashboard_title() }}</h1>
-              {{ org_renderer.render_organization_selection_menu(current_user) }}
-            </div>
+            <h1 class="ui header">
+              {{ self.dashboard_title() }}
+            </h1>
           </div>
         </div>
       </header>
 
       <main class="main-content">
-        {%- if self.dashboard_title().lower() != 'dashboard' %}
+        {%- if request.endpoint not in ['dashboard.index', 'dashboard.index_admin'] %}
         <div class="ui segment">
           <div class="ui big breadcrumb">
-            {% block breadcrumbs %}
-              <div class="active section">Dashboard</div>
-            {% endblock %}
+            {% block breadcrumbs %}{% endblock %}
           </div>
         </div>
         {% endif -%}
 {% block content %}{% endblock %}
       </main>
 
-      {% if config.DEFAULT_THEME == 'coe' %}
-        {% include "/base/coe/footer.html" %}
-      {% else %}
-        {% include "/base/diis/footer.html" %}
-      {% endif %}
+      <footer class="ui vertical footer segment">
+{% include "/base/footer.html" %}
+      </footer>
       
     </div>
     {# end main article #}
 
   </div>
+{#
+<footer class="ui vertical footer segment">
+{% include "/base/footer.html" %}
+</footer>
+#}
 </div>
 
 {% endblock body %}
+
+

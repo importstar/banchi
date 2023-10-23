@@ -1,0 +1,44 @@
+{% extends "/base/default-page.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block additional_head %}
+
+  <style type="text/css">
+    body > .grid {
+      height: 100%;
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="ui middle aligned center aligned grid" style="height: 70vh;">
+  <div class="column">
+    <h2 class="ui teal image header" style="font-size: 3em;">
+      <i class="ui book icon large"></i><br/>
+      <div class="content">
+        Login
+      </div>
+    </h2>
+    <div>
+      <div class="ui large vertical buttons" >
+          
+        <div class="row" style="padding: 10px;">
+          <div class="column header" style="text-align: left;">
+            <h3>For Participant</h3>
+          </div>
+        </div>
+
+        {% if 'google' in oauth_clients %}
+        <div class="row" style="padding-top: 5px;">
+          <a class="ui  labeled icon red button huge" href="{{ url_for('accounts.login_oauth', name='google') }}">
+            <i class="google icon"></i>
+            Google
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,22 +1,16 @@
 
-    <div class="ui inverted vertical center aligned segment" style="background-color: rgb(25, 60, 108);">
+    <div class="ui inverted vertical center aligned segment">
         <div class="ui container grid row two columns">
           <div class="column">
-            {#
-            <i class="university icon massive"></i>
-            #}
-            <div>
-              <img src="{{ url_for('static', filename='images/PSU-logo-white.png') }}">
-            </div>
+            <i class="ui book icon massive"></i>
             <div style="padding-top: 1vh;">
-              Office of Digital Innovation and Intelligent Systems <br/>
-              Prince of Songkla University
+              โปรแกรมบัญชี
             </div>
           </div>
           <div class="column">
             <div>
               <h1 class="ui huge inverted header" style="font-size:4em">{{ config.get('APP_TITLE') }} </h1>
-              <h2>DiiS Certification Systems, PSU, Please Login.</h2>
+              <h2>Banchi, Import Star, Please Login.</h2>
             </div>
             <div style="padding-top: 20px;">
               {% if not current_user.is_authenticated %}

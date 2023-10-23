@@ -4,19 +4,11 @@
   <header> 
   {% block header %}
     {% if request.path == '/' %}
-
-      {% if config.DEFAULT_THEME == 'coe' %}
-        {% include "/base/coe/banner.html" %}
-      {% else %}
-        {% include "/base/diis/banner.html" %}
-      {% endif %}
-
+      <div style="padding-top: 10vh;" class="ui inverted segment vertical">
+        {% include "/base/banner.html" %}
+      </div>
     {% else %}
-      {% if config.DEFAULT_THEME == 'coe' %}
-        {% include "/base/coe/toolbar.html" %}
-      {% else %}
-        {% include "/base/diis/toolbar.html" %}
-      {% endif %}
+        {% include "/base/toolbar.html" %}
     {% endif %}
   {% endblock %}
   </header>
@@ -25,12 +17,9 @@
     <main>
       {% block content %}{% endblock content %}
     </main>
-
-    {% if config.DEFAULT_THEME == 'coe' %}
-      {% include "/base/coe/footer.html" %}
-    {% else %}
-      {% include "/base/diis/footer.html" %}
-    {% endif %}
+    <footer>
+      {% include "/base/footer.html" %}
+    </footer>
 
   </div>
 {% endblock body %}
