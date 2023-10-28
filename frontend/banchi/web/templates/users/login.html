@@ -15,7 +15,7 @@
         <h2 class="ui teal" style="font-size: 3em;">
           Login
         </h2>
-        <form class="ui form" action="{{ url_for('accounts.authorized_banchi') }}" method="POST">
+        <form class="ui form" action="{{ url_for('users.authorized_banchi') }}" method="POST">
           {{ form.hidden_tag() }}
           {{ renderer.render_field(form.username) }}
           {{ renderer.render_field(form.password) }}
@@ -32,7 +32,7 @@
 
           {% if 'google' in oauth_clients %}
           <div class="row" style="padding-top: 5px;">
-            <a class="ui  labeled icon red button huge" href="{{ url_for('accounts.login_oauth', name='google') }}">
+            <a class="ui  labeled icon red button huge" href="{{ url_for('users.login_oauth', name='google') }}">
               <i class="google icon"></i>
               Google
             </a>

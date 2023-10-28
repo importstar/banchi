@@ -26,35 +26,7 @@ from banchi_client.api.v1 import (
 )
 
 
-module = Blueprint("accounts", __name__)
-
-
-def get_user_and_remember():
-    client = oauth2.oauth2_client
-    result = client.principal.get("me")
-    data = result.json()
-
-    user = models.User.objects(
-        me.Q(username=data.get("username", "")) | me.Q(email=data.get("email", ""))
-    ).first()
-    if not user:
-        user = models.User(
-            id=data.get("id"),
-            first_name=data.get("first_name").title(),
-            last_name=data.get("last_name").title(),
-            email=data.get("email"),
-            username=data.get("username"),
-            status="active",
-        )
-        roles = []
-        for role in ["student", "lecturer", "staff"]:
-            if role in data.get("roles", []):
-                roles.append(role)
-
-        user.save()
-
-    if user:
-        login_user(user, remember=True)
+module = Blueprint("users", __name__)
 
 
 @module.route("/login", methods=("GET", "POST"))
@@ -67,11 +39,9 @@ def login():
 
     oauth_clients = current_app.extensions["authlib.integrations.flask_client"]._clients
 
-    form = forms.accounts.LoginForm()
+    form = forms.users.LoginForm()
 
-    return render_template(
-        "/accounts/login.html", oauth_clients=oauth_clients, form=form
-    )
+    return render_template("/users/login.html", oauth_clients=oauth_clients, form=form)
 
 
 @module.route("/login/<name>")
@@ -80,7 +50,7 @@ def login_oauth(name):
 
     scheme = request.environ.get("HTTP_X_FORWARDED_PROTO", "http")
     redirect_uri = url_for(
-        "accounts.authorized_oauth", name=name, _external=True, _scheme=scheme
+        "users.authorized_oauth", name=name, _external=True, _scheme=scheme
     )
     response = None
     if name == "google":
@@ -98,9 +68,9 @@ def login_oauth(name):
 
 @module.route("/auth/banchi", methods=["POST"])
 def authorized_banchi():
-    form = forms.accounts.LoginForm()
+    form = forms.users.LoginForm()
     if not form.validate_on_submit():
-        return redirect("accounts.login")
+        return redirect("users.login")
 
     username = form.username.data
     password = form.password.data
@@ -115,7 +85,7 @@ def authorized_banchi():
     response = authentication_v1_auth_login_post.sync(client=client, form_data=model)
 
     if not response:
-        return redirect(url_for("accounts.login"))
+        return redirect(url_for("users.login"))
 
     session["tokens"] = response.to_dict()
 
@@ -149,7 +119,7 @@ def authorized_oauth(name):
 
     except Exception as e:
         print("autorize access error =>", e)
-        return redirect(url_for("accounts.login"))
+        return redirect(url_for("users.login"))
 
     session["oauth_provider"] = name
     return oauth2.handle_authorized_oauth2(remote, token)
@@ -184,44 +154,46 @@ def logout():
     return redirect(url_for("site.index"))
 
 
-@module.route("/accounts/<user_id>")
+@module.route("/users/<user_id>")
 def profile(user_id):
     return index()
 
 
-@module.route("/accounts", methods=["GET", "POST"])
+@module.route("/users", methods=["GET", "POST"])
 @login_required
 def index():
     biography = ""
-    if current_user.biography:
-        biography = markdown.markdown(current_user.biography)
+    # if current_user.biography:
+    #     biography = markdown.markdown(current_user.biography)
 
-    form = forms.accounts.SelectOrganizationForm(obj=current_user.user_setting)
-    form.current_organization.choices = [
-        (str(o.id), o.name) for o in current_user.organizations
-    ]
+    # form = forms.users.SelectOrganizationForm(obj=current_user.user_setting)
+    # form.current_organization.choices = [
+    #     (str(o.id), o.name) for o in current_user.organizations
+    # ]
 
-    if form.validate_on_submit():
-        current_user.user_setting.current_organization = (
-            models.Organization.objects.get(id=form.current_organization.data)
-        )
-        current_user.save()
-        return redirect(url_for("accounts.index"))
+    # if form.validate_on_submit():
+    # current_user.user_setting.current_organization = (
+    #     models.Organization.objects.get(id=form.current_organization.data)
+    # )
+    # current_user.save()
+    # return redirect(url_for("users.index"))
 
-    current_organization = current_user.user_setting.current_organization
-    if current_organization:
-        form.current_organization.data = str(current_organization.id)
+    # current_organization = current_user.user_setting.current_organization
+    # if current_organization:
+    #     form.current_organization.data = str(current_organization.id)
+
+    form = forms.users.User()
     return render_template(
-        "/accounts/index.html", user=current_user, biography=biography, form=form
+        "/users/index.html", user=current_user, biography=biography, form=form
     )
 
 
-@module.route("/accounts/edit-profile", methods=["GET", "POST"])
+@module.route("/users/edit-profile", methods=["GET", "POST"])
 @login_required
 def edit_profile():
-    form = forms.accounts.ProfileForm(obj=current_user, pic=current_user.picture)
+    form = forms.users.ProfileForm(obj=current_user, pic=current_user.picture)
     if not form.validate_on_submit():
-        return render_template("/accounts/edit-profile.html", form=form)
+        return render_template("/users/edit-profile.html", form=form)
 
     user = current_user._get_current_object()
     form.populate_obj(user)
@@ -243,10 +215,10 @@ def edit_profile():
     user.updated_date = datetime.datetime.now()
     user.save()
 
-    return redirect(url_for("accounts.index"))
+    return redirect(url_for("users.index"))
 
 
-@module.route("/accounts/<user_id>/picture/<filename>", methods=["GET", "POST"])
+@module.route("/users/<user_id>/picture/<filename>", methods=["GET", "POST"])
 def picture(user_id, filename):
     user = models.User.objects.get(id=user_id)
 
@@ -262,11 +234,11 @@ def picture(user_id, filename):
 
 
 @module.route(
-    "/accounts/<user_id>/add-signature",
+    "/users/<user_id>/add-signature",
     methods=["GET", "POST"],
     defaults={"signature_id": None},
 )
-@module.route("/accounts/<user_id>/signatures/<signature_id>", methods=["GET", "POST"])
+@module.route("/users/<user_id>/signatures/<signature_id>", methods=["GET", "POST"])
 def add_or_edit_signature(user_id, signature_id):
     user = models.User.objects.get(id=user_id)
 
@@ -277,7 +249,7 @@ def add_or_edit_signature(user_id, signature_id):
 
     if not form.validate_on_submit():
         return render_template(
-            "/accounts/add-signature.html",
+            "/users/add-signature.html",
             form=form,
         )
 
@@ -304,7 +276,7 @@ def add_or_edit_signature(user_id, signature_id):
     signature.ip_address = request.remote_addr
     signature.save()
 
-    return redirect(url_for("accounts.profile", user_id=user_id))
+    return redirect(url_for("users.profile", user_id=user_id))
 
 
 @module.route("/change_organization/<organization_id>")

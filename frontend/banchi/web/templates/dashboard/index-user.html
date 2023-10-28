@@ -14,7 +14,7 @@
 {% block content %}
 <div class="ui attached left aligned segment">
   <h1 class="ui left aligned header">
-    <a href="{{ url_for('accounts.index') }}" class="ui image">
+    <a href="{{ url_for('users.index') }}" class="ui image">
       {% if current_user.get_picture() %}
       <img class="ui avatar image" src="{{ current_user.get_picture() }}">
       {% else %}
@@ -23,7 +23,7 @@
     </a>
   
     <div class="content">
-      <a class="ui header blinking link" href="{{ url_for('accounts.index') }}">
+      <a class="ui header blinking link" href="{{ url_for('users.index') }}">
         {{ current_user.first_name }} {{ current_user.last_name }}
       </a>
       <div class="sub header">
