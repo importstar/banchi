@@ -17,6 +17,8 @@
 <a class="item" href="{{ url_for('dashboard.index') }}"><i class="icon dashboard"></i>Dashboard</a>
 <a class="item" href="{{ url_for('site.index') }}"><i class="icon world"></i>Home Page</a>
 
+<a class="item" href="{{ url_for('spaces.index') }}"><i class="icon dice d20"></i>Space</a>
+<a class="item" href="{{ url_for('accounts.index') }}"><i class="icon dollar sign"></i>Account</a>
 {% if current_user.has_roles('admin') %}
 {#
 <a class="item" href="{{ url_for('dashboard.index_admin') }}"><i class="icon dashboard"></i>Dashboard Admin</a>
