@@ -16,7 +16,6 @@ class BanchiClient:
 
     def get_current_client(self, timeout=30, is_anonymous=False):
         tokens = session.get("tokens")
-        print("--->", tokens)
         expires_at = None
         if not tokens:
             if is_anonymous:
