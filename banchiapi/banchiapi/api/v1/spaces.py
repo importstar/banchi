@@ -3,6 +3,8 @@ import io
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from loguru import logger
+import bson
+
 from banchiapi import models
 from banchiapi import schemas
 from banchiapi.core import deps
@@ -43,7 +45,7 @@ async def create_space(
         models.spaces.Space.code == space.code, models.spaces.Space.status == "active"
     )
     if db_space:
-        raise HTTPException(
+        raise status.HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="There are already space code",
         )
@@ -61,17 +63,19 @@ async def create_space(
 @router.get(
     "/{space_id}",
     response_model_by_alias=False,
-    response_model=schemas.spaces.Space,
 )
-def get_space(
+async def get_space(
     space_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
-    try:
-        db_space = models.Space.objects.get(id=space_id)
-    except Exception:
+) -> schemas.spaces.Space:
+    db_space = await models.spaces.Space.find_one(
+        models.spaces.Space.id == bson.ObjectId(space_id),
+        models.spaces.Space.owner.id == current_user.id,
+    )
+
+    if not db_space:
         raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_404_NOT_FOUND,
             detail="Not found this space",
         )
     return db_space
@@ -82,7 +86,7 @@ def get_space(
     response_model_by_alias=False,
     response_model=schemas.spaces.Space,
 )
-def update_space(
+async def update_space(
     space_id: str,
     space: schemas.spaces.CreatedSpace,
     current_user: models.users.User = Depends(deps.get_current_user),
@@ -120,7 +124,7 @@ def update_space(
     response_model_by_alias=False,
     response_model=schemas.spaces.Space,
 )
-def delete_space(
+async def delete_space(
     space_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
