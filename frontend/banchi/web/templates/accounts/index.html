@@ -1,11 +1,11 @@
 {% extends '/base/default-dashboard.html' %}
 
 {% block dashboard_title %}
-Space
+Account
 {% endblock %}
 
 {% block breadcrumbs %}
-<a href="{{ url_for('spaces.index') }}" class="section">Spaces</a>
+<a href="{{ url_for('accounts.index') }}" class="section">Accounts</a>
 {% endblock %}
 
 {% block title %}
@@ -13,14 +13,14 @@ Space
 
 {% block content %}
   <div class="ui segment">
-      <a class="ui button primary" href="{{ url_for('spaces.create_or_edit') }}">Create</a>
+      <a class="ui button primary" href="{{ url_for('accounts.create_or_edit') }}">Create</a>
   </div>
   <div class="ui cards">
 
-    {% for space in spaces %}
+    {% for account in accounts %}
     <div class="card">
       <div class="content">
-        <div class="header">{{ space.name }}</div>
+        <div class="header">{{ account.name }}</div>
       </div>
       <div class="content">
         <h4 class="ui sub header">Infomation</h4>
@@ -28,21 +28,21 @@ Space
           <div class="event">
             <div class="content">
               <div class="summary">
-                <b>Code:</b> {{ space.code }}
+                <b>Code:</b> {{ account.code }}
               </div>
             </div>
           </div>
           <div class="event">
             <div class="content">
               <div class="summary">
-                <b>Tax ID:</b> {{ space.tax_id }}
+                <b>Tax ID:</b> {{ account.tax_id }}
               </div>
             </div>
           </div>
         </div>
       </div>
       <div class="extra content">
-        <a class="ui button primary" href="{{ url_for('spaces.view', space_id=space.id) }}">View Space</a>
+        <a class="ui button primary" href="{{ url_for('accounts.view', account_id=account.id) }}">View Account</a>
       </div>
     </div>
     {% endfor %}

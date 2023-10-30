@@ -1,4 +1,4 @@
-{% extends '/spaces/index.html' %}
+{% extends '/accounts/index.html' %}
 {% import '/base/html-renderer.html' as renderer %}
 
 
@@ -6,22 +6,20 @@
 {{ super() }}
 <i class="right angle icon divider"></i>
 {% if 'edit' not in request.path %}
-  <div class="active section">Create Space</div>
+  <div class="active section">Create Account</div>
 {% else %}
-  <div class="active section">Edit Space</div>
+  <div class="active section">Edit Account</div>
 {% endif %}
 {% endblock %}
 
 {% block content %}
   <div class="ui segment">
-    <h2>Space</h2>
+    <h2>Account</h2>
     <form method="POST" class="ui form" enctype="multipart/form-data">
       {{ form.csrf_token }}
       {{ renderer.render_field(form.name) }}
-      <div class="two fields">
-      {{ renderer.render_field(form.code) }}
-      {{ renderer.render_field(form.tax_id) }}
-      </div>
+      {{ renderer.render_field(form.description) }}
+      {{ renderer.render_field(form.currency) }}
       <button name="subnit" type="submit" class="ui primary button">
         {% if 'edit' not in request.path %}
           Create

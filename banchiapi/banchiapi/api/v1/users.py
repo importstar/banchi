@@ -18,7 +18,7 @@ def get_me(current_user: models.users.User = Depends(deps.get_current_user)):
     response_model_by_alias=False,
     response_model=bool,
 )
-def get_me_check_password(
+async def get_me_check_password(
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
     return current_user.is_use_citizen_id_as_password()
@@ -29,10 +29,10 @@ def get_me_check_password(
     response_model_by_alias=False,
     response_model=schemas.users.User,
 )
-def get_user(
+async def get(
     user_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.users.User:
     try:
         user = models.users.User.objects.get(id=user_id)
     except Exception:
@@ -47,7 +47,7 @@ def get_user(
     "",
     response_model_by_alias=False,
 )
-async def get_users(
+async def get_all(
     first_name: str = "",
     last_name: str = "",
     citizen_id: str = "",
@@ -88,7 +88,6 @@ async def get_users(
     "/create",
     # response_model=schemas.users.User,
     response_model_by_alias=False,
-    name="user:create",
 )
 async def create(
     user_register: schemas.users.RegisteredUser,
@@ -114,7 +113,6 @@ async def create(
     "/{user_id}/change_password",
     response_model=schemas.users.User,
     response_model_by_alias=False,
-    name="user:change_password",
 )
 def change_password(
     user_id: str,
@@ -143,7 +141,6 @@ def change_password(
     "/{user_id}/update",
     response_model=schemas.users.User,
     response_model_by_alias=False,
-    name="user:update",
 )
 def update(
     request: Request,
@@ -178,7 +175,6 @@ def update(
     "/{user_id}/set_status",
     response_model=schemas.users.User,
     response_model_by_alias=False,
-    name="user:set_status",
 )
 def set_status(
     request: Request,
@@ -207,7 +203,6 @@ def set_status(
     "/{user_id}/set_space",
     response_model=schemas.users.User,
     response_model_by_alias=False,
-    name="user:set_space",
 )
 def set_space(
     request: Request,
@@ -246,51 +241,8 @@ def set_space(
 
 
 @router.put(
-    "/{user_id}/set_division",
-    response_model=schemas.users.User,
-    response_model_by_alias=False,
-    name="user:set_division",
-)
-def set_division(
-    request: Request,
-    user_id: str,
-    division_id: str,
-    action: str,
-    current_user: models.users.User = Depends(deps.get_current_user),
-):
-    try:
-        user = models.users.User.objects.get(id=user_id)
-    except Exception:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail="Not found this user",
-        )
-    if action == "add":
-        try:
-            division = models.Division.objects.get(id=division_id)
-        except Exception:
-            raise HTTPException(
-                status_code=HTTP_404_NOT_FOUND,
-                detail="Not found this division",
-            )
-        user.update(division=division)
-    elif action == "remove":
-        user.update(division=None)
-
-    user.reload()
-    # request_log = deps.create_logs(
-    #     action="update", request=request, current_user=current_user
-    # )
-    # user.request_logs.append(request_log)
-    user.save()
-    return user
-
-
-@router.put(
     "/{user_id}/set_role",
-    response_model=schemas.users.User,
     response_model_by_alias=False,
-    name="user:set_role",
 )
 def set_role(
     request: Request,
@@ -298,7 +250,7 @@ def set_role(
     role: str,
     action: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.users.User:
     try:
         user = models.users.User.objects.get(id=user_id)
     except Exception:

@@ -4,6 +4,8 @@ import enum
 from pydantic import BaseModel, Field
 from beanie import PydanticObjectId
 
+from . import users
+from . import spaces
 from .system_settings import BaseAuthorizedSignatory
 
 
@@ -22,6 +24,9 @@ class Account(BaseAccount):
     id: PydanticObjectId = Field(
         default_factory=PydanticObjectId, alias="_id", example="0"
     )
+
+    spaces: list[spaces.Space]
+    creator: list[users.User]
 
 
 class CreatedAccount(BaseAccount):

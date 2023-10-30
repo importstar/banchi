@@ -6,31 +6,26 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.http_validation_error import HTTPValidationError
+from ...models.updated_user import UpdatedUser
 from ...models.user import User
-from ...types import UNSET, Response
+from ...types import Response
 
 
 def _get_kwargs(
     user_id: str,
     *,
-    division_id: str,
-    action: str,
+    json_body: UpdatedUser,
 ) -> Dict[str, Any]:
     pass
 
-    params: Dict[str, Any] = {}
-    params["division_id"] = division_id
-
-    params["action"] = action
-
-    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+    json_json_body = json_body.to_dict()
 
     return {
         "method": "put",
-        "url": "/v1/users/{user_id}/set_division".format(
+        "url": "/v1/users/{user_id}/update".format(
             user_id=user_id,
         ),
-        "params": params,
+        "json": json_json_body,
     }
 
 
@@ -66,15 +61,13 @@ def sync_detailed(
     user_id: str,
     *,
     client: AuthenticatedClient,
-    division_id: str,
-    action: str,
+    json_body: UpdatedUser,
 ) -> Response[Union[HTTPValidationError, User]]:
-    """User:Set Division
+    """Update
 
     Args:
         user_id (str):
-        division_id (str):
-        action (str):
+        json_body (UpdatedUser):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -86,8 +79,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         user_id=user_id,
-        division_id=division_id,
-        action=action,
+        json_body=json_body,
     )
 
     response = client.get_httpx_client().request(
@@ -101,15 +93,13 @@ def sync(
     user_id: str,
     *,
     client: AuthenticatedClient,
-    division_id: str,
-    action: str,
+    json_body: UpdatedUser,
 ) -> Optional[Union[HTTPValidationError, User]]:
-    """User:Set Division
+    """Update
 
     Args:
         user_id (str):
-        division_id (str):
-        action (str):
+        json_body (UpdatedUser):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -122,8 +112,7 @@ def sync(
     return sync_detailed(
         user_id=user_id,
         client=client,
-        division_id=division_id,
-        action=action,
+        json_body=json_body,
     ).parsed
 
 
@@ -131,15 +120,13 @@ async def asyncio_detailed(
     user_id: str,
     *,
     client: AuthenticatedClient,
-    division_id: str,
-    action: str,
+    json_body: UpdatedUser,
 ) -> Response[Union[HTTPValidationError, User]]:
-    """User:Set Division
+    """Update
 
     Args:
         user_id (str):
-        division_id (str):
-        action (str):
+        json_body (UpdatedUser):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -151,8 +138,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         user_id=user_id,
-        division_id=division_id,
-        action=action,
+        json_body=json_body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -164,15 +150,13 @@ async def asyncio(
     user_id: str,
     *,
     client: AuthenticatedClient,
-    division_id: str,
-    action: str,
+    json_body: UpdatedUser,
 ) -> Optional[Union[HTTPValidationError, User]]:
-    """User:Set Division
+    """Update
 
     Args:
         user_id (str):
-        division_id (str):
-        action (str):
+        json_body (UpdatedUser):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -186,7 +170,6 @@ async def asyncio(
         await asyncio_detailed(
             user_id=user_id,
             client=client,
-            division_id=division_id,
-            action=action,
+            json_body=json_body,
         )
     ).parsed

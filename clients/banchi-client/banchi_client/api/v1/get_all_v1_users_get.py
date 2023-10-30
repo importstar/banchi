@@ -77,7 +77,7 @@ def sync_detailed(
     current_page: Union[Unset, int] = 1,
     limit: Union[Unset, int] = 50,
 ) -> Response[Union[HTTPValidationError, UserList]]:
-    """Get Users
+    """Get All
 
     Args:
         first_name (Union[Unset, str]):  Default: ''.
@@ -118,7 +118,7 @@ def sync(
     current_page: Union[Unset, int] = 1,
     limit: Union[Unset, int] = 50,
 ) -> Optional[Union[HTTPValidationError, UserList]]:
-    """Get Users
+    """Get All
 
     Args:
         first_name (Union[Unset, str]):  Default: ''.
@@ -154,7 +154,7 @@ async def asyncio_detailed(
     current_page: Union[Unset, int] = 1,
     limit: Union[Unset, int] = 50,
 ) -> Response[Union[HTTPValidationError, UserList]]:
-    """Get Users
+    """Get All
 
     Args:
         first_name (Union[Unset, str]):  Default: ''.
@@ -193,7 +193,7 @@ async def asyncio(
     current_page: Union[Unset, int] = 1,
     limit: Union[Unset, int] = 50,
 ) -> Optional[Union[HTTPValidationError, UserList]]:
-    """Get Users
+    """Get All
 
     Args:
         first_name (Union[Unset, str]):  Default: ''.

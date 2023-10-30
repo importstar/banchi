@@ -13,8 +13,32 @@ Space
 
 {% block content %}
   <div class="ui segment">
-      <a class="ui button primary" href="{{ url_for('spaces.index') }}">Space</a>
+    <a class="ui button primary" href="{{ url_for('spaces.index') }}">Space</a>
   </div>
   <div>
+    <a class="ui icon button primary" href="{{ url_for('accounts.create_or_edit', space_id=space.id) }}"><i class="add icon"></i> Create Account</a>
   </div>
+  <div>
+    <table class="ui table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Currentcy</th>
+          <th>Description</th>
+          <th>Operation</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for account in accounts %}
+        <tr>
+          <td>{{ account.name }}</td>
+          <td>{{ account.currency }}</td>
+          <td>{{ account.description }}</td>
+          <td></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
 {% endblock %}

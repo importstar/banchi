@@ -5,15 +5,15 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.account_book import AccountBook
-from ...models.created_account_book import CreatedAccountBook
+from ...models.created_space import CreatedSpace
 from ...models.http_validation_error import HTTPValidationError
+from ...models.space import Space
 from ...types import Response
 
 
 def _get_kwargs(
     *,
-    json_body: CreatedAccountBook,
+    json_body: CreatedSpace,
 ) -> Dict[str, Any]:
     pass
 
@@ -21,16 +21,16 @@ def _get_kwargs(
 
     return {
         "method": "post",
-        "url": "/v1/account-books/create",
+        "url": "/v1/spaces/create",
         "json": json_json_body,
     }
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[AccountBook, HTTPValidationError]]:
+) -> Optional[Union[HTTPValidationError, Space]]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = AccountBook.from_dict(response.json())
+        response_200 = Space.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -45,7 +45,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[AccountBook, HTTPValidationError]]:
+) -> Response[Union[HTTPValidationError, Space]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -57,19 +57,19 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccountBook,
-) -> Response[Union[AccountBook, HTTPValidationError]]:
-    """Create Account Book
+    json_body: CreatedSpace,
+) -> Response[Union[HTTPValidationError, Space]]:
+    """Create
 
     Args:
-        json_body (CreatedAccountBook):
+        json_body (CreatedSpace):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[AccountBook, HTTPValidationError]]
+        Response[Union[HTTPValidationError, Space]]
     """
 
     kwargs = _get_kwargs(
@@ -86,19 +86,19 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccountBook,
-) -> Optional[Union[AccountBook, HTTPValidationError]]:
-    """Create Account Book
+    json_body: CreatedSpace,
+) -> Optional[Union[HTTPValidationError, Space]]:
+    """Create
 
     Args:
-        json_body (CreatedAccountBook):
+        json_body (CreatedSpace):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[AccountBook, HTTPValidationError]
+        Union[HTTPValidationError, Space]
     """
 
     return sync_detailed(
@@ -110,19 +110,19 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccountBook,
-) -> Response[Union[AccountBook, HTTPValidationError]]:
-    """Create Account Book
+    json_body: CreatedSpace,
+) -> Response[Union[HTTPValidationError, Space]]:
+    """Create
 
     Args:
-        json_body (CreatedAccountBook):
+        json_body (CreatedSpace):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[AccountBook, HTTPValidationError]]
+        Response[Union[HTTPValidationError, Space]]
     """
 
     kwargs = _get_kwargs(
@@ -137,19 +137,19 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccountBook,
-) -> Optional[Union[AccountBook, HTTPValidationError]]:
-    """Create Account Book
+    json_body: CreatedSpace,
+) -> Optional[Union[HTTPValidationError, Space]]:
+    """Create
 
     Args:
-        json_body (CreatedAccountBook):
+        json_body (CreatedSpace):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[AccountBook, HTTPValidationError]
+        Union[HTTPValidationError, Space]
     """
 
     return (

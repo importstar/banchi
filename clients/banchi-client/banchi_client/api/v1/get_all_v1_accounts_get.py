@@ -5,50 +5,31 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.changed_password import ChangedPassword
-from ...models.http_validation_error import HTTPValidationError
-from ...models.user import User
+from ...models.account_list import AccountList
 from ...types import Response
 
 
-def _get_kwargs(
-    user_id: str,
-    *,
-    json_body: ChangedPassword,
-) -> Dict[str, Any]:
+def _get_kwargs() -> Dict[str, Any]:
     pass
 
-    json_json_body = json_body.to_dict()
-
     return {
-        "method": "put",
-        "url": "/v1/users/{user_id}/change_password".format(
-            user_id=user_id,
-        ),
-        "json": json_json_body,
+        "method": "get",
+        "url": "/v1/accounts",
     }
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[HTTPValidationError, User]]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[AccountList]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = User.from_dict(response.json())
+        response_200 = AccountList.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
-        response_422 = HTTPValidationError.from_dict(response.json())
-
-        return response_422
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
         return None
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[HTTPValidationError, User]]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[AccountList]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -58,29 +39,20 @@ def _build_response(
 
 
 def sync_detailed(
-    user_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ChangedPassword,
-) -> Response[Union[HTTPValidationError, User]]:
-    """User:Change Password
-
-    Args:
-        user_id (str):
-        json_body (ChangedPassword):
+) -> Response[AccountList]:
+    """Get All
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, User]]
+        Response[AccountList]
     """
 
-    kwargs = _get_kwargs(
-        user_id=user_id,
-        json_body=json_body,
-    )
+    kwargs = _get_kwargs()
 
     response = client.get_httpx_client().request(
         **kwargs,
@@ -90,56 +62,39 @@ def sync_detailed(
 
 
 def sync(
-    user_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ChangedPassword,
-) -> Optional[Union[HTTPValidationError, User]]:
-    """User:Change Password
-
-    Args:
-        user_id (str):
-        json_body (ChangedPassword):
+) -> Optional[AccountList]:
+    """Get All
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, User]
+        AccountList
     """
 
     return sync_detailed(
-        user_id=user_id,
         client=client,
-        json_body=json_body,
     ).parsed
 
 
 async def asyncio_detailed(
-    user_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ChangedPassword,
-) -> Response[Union[HTTPValidationError, User]]:
-    """User:Change Password
-
-    Args:
-        user_id (str):
-        json_body (ChangedPassword):
+) -> Response[AccountList]:
+    """Get All
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, User]]
+        Response[AccountList]
     """
 
-    kwargs = _get_kwargs(
-        user_id=user_id,
-        json_body=json_body,
-    )
+    kwargs = _get_kwargs()
 
     response = await client.get_async_httpx_client().request(**kwargs)
 
@@ -147,29 +102,21 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    user_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: ChangedPassword,
-) -> Optional[Union[HTTPValidationError, User]]:
-    """User:Change Password
-
-    Args:
-        user_id (str):
-        json_body (ChangedPassword):
+) -> Optional[AccountList]:
+    """Get All
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, User]
+        AccountList
     """
 
     return (
         await asyncio_detailed(
-            user_id=user_id,
             client=client,
-            json_body=json_body,
         )
     ).parsed

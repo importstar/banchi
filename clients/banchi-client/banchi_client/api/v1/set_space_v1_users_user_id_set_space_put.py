@@ -5,29 +5,40 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.account import Account
 from ...models.http_validation_error import HTTPValidationError
-from ...types import Response
+from ...models.user import User
+from ...types import UNSET, Response
 
 
 def _get_kwargs(
-    account_id: str,
+    user_id: str,
+    *,
+    space_id: str,
+    action: str,
 ) -> Dict[str, Any]:
     pass
 
+    params: Dict[str, Any] = {}
+    params["space_id"] = space_id
+
+    params["action"] = action
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+
     return {
-        "method": "get",
-        "url": "/v1/accounts/{account_id}".format(
-            account_id=account_id,
+        "method": "put",
+        "url": "/v1/users/{user_id}/set_space".format(
+            user_id=user_id,
         ),
+        "params": params,
     }
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[Account, HTTPValidationError]]:
+) -> Optional[Union[HTTPValidationError, User]]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = Account.from_dict(response.json())
+        response_200 = User.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -42,7 +53,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[Account, HTTPValidationError]]:
+) -> Response[Union[HTTPValidationError, User]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -52,25 +63,31 @@ def _build_response(
 
 
 def sync_detailed(
-    account_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Union[Account, HTTPValidationError]]:
-    """Get Account
+    space_id: str,
+    action: str,
+) -> Response[Union[HTTPValidationError, User]]:
+    """Set Space
 
     Args:
-        account_id (str):
+        user_id (str):
+        space_id (str):
+        action (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Account, HTTPValidationError]]
+        Response[Union[HTTPValidationError, User]]
     """
 
     kwargs = _get_kwargs(
-        account_id=account_id,
+        user_id=user_id,
+        space_id=space_id,
+        action=action,
     )
 
     response = client.get_httpx_client().request(
@@ -81,49 +98,61 @@ def sync_detailed(
 
 
 def sync(
-    account_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[Union[Account, HTTPValidationError]]:
-    """Get Account
+    space_id: str,
+    action: str,
+) -> Optional[Union[HTTPValidationError, User]]:
+    """Set Space
 
     Args:
-        account_id (str):
+        user_id (str):
+        space_id (str):
+        action (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Account, HTTPValidationError]
+        Union[HTTPValidationError, User]
     """
 
     return sync_detailed(
-        account_id=account_id,
+        user_id=user_id,
         client=client,
+        space_id=space_id,
+        action=action,
     ).parsed
 
 
 async def asyncio_detailed(
-    account_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Union[Account, HTTPValidationError]]:
-    """Get Account
+    space_id: str,
+    action: str,
+) -> Response[Union[HTTPValidationError, User]]:
+    """Set Space
 
     Args:
-        account_id (str):
+        user_id (str):
+        space_id (str):
+        action (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Account, HTTPValidationError]]
+        Response[Union[HTTPValidationError, User]]
     """
 
     kwargs = _get_kwargs(
-        account_id=account_id,
+        user_id=user_id,
+        space_id=space_id,
+        action=action,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -132,26 +161,32 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    account_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[Union[Account, HTTPValidationError]]:
-    """Get Account
+    space_id: str,
+    action: str,
+) -> Optional[Union[HTTPValidationError, User]]:
+    """Set Space
 
     Args:
-        account_id (str):
+        user_id (str):
+        space_id (str):
+        action (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Account, HTTPValidationError]
+        Union[HTTPValidationError, User]
     """
 
     return (
         await asyncio_detailed(
-            account_id=account_id,
+            user_id=user_id,
             client=client,
+            space_id=space_id,
+            action=action,
         )
     ).parsed

@@ -13,7 +13,7 @@ router = APIRouter(prefix="/spaces", tags=["space"])
 
 
 @router.get("", response_model_by_alias=False)
-async def get_spaces(
+async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.SpaceList:
     spaces = await models.spaces.Space.find(
@@ -28,7 +28,7 @@ async def get_spaces(
     "/create",
     response_model_by_alias=False,
 )
-async def create_space(
+async def create(
     space: schemas.spaces.CreatedSpace,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
@@ -64,7 +64,7 @@ async def create_space(
     "/{space_id}",
     response_model_by_alias=False,
 )
-async def get_space(
+async def get(
     space_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
@@ -86,7 +86,7 @@ async def get_space(
     response_model_by_alias=False,
     response_model=schemas.spaces.Space,
 )
-async def update_space(
+async def update(
     space_id: str,
     space: schemas.spaces.CreatedSpace,
     current_user: models.users.User = Depends(deps.get_current_user),
@@ -124,7 +124,7 @@ async def update_space(
     response_model_by_alias=False,
     response_model=schemas.spaces.Space,
 )
-async def delete_space(
+async def delete(
     space_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):

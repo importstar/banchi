@@ -5,29 +5,35 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.account_book import AccountBook
+from ...models.changed_password import ChangedPassword
 from ...models.http_validation_error import HTTPValidationError
+from ...models.user import User
 from ...types import Response
 
 
 def _get_kwargs(
-    account_book_id: str,
+    user_id: str,
+    *,
+    json_body: ChangedPassword,
 ) -> Dict[str, Any]:
     pass
 
+    json_json_body = json_body.to_dict()
+
     return {
-        "method": "delete",
-        "url": "/v1/account-books/{account_book_id}/delete".format(
-            account_book_id=account_book_id,
+        "method": "put",
+        "url": "/v1/users/{user_id}/change_password".format(
+            user_id=user_id,
         ),
+        "json": json_json_body,
     }
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[AccountBook, HTTPValidationError]]:
+) -> Optional[Union[HTTPValidationError, User]]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = AccountBook.from_dict(response.json())
+        response_200 = User.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -42,7 +48,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[AccountBook, HTTPValidationError]]:
+) -> Response[Union[HTTPValidationError, User]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -52,25 +58,28 @@ def _build_response(
 
 
 def sync_detailed(
-    account_book_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Union[AccountBook, HTTPValidationError]]:
-    """Delete Account Book
+    json_body: ChangedPassword,
+) -> Response[Union[HTTPValidationError, User]]:
+    """Change Password
 
     Args:
-        account_book_id (str):
+        user_id (str):
+        json_body (ChangedPassword):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[AccountBook, HTTPValidationError]]
+        Response[Union[HTTPValidationError, User]]
     """
 
     kwargs = _get_kwargs(
-        account_book_id=account_book_id,
+        user_id=user_id,
+        json_body=json_body,
     )
 
     response = client.get_httpx_client().request(
@@ -81,49 +90,55 @@ def sync_detailed(
 
 
 def sync(
-    account_book_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[Union[AccountBook, HTTPValidationError]]:
-    """Delete Account Book
+    json_body: ChangedPassword,
+) -> Optional[Union[HTTPValidationError, User]]:
+    """Change Password
 
     Args:
-        account_book_id (str):
+        user_id (str):
+        json_body (ChangedPassword):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[AccountBook, HTTPValidationError]
+        Union[HTTPValidationError, User]
     """
 
     return sync_detailed(
-        account_book_id=account_book_id,
+        user_id=user_id,
         client=client,
+        json_body=json_body,
     ).parsed
 
 
 async def asyncio_detailed(
-    account_book_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Union[AccountBook, HTTPValidationError]]:
-    """Delete Account Book
+    json_body: ChangedPassword,
+) -> Response[Union[HTTPValidationError, User]]:
+    """Change Password
 
     Args:
-        account_book_id (str):
+        user_id (str):
+        json_body (ChangedPassword):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[AccountBook, HTTPValidationError]]
+        Response[Union[HTTPValidationError, User]]
     """
 
     kwargs = _get_kwargs(
-        account_book_id=account_book_id,
+        user_id=user_id,
+        json_body=json_body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -132,26 +147,29 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    account_book_id: str,
+    user_id: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[Union[AccountBook, HTTPValidationError]]:
-    """Delete Account Book
+    json_body: ChangedPassword,
+) -> Optional[Union[HTTPValidationError, User]]:
+    """Change Password
 
     Args:
-        account_book_id (str):
+        user_id (str):
+        json_body (ChangedPassword):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[AccountBook, HTTPValidationError]
+        Union[HTTPValidationError, User]
     """
 
     return (
         await asyncio_detailed(
-            account_book_id=account_book_id,
+            user_id=user_id,
             client=client,
+            json_body=json_body,
         )
     ).parsed

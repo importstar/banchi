@@ -5,6 +5,8 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from loguru import logger
 
+import bson
+
 from banchiapi import models
 from banchiapi.core import deps
 from banchiapi import schemas
@@ -16,11 +18,11 @@ router = APIRouter(prefix="/accounts", tags=["accounts"])
     "",
     response_model_by_alias=False,
 )
-async def get_accounts(
+async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.accounts.AccountList:
     db_accounts = await models.accounts.Account.find(
-        models.accounts.Account.owner == current_user
+        models.accounts.Account.creator == current_user
     ).to_list()
     return dict(accounts=db_accounts)
 
@@ -29,25 +31,25 @@ async def get_accounts(
     "/create",
     response_model_by_alias=False,
 )
-async def create_account(
+async def create(
     account: schemas.accounts.CreatedAccount,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.accounts.Account:
-    db_account = models.Account.objects(name=account.name, status="active").first()
-    if db_account:
+    db_space = models.spaces.Space.find_one(
+        models.spaces.Space.id == bson.ObjectId(account.space_id),
+        models.spaces.Space.owner == current_user,
+    )
+
+    if db_space:
         raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already account name",
-        )
-    db_account = models.Account.objects(code=account.code, status="active").first()
-    if db_account:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already account code",
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Space id {account.space_id} not found",
         )
 
     data = account.dict()
     db_account = models.Account(**data)
+    db_account.creator = current_user
+    db_account.space = db_space
     db_account.created_date = datetime.datetime.now()
     db_account.updated_date = datetime.datetime.now()
     db_account.save()
@@ -58,12 +60,11 @@ async def create_account(
 @router.get(
     "/{account_id}",
     response_model_by_alias=False,
-    response_model=schemas.accounts.Account,
 )
-def get_account(
+def get(
     account_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.accounts.Account:
     try:
         db_account = models.Account.objects.get(id=account_id)
     except Exception:
@@ -79,7 +80,7 @@ def get_account(
     response_model_by_alias=False,
     response_model=schemas.accounts.Account,
 )
-def update_account(
+def update(
     account_id: str,
     account: schemas.accounts.CreatedAccount,
     current_user: models.users.User = Depends(deps.get_current_user),

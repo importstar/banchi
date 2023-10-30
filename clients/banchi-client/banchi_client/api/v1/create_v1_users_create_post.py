@@ -6,28 +6,23 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.http_validation_error import HTTPValidationError
+from ...models.registered_user import RegisteredUser
 from ...models.user import User
-from ...types import UNSET, Response, Unset
+from ...types import Response
 
 
 def _get_kwargs(
-    user_id: str,
     *,
-    status: Union[Unset, str] = "active",
+    json_body: RegisteredUser,
 ) -> Dict[str, Any]:
     pass
 
-    params: Dict[str, Any] = {}
-    params["status"] = status
-
-    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+    json_json_body = json_body.to_dict()
 
     return {
-        "method": "put",
-        "url": "/v1/users/{user_id}/set_status".format(
-            user_id=user_id,
-        ),
-        "params": params,
+        "method": "post",
+        "url": "/v1/users/create",
+        "json": json_json_body,
     }
 
 
@@ -60,16 +55,14 @@ def _build_response(
 
 
 def sync_detailed(
-    user_id: str,
     *,
-    client: AuthenticatedClient,
-    status: Union[Unset, str] = "active",
+    client: Union[AuthenticatedClient, Client],
+    json_body: RegisteredUser,
 ) -> Response[Union[HTTPValidationError, User]]:
-    """User:Set Status
+    """Create
 
     Args:
-        user_id (str):
-        status (Union[Unset, str]):  Default: 'active'.
+        json_body (RegisteredUser):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -80,8 +73,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        user_id=user_id,
-        status=status,
+        json_body=json_body,
     )
 
     response = client.get_httpx_client().request(
@@ -92,16 +84,14 @@ def sync_detailed(
 
 
 def sync(
-    user_id: str,
     *,
-    client: AuthenticatedClient,
-    status: Union[Unset, str] = "active",
+    client: Union[AuthenticatedClient, Client],
+    json_body: RegisteredUser,
 ) -> Optional[Union[HTTPValidationError, User]]:
-    """User:Set Status
+    """Create
 
     Args:
-        user_id (str):
-        status (Union[Unset, str]):  Default: 'active'.
+        json_body (RegisteredUser):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -112,23 +102,20 @@ def sync(
     """
 
     return sync_detailed(
-        user_id=user_id,
         client=client,
-        status=status,
+        json_body=json_body,
     ).parsed
 
 
 async def asyncio_detailed(
-    user_id: str,
     *,
-    client: AuthenticatedClient,
-    status: Union[Unset, str] = "active",
+    client: Union[AuthenticatedClient, Client],
+    json_body: RegisteredUser,
 ) -> Response[Union[HTTPValidationError, User]]:
-    """User:Set Status
+    """Create
 
     Args:
-        user_id (str):
-        status (Union[Unset, str]):  Default: 'active'.
+        json_body (RegisteredUser):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -139,8 +126,7 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        user_id=user_id,
-        status=status,
+        json_body=json_body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -149,16 +135,14 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    user_id: str,
     *,
-    client: AuthenticatedClient,
-    status: Union[Unset, str] = "active",
+    client: Union[AuthenticatedClient, Client],
+    json_body: RegisteredUser,
 ) -> Optional[Union[HTTPValidationError, User]]:
-    """User:Set Status
+    """Create
 
     Args:
-        user_id (str):
-        status (Union[Unset, str]):  Default: 'active'.
+        json_body (RegisteredUser):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -170,8 +154,7 @@ async def asyncio(
 
     return (
         await asyncio_detailed(
-            user_id=user_id,
             client=client,
-            status=status,
+            json_body=json_body,
         )
     ).parsed

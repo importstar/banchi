@@ -63,7 +63,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     json_body: CreatedSpace,
 ) -> Response[Union[HTTPValidationError, Space]]:
-    """Update Space
+    """Update
 
     Args:
         space_id (str):
@@ -95,7 +95,7 @@ def sync(
     client: AuthenticatedClient,
     json_body: CreatedSpace,
 ) -> Optional[Union[HTTPValidationError, Space]]:
-    """Update Space
+    """Update
 
     Args:
         space_id (str):
@@ -122,7 +122,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     json_body: CreatedSpace,
 ) -> Response[Union[HTTPValidationError, Space]]:
-    """Update Space
+    """Update
 
     Args:
         space_id (str):
@@ -152,7 +152,7 @@ async def asyncio(
     client: AuthenticatedClient,
     json_body: CreatedSpace,
 ) -> Optional[Union[HTTPValidationError, Space]]:
-    """Update Space
+    """Update
 
     Args:
         space_id (str):

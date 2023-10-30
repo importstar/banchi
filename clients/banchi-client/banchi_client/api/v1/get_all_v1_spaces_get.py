@@ -5,7 +5,7 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.account_book_list import AccountBookList
+from ...models.space_list import SpaceList
 from ...types import Response
 
 
@@ -14,15 +14,13 @@ def _get_kwargs() -> Dict[str, Any]:
 
     return {
         "method": "get",
-        "url": "/v1/account-books",
+        "url": "/v1/spaces",
     }
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[AccountBookList]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[SpaceList]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = AccountBookList.from_dict(response.json())
+        response_200 = SpaceList.from_dict(response.json())
 
         return response_200
     if client.raise_on_unexpected_status:
@@ -31,9 +29,7 @@ def _parse_response(
         return None
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[AccountBookList]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[SpaceList]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -45,15 +41,15 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[AccountBookList]:
-    """Get Account Books
+) -> Response[SpaceList]:
+    """Get All
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AccountBookList]
+        Response[SpaceList]
     """
 
     kwargs = _get_kwargs()
@@ -68,15 +64,15 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-) -> Optional[AccountBookList]:
-    """Get Account Books
+) -> Optional[SpaceList]:
+    """Get All
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AccountBookList
+        SpaceList
     """
 
     return sync_detailed(
@@ -87,15 +83,15 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[AccountBookList]:
-    """Get Account Books
+) -> Response[SpaceList]:
+    """Get All
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AccountBookList]
+        Response[SpaceList]
     """
 
     kwargs = _get_kwargs()
@@ -108,15 +104,15 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-) -> Optional[AccountBookList]:
-    """Get Account Books
+) -> Optional[SpaceList]:
+    """Get All
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AccountBookList
+        SpaceList
     """
 
     return (

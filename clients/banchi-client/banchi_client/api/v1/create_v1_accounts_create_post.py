@@ -5,40 +5,32 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.account import Account
+from ...models.created_account import CreatedAccount
 from ...models.http_validation_error import HTTPValidationError
-from ...models.user import User
-from ...types import UNSET, Response
+from ...types import Response
 
 
 def _get_kwargs(
-    user_id: str,
     *,
-    role: str,
-    action: str,
+    json_body: CreatedAccount,
 ) -> Dict[str, Any]:
     pass
 
-    params: Dict[str, Any] = {}
-    params["role"] = role
-
-    params["action"] = action
-
-    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+    json_json_body = json_body.to_dict()
 
     return {
-        "method": "put",
-        "url": "/v1/users/{user_id}/set_role".format(
-            user_id=user_id,
-        ),
-        "params": params,
+        "method": "post",
+        "url": "/v1/accounts/create",
+        "json": json_json_body,
     }
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[HTTPValidationError, User]]:
+) -> Optional[Union[Account, HTTPValidationError]]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = User.from_dict(response.json())
+        response_200 = Account.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -53,7 +45,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[HTTPValidationError, User]]:
+) -> Response[Union[Account, HTTPValidationError]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -63,31 +55,25 @@ def _build_response(
 
 
 def sync_detailed(
-    user_id: str,
     *,
     client: AuthenticatedClient,
-    role: str,
-    action: str,
-) -> Response[Union[HTTPValidationError, User]]:
-    """User:Set Role
+    json_body: CreatedAccount,
+) -> Response[Union[Account, HTTPValidationError]]:
+    """Create
 
     Args:
-        user_id (str):
-        role (str):
-        action (str):
+        json_body (CreatedAccount):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, User]]
+        Response[Union[Account, HTTPValidationError]]
     """
 
     kwargs = _get_kwargs(
-        user_id=user_id,
-        role=role,
-        action=action,
+        json_body=json_body,
     )
 
     response = client.get_httpx_client().request(
@@ -98,61 +84,49 @@ def sync_detailed(
 
 
 def sync(
-    user_id: str,
     *,
     client: AuthenticatedClient,
-    role: str,
-    action: str,
-) -> Optional[Union[HTTPValidationError, User]]:
-    """User:Set Role
+    json_body: CreatedAccount,
+) -> Optional[Union[Account, HTTPValidationError]]:
+    """Create
 
     Args:
-        user_id (str):
-        role (str):
-        action (str):
+        json_body (CreatedAccount):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, User]
+        Union[Account, HTTPValidationError]
     """
 
     return sync_detailed(
-        user_id=user_id,
         client=client,
-        role=role,
-        action=action,
+        json_body=json_body,
     ).parsed
 
 
 async def asyncio_detailed(
-    user_id: str,
     *,
     client: AuthenticatedClient,
-    role: str,
-    action: str,
-) -> Response[Union[HTTPValidationError, User]]:
-    """User:Set Role
+    json_body: CreatedAccount,
+) -> Response[Union[Account, HTTPValidationError]]:
+    """Create
 
     Args:
-        user_id (str):
-        role (str):
-        action (str):
+        json_body (CreatedAccount):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, User]]
+        Response[Union[Account, HTTPValidationError]]
     """
 
     kwargs = _get_kwargs(
-        user_id=user_id,
-        role=role,
-        action=action,
+        json_body=json_body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -161,32 +135,26 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    user_id: str,
     *,
     client: AuthenticatedClient,
-    role: str,
-    action: str,
-) -> Optional[Union[HTTPValidationError, User]]:
-    """User:Set Role
+    json_body: CreatedAccount,
+) -> Optional[Union[Account, HTTPValidationError]]:
+    """Create
 
     Args:
-        user_id (str):
-        role (str):
-        action (str):
+        json_body (CreatedAccount):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, User]
+        Union[Account, HTTPValidationError]
     """
 
     return (
         await asyncio_detailed(
-            user_id=user_id,
             client=client,
-            role=role,
-            action=action,
+            json_body=json_body,
         )
     ).parsed

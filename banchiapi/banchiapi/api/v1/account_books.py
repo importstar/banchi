@@ -16,7 +16,7 @@ router = APIRouter(prefix="/account-books", tags=["account_books"])
     "",
     response_model_by_alias=False,
 )
-async def get_account_books(
+async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBookList:
     account_books = await models.account_books.AccountBook.find(
@@ -29,7 +29,7 @@ async def get_account_books(
     "/create",
     response_model_by_alias=False,
 )
-async def create_account_book(
+async def create(
     account_book: schemas.account_books.CreatedAccountBook,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBook:
@@ -64,7 +64,7 @@ async def create_account_book(
     response_model_by_alias=False,
     response_model=schemas.account_books.AccountBook,
 )
-def get_account_book(
+def get(
     account_book_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
@@ -83,7 +83,7 @@ def get_account_book(
     response_model_by_alias=False,
     response_model=schemas.account_books.AccountBook,
 )
-def update_account_book(
+def update(
     account_book_id: str,
     account_book: schemas.account_books.CreatedAccountBook,
     current_user: models.users.User = Depends(deps.get_current_user),
@@ -125,7 +125,7 @@ def update_account_book(
     response_model_by_alias=False,
     response_model=schemas.account_books.AccountBook,
 )
-def delete_account_book(
+def delete(
     account_book_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
