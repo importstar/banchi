@@ -6,6 +6,8 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from loguru import logger
 
 import bson
+from typing import Annotated
+
 
 from banchiapi import models
 from banchiapi.core import deps
@@ -22,8 +24,9 @@ async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.accounts.AccountList:
     db_accounts = await models.accounts.Account.find(
-        models.accounts.Account.creator == current_user
+        models.accounts.Account.creator.id == current_user.id
     ).to_list()
+    print(db_accounts)
     return dict(accounts=db_accounts)
 
 
@@ -33,26 +36,26 @@ async def get_all(
 )
 async def create(
     account: schemas.accounts.CreatedAccount,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    current_user: Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.accounts.Account:
-    db_space = models.spaces.Space.find_one(
+    db_space = await models.spaces.Space.find_one(
         models.spaces.Space.id == bson.ObjectId(account.space_id),
-        models.spaces.Space.owner == current_user,
+        models.spaces.Space.owner.id == current_user.id,
     )
 
-    if db_space:
+    if not db_space:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Space id {account.space_id} not found",
         )
 
     data = account.dict()
-    db_account = models.Account(**data)
-    db_account.creator = current_user
-    db_account.space = db_space
-    db_account.created_date = datetime.datetime.now()
-    db_account.updated_date = datetime.datetime.now()
-    db_account.save()
+    data.pop("space_id")
+    data["creator"] = current_user
+    data["updated_by"] = current_user
+    data["space"] = db_space
+    db_account = models.accounts.Account.parse_obj(data)
+    await db_account.save()
 
     return db_account
 

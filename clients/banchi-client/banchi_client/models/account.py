@@ -1,9 +1,16 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from typing import Any, Dict, Type, TypeVar, TYPE_CHECKING
+
+from typing import List
+
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
+
+from typing import Union
+from ..types import UNSET, Unset
+from typing import Dict
 
 if TYPE_CHECKING:
     from ..models.space import Space
@@ -20,16 +27,16 @@ class Account:
         name (str):  Example: Account Name.
         description (str):  Example: Description.
         currency (str):
-        spaces (List['Space']):
-        creator (List['User']):
+        space (Space):
+        creator (User):
         field_id (Union[Unset, str]):  Example: 0.
     """
 
     name: str
     description: str
     currency: str
-    spaces: List["Space"]
-    creator: List["User"]
+    space: "Space"
+    creator: "User"
     field_id: Union[Unset, str] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -37,17 +44,9 @@ class Account:
         name = self.name
         description = self.description
         currency = self.currency
-        spaces = []
-        for spaces_item_data in self.spaces:
-            spaces_item = spaces_item_data.to_dict()
+        space = self.space.to_dict()
 
-            spaces.append(spaces_item)
-
-        creator = []
-        for creator_item_data in self.creator:
-            creator_item = creator_item_data.to_dict()
-
-            creator.append(creator_item)
+        creator = self.creator.to_dict()
 
         field_id = self.field_id
 
@@ -58,7 +57,7 @@ class Account:
                 "name": name,
                 "description": description,
                 "currency": currency,
-                "spaces": spaces,
+                "space": space,
                 "creator": creator,
             }
         )
@@ -79,19 +78,9 @@ class Account:
 
         currency = d.pop("currency")
 
-        spaces = []
-        _spaces = d.pop("spaces")
-        for spaces_item_data in _spaces:
-            spaces_item = Space.from_dict(spaces_item_data)
+        space = Space.from_dict(d.pop("space"))
 
-            spaces.append(spaces_item)
-
-        creator = []
-        _creator = d.pop("creator")
-        for creator_item_data in _creator:
-            creator_item = User.from_dict(creator_item_data)
-
-            creator.append(creator_item)
+        creator = User.from_dict(d.pop("creator"))
 
         field_id = d.pop("_id", UNSET)
 
@@ -99,7 +88,7 @@ class Account:
             name=name,
             description=description,
             currency=currency,
-            spaces=spaces,
+            space=space,
             creator=creator,
             field_id=field_id,
         )

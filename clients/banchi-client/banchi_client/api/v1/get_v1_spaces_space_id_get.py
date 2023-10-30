@@ -3,18 +3,18 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.http_validation_error import HTTPValidationError
-from ...models.space import Space
 from ...types import Response
+from ... import errors
+
+from ...models.space import Space
+from ...models.http_validation_error import HTTPValidationError
+from typing import Dict
 
 
 def _get_kwargs(
     space_id: str,
 ) -> Dict[str, Any]:
-    pass
-
     return {
         "method": "get",
         "url": "/v1/spaces/{space_id}".format(

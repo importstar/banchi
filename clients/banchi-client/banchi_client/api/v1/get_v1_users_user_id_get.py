@@ -3,18 +3,18 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.http_validation_error import HTTPValidationError
-from ...models.user import User
 from ...types import Response
+from ... import errors
+
+from ...models.user import User
+from ...models.http_validation_error import HTTPValidationError
+from typing import Dict
 
 
 def _get_kwargs(
     user_id: str,
 ) -> Dict[str, Any]:
-    pass
-
     return {
         "method": "get",
         "url": "/v1/users/{user_id}".format(

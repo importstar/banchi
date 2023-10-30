@@ -3,11 +3,13 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.http_validation_error import HTTPValidationError
+from ...types import Response, UNSET
+from ... import errors
+
 from ...models.user import User
-from ...types import UNSET, Response
+from ...models.http_validation_error import HTTPValidationError
+from typing import Dict
 
 
 def _get_kwargs(
@@ -16,8 +18,6 @@ def _get_kwargs(
     space_id: str,
     action: str,
 ) -> Dict[str, Any]:
-    pass
-
     params: Dict[str, Any] = {}
     params["space_id"] = space_id
 

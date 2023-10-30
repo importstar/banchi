@@ -3,15 +3,15 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.system_setting_in_response import SystemSettingInResponse
 from ...types import Response
+from ... import errors
+
+from ...models.system_setting_in_response import SystemSettingInResponse
+from typing import Dict
 
 
 def _get_kwargs() -> Dict[str, Any]:
-    pass
-
     return {
         "method": "get",
         "url": "/v1/system_settings",

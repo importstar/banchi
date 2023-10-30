@@ -3,12 +3,16 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.body_authentication_v1_auth_login_post import BodyAuthenticationV1AuthLoginPost
+from ...types import Response, UNSET
+from ... import errors
+
 from ...models.http_validation_error import HTTPValidationError
 from ...models.token import Token
-from ...types import UNSET, Response, Unset
+from typing import Dict
+from ...types import UNSET, Unset
+from ...models.body_authentication_v1_auth_login_post import BodyAuthenticationV1AuthLoginPost
+from typing import Union
 
 
 def _get_kwargs(
@@ -16,8 +20,6 @@ def _get_kwargs(
     form_data: BodyAuthenticationV1AuthLoginPost,
     name: Union[Unset, Any] = UNSET,
 ) -> Dict[str, Any]:
-    pass
-
     params: Dict[str, Any] = {}
     params["name"] = name
 

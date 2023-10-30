@@ -3,11 +3,15 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.http_validation_error import HTTPValidationError
+from ...types import Response, UNSET
+from ... import errors
+
 from ...models.user_list import UserList
-from ...types import UNSET, Response, Unset
+from ...models.http_validation_error import HTTPValidationError
+from typing import Dict
+from ...types import UNSET, Unset
+from typing import Union
 
 
 def _get_kwargs(
@@ -18,8 +22,6 @@ def _get_kwargs(
     current_page: Union[Unset, int] = 1,
     limit: Union[Unset, int] = 50,
 ) -> Dict[str, Any]:
-    pass
-
     params: Dict[str, Any] = {}
     params["first_name"] = first_name
 

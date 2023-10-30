@@ -3,12 +3,14 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...types import Response
+from ... import errors
+
 from ...models.changed_password import ChangedPassword
 from ...models.http_validation_error import HTTPValidationError
 from ...models.user import User
-from ...types import Response
+from typing import Dict
 
 
 def _get_kwargs(
@@ -16,8 +18,6 @@ def _get_kwargs(
     *,
     json_body: ChangedPassword,
 ) -> Dict[str, Any]:
-    pass
-
     json_json_body = json_body.to_dict()
 
     return {

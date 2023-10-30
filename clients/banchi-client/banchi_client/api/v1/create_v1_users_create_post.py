@@ -3,20 +3,20 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.http_validation_error import HTTPValidationError
-from ...models.registered_user import RegisteredUser
-from ...models.user import User
 from ...types import Response
+from ... import errors
+
+from ...models.http_validation_error import HTTPValidationError
+from ...models.user import User
+from typing import Dict
+from ...models.registered_user import RegisteredUser
 
 
 def _get_kwargs(
     *,
     json_body: RegisteredUser,
 ) -> Dict[str, Any]:
-    pass
-
     json_json_body = json_body.to_dict()
 
     return {

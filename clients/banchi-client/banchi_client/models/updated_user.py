@@ -1,7 +1,14 @@
-from typing import Any, Dict, List, Type, TypeVar, cast
+from typing import Any, Dict, Type, TypeVar
+
+from typing import List
+
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+
+
+from typing import cast, List
+
 
 T = TypeVar("T", bound="UpdatedUser")
 

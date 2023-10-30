@@ -3,18 +3,18 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...types import Response
+from ... import errors
+
 from ...models.account_book import AccountBook
 from ...models.http_validation_error import HTTPValidationError
-from ...types import Response
+from typing import Dict
 
 
 def _get_kwargs(
     account_book_id: str,
 ) -> Dict[str, Any]:
-    pass
-
     return {
         "method": "delete",
         "url": "/v1/account-books/{account_book_id}/delete".format(

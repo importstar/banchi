@@ -3,15 +3,15 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.user import User
 from ...types import Response
+from ... import errors
+
+from ...models.user import User
+from typing import Dict
 
 
 def _get_kwargs() -> Dict[str, Any]:
-    pass
-
     return {
         "method": "get",
         "url": "/v1/users/me",

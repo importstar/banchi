@@ -25,8 +25,8 @@ class Account(BaseAccount):
         default_factory=PydanticObjectId, alias="_id", example="0"
     )
 
-    spaces: list[spaces.Space]
-    creator: list[users.User]
+    space: spaces.Space
+    creator: users.User
 
 
 class CreatedAccount(BaseAccount):
