@@ -1,0 +1,22 @@
+{% extends '/account_books/index.html' %}
+
+{% block dashboard_title %}
+Account Book {{ account_book.name }}
+{% endblock %}
+
+{% block breadcrumbs %}
+  {{ super() }}
+  <div class="divider">/</div>
+  <div class="active section">Account Book: {{ account_book.name }} </div>
+
+{% endblock %}
+
+{% block title %}
+  {{ self.dashboard_title() }}
+{% endblock %}
+
+{% block content %}
+  <div>
+    <a class="ui primary button" href="{{ url_for('account_books.create_or_edit') }}">Create Account Book</a>
+  </div>
+{% endblock %}

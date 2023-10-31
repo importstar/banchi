@@ -7,6 +7,9 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
+from ..models.account_type_enum import AccountTypeEnum
+from ..models.smallest_fraction_enum import SmallestFractionEnum
+from ..models.currency_enum import CurrencyEnum
 from typing import cast, Union
 
 
@@ -19,16 +22,18 @@ class CreatedAccountBook:
     Attributes:
         name (str):  Example: Account Name.
         description (str):  Example: Description.
-        type (str):  Example: asset.
-        currency (str):
+        type (AccountTypeEnum):
+        smallest_fraction (SmallestFractionEnum):
+        currency (CurrencyEnum):
         parent_id (Union[None, str]):
         account_id (str):  Example: 0.
     """
 
     name: str
     description: str
-    type: str
-    currency: str
+    type: AccountTypeEnum
+    smallest_fraction: SmallestFractionEnum
+    currency: CurrencyEnum
     parent_id: Union[None, str]
     account_id: str
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -36,8 +41,12 @@ class CreatedAccountBook:
     def to_dict(self) -> Dict[str, Any]:
         name = self.name
         description = self.description
-        type = self.type
-        currency = self.currency
+        type = self.type.value
+
+        smallest_fraction = self.smallest_fraction.value
+
+        currency = self.currency.value
+
         parent_id: Union[None, str]
 
         parent_id = self.parent_id
@@ -51,6 +60,7 @@ class CreatedAccountBook:
                 "name": name,
                 "description": description,
                 "type": type,
+                "smallest_fraction": smallest_fraction,
                 "currency": currency,
                 "parent_id": parent_id,
                 "account_id": account_id,
@@ -66,9 +76,11 @@ class CreatedAccountBook:
 
         description = d.pop("description")
 
-        type = d.pop("type")
+        type = AccountTypeEnum(d.pop("type"))
 
-        currency = d.pop("currency")
+        smallest_fraction = SmallestFractionEnum(d.pop("smallest_fraction"))
+
+        currency = CurrencyEnum(d.pop("currency"))
 
         def _parse_parent_id(data: object) -> Union[None, str]:
             if data is None:
@@ -83,6 +95,7 @@ class CreatedAccountBook:
             name=name,
             description=description,
             type=type,
+            smallest_fraction=smallest_fraction,
             currency=currency,
             parent_id=parent_id,
             account_id=account_id,

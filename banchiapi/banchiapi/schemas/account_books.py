@@ -4,47 +4,54 @@ import enum
 from pydantic import BaseModel, Field
 from beanie import PydanticObjectId
 
-from .accounts import CurrencyEnum
+from . import bases
+from . import users
+from . import accounts
 
-account_types = [
-    "asset",
-    "bank",
-    "cash",
-    "credit card",
-    "liability",
-    "stock",
-    "multual fund",
-]
+
+class AccountTypeEnum(str, enum.Enum):
+    asset = "asset"
+    bank = "bank"
+    cash = "cash"
+    credit_card = "credit card"
+    liability = "liability"
+    stock = "stock"
+    multual_fund = "multual fund"
+
 
 # smallest_fractions = [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
 
 
-class SmallestFractionEnum(float, enum.Enum):
-    f1 = 1.0
-    f0_1 = 0.1
-    f0_01 = 0.01
-    f0_001 = 0.001
-    f0_0001 = 0.0001
-    f0_00001 = 0.00001
-    f0_000001 = 0.000001
+class SmallestFractionEnum(int, enum.Enum):
+    f1 = 1
+    f0_1 = 10
+    f0_01 = 100
+    f0_001 = 1000
+    f0_0001 = 10000
+    f0_00001 = 100000
+    f0_000001 = 1000000
 
 
 class BaseAccountBook(BaseModel):
     name: str = Field(..., example="Account Name")
     description: str = Field(..., example="Description")
-    type: str = Field(
+    type: AccountTypeEnum = Field(
         ...,
-        example="asset",
+        example=AccountTypeEnum.asset,
     )
-    # smallest_fraction: SmallestFractionEnum = Field(
-    #     ..., example=SmallestFractionEnum.f0_01
-    # )
-    currency: CurrencyEnum = Field(..., example=CurrencyEnum.THB)
+    smallest_fraction: SmallestFractionEnum = Field(
+        ..., example=SmallestFractionEnum.f0_01
+    )
+    currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
 
 
-class AccountBook(BaseAccountBook):
-    id: PydanticObjectId = Field(
-        default_factory=PydanticObjectId, alias="_id", example="0"
+class AccountBook(bases.BaseSchema, BaseAccountBook):
+    account: accounts.Account
+    creator: users.User
+
+    status: str = Field(
+        default="active",
+        example="active",
     )
 
 

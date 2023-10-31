@@ -7,12 +7,12 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response, UNSET
 from ... import errors
 
-from ...models.http_validation_error import HTTPValidationError
 from ...models.token import Token
-from typing import Dict
-from ...types import UNSET, Unset
-from ...models.body_authentication_v1_auth_login_post import BodyAuthenticationV1AuthLoginPost
 from typing import Union
+from typing import Dict
+from ...models.body_authentication_v1_auth_login_post import BodyAuthenticationV1AuthLoginPost
+from ...models.http_validation_error import HTTPValidationError
+from ...types import UNSET, Unset
 
 
 def _get_kwargs(

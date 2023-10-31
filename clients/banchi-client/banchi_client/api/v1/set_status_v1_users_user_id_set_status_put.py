@@ -8,10 +8,10 @@ from ...types import Response, UNSET
 from ... import errors
 
 from ...models.user import User
-from ...models.http_validation_error import HTTPValidationError
-from typing import Dict
-from ...types import UNSET, Unset
 from typing import Union
+from typing import Dict
+from ...models.http_validation_error import HTTPValidationError
+from ...types import UNSET, Unset
 
 
 def _get_kwargs(

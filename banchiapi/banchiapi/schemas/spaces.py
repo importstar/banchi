@@ -5,6 +5,8 @@ from beanie import PydanticObjectId
 
 from .system_settings import BaseAuthorizedSignatory
 
+from . import bases
+
 
 class Address(BaseModel):
     address: str | None  # บ้านเลขที่
@@ -26,10 +28,10 @@ class BaseSpace(BaseModel):
     tax_id: str | None = Field(..., example="Text ID")
 
 
-class Space(BaseSpace):
-    id: PydanticObjectId = Field(
-        default_factory=PydanticObjectId, alias="_id", example="0"
-    )
+class Space(bases.BaseSchema, BaseSpace):
+    # id: PydanticObjectId = Field(
+    #     default_factory=PydanticObjectId, alias="_id", example="0"
+    # )
 
     status: str = Field(
         default="active",

@@ -8,8 +8,8 @@ from ...types import Response
 from ... import errors
 
 from ...models.user import User
-from ...models.http_validation_error import HTTPValidationError
 from typing import Dict
+from ...models.http_validation_error import HTTPValidationError
 
 
 def _get_kwargs(

@@ -39,14 +39,10 @@ def create_or_edit(space_id):
 
     if not space:
         space = models.CreatedSpace.from_dict(form.data)
-        response = create_space_v1_spaces_create_post.sync(
-            client=client, json_body=space
-        )
+        response = create_v1_spaces_create_post.sync(client=client, json_body=space)
     else:
         space = models.UpdatedSpace.from_dict(form.data)
-        response = update_space_v1_spaces_update_post.sync(
-            client=client, json_body=space
-        )
+        response = update_v1_spaces_update_post.sync(client=client, json_body=space)
 
     if not response:
         print("error cannot save")
@@ -59,6 +55,5 @@ def view(space_id):
     client = banchi_api_clients.client.get_current_client()
     space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
     response = get_all_v1_accounts_get.sync(client=client)
-    print(response)
 
     return render_template("/spaces/view.html", space=space, accounts=response.accounts)

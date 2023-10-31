@@ -7,10 +7,10 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from ...models.http_validation_error import HTTPValidationError
-from ...models.created_space import CreatedSpace
-from ...models.space import Space
 from typing import Dict
+from ...models.created_space import CreatedSpace
+from ...models.http_validation_error import HTTPValidationError
+from ...models.space import Space
 
 
 def _get_kwargs(

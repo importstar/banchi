@@ -8,13 +8,14 @@ from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
 
+from ..models.currency_enum import CurrencyEnum
 from typing import Union
-from ..types import UNSET, Unset
 from typing import Dict
+from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.space import Space
     from ..models.user import User
+    from ..models.space import Space
 
 
 T = TypeVar("T", bound="Account")
@@ -26,29 +27,33 @@ class Account:
     Attributes:
         name (str):  Example: Account Name.
         description (str):  Example: Description.
-        currency (str):
+        currency (CurrencyEnum):
         space (Space):
         creator (User):
         field_id (Union[Unset, str]):  Example: 0.
+        status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
     name: str
     description: str
-    currency: str
+    currency: CurrencyEnum
     space: "Space"
     creator: "User"
     field_id: Union[Unset, str] = UNSET
+    status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         name = self.name
         description = self.description
-        currency = self.currency
+        currency = self.currency.value
+
         space = self.space.to_dict()
 
         creator = self.creator.to_dict()
 
         field_id = self.field_id
+        status = self.status
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -63,26 +68,30 @@ class Account:
         )
         if field_id is not UNSET:
             field_dict["_id"] = field_id
+        if status is not UNSET:
+            field_dict["status"] = status
 
         return field_dict
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.space import Space
         from ..models.user import User
+        from ..models.space import Space
 
         d = src_dict.copy()
         name = d.pop("name")
 
         description = d.pop("description")
 
-        currency = d.pop("currency")
+        currency = CurrencyEnum(d.pop("currency"))
 
         space = Space.from_dict(d.pop("space"))
 
         creator = User.from_dict(d.pop("creator"))
 
         field_id = d.pop("_id", UNSET)
+
+        status = d.pop("status", UNSET)
 
         account = cls(
             name=name,
@@ -91,6 +100,7 @@ class Account:
             space=space,
             creator=creator,
             field_id=field_id,
+            status=status,
         )
 
         account.additional_properties = d

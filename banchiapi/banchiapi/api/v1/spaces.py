@@ -53,9 +53,8 @@ async def create(
     data = space.dict()
     data["owner"] = current_user
     data["updated_by"] = current_user
-    db_space = models.spaces.Space(**data)
-    print("->", db_space.dict())
-    await db_space.insert()
+    db_space = models.spaces.Space.parse_obj(data)
+    await db_space.save()
 
     return db_space
 

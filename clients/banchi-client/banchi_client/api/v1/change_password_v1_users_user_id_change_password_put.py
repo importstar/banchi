@@ -7,10 +7,10 @@ from ...client import AuthenticatedClient, Client
 from ...types import Response
 from ... import errors
 
-from ...models.changed_password import ChangedPassword
-from ...models.http_validation_error import HTTPValidationError
 from ...models.user import User
 from typing import Dict
+from ...models.http_validation_error import HTTPValidationError
+from ...models.changed_password import ChangedPassword
 
 
 def _get_kwargs(

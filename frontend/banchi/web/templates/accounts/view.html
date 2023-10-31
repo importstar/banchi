@@ -1,20 +1,41 @@
-{% extends '/base/default-dashboard.html' %}
+{% extends '/accounts/index.html' %}
 
 {% block dashboard_title %}
-Space
+Account {{ account.name }}
 {% endblock %}
 
 {% block breadcrumbs %}
-<a href="{{ url_for('spaces.index') }}" class="section">Spaces</a>
+  {{ super() }}
+  <div class="divider">/</div>
+  <div class="active section">Account: {{ account.name }} </div>
+
 {% endblock %}
 
 {% block title %}
+  {{ self.dashboard_title() }}
 {% endblock %}
 
 {% block content %}
-  <div class="ui segment">
-      <a class="ui button primary" href="{{ url_for('spaces.index') }}">Space</a>
+  <div>
+    <a class="ui primary button" href="{{ url_for('account_books.create_or_edit', account_id=account.id) }}">Create Account Book</a>
   </div>
   <div>
+    <table class="ui table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        {% for account_book in account_books %}
+        <tr>
+          <td>{{ account_book.id }}</td>
+          <td>{{ account_book.name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 {% endblock %}

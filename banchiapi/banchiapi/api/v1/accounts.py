@@ -24,9 +24,11 @@ async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.accounts.AccountList:
     db_accounts = await models.accounts.Account.find(
-        models.accounts.Account.creator.id == current_user.id
+        models.accounts.Account.status == "active",
+        models.accounts.Account.creator.id == current_user.id,
+        fetch_links=True,
     ).to_list()
-    print(db_accounts)
+
     return dict(accounts=db_accounts)
 
 
@@ -64,13 +66,17 @@ async def create(
     "/{account_id}",
     response_model_by_alias=False,
 )
-def get(
+async def get(
     account_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.accounts.Account:
-    try:
-        db_account = models.Account.objects.get(id=account_id)
-    except Exception:
+    db_account = await models.accounts.Account.find_one(
+        models.accounts.Account.id == bson.ObjectId(account_id),
+        models.accounts.Account.creator.id == current_user.id,
+        fetch_links=True,
+    )
+
+    if not db_account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Not found this account",
@@ -81,13 +87,12 @@ def get(
 @router.put(
     "/{account_id}/update",
     response_model_by_alias=False,
-    response_model=schemas.accounts.Account,
 )
-def update(
+async def update(
     account_id: str,
     account: schemas.accounts.CreatedAccount,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.accounts.Account:
     db_account = models.Account.objects(id=account_id).first()
     if not db_account:
         raise HTTPException(
@@ -123,12 +128,11 @@ def update(
 @router.delete(
     "/{account_id}/delete",
     response_model_by_alias=False,
-    response_model=schemas.accounts.Account,
 )
-def delete_account(
+async def delete(
     account_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.accounts.Account:
     try:
         db_account = models.Account.objects.get(id=account_id)
     except Exception:

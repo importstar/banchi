@@ -1,5 +1,6 @@
 import datetime
 import io
+import bson
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
@@ -18,10 +19,18 @@ router = APIRouter(prefix="/account-books", tags=["account_books"])
 )
 async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
+    account_id: str | None = None,
 ) -> schemas.account_books.AccountBookList:
-    account_books = await models.account_books.AccountBook.find(
-        owner=current_user
-    ).to_list()
+    query = models.account_books.AccountBook.find(
+        models.account_books.AccountBook.status == "active",
+        models.account_books.AccountBook.creator.id == current_user.id,
+    )
+    if account_id:
+        query.find(
+            models.account_books.AccountBook.account.id == bson.ObjectId(account_id)
+        )
+
+    account_books = await query.find(fetch_links=True).to_list()
     return dict(account_books=account_books)
 
 
@@ -33,29 +42,20 @@ async def create(
     account_book: schemas.account_books.CreatedAccountBook,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBook:
-    db_account_book = models.AccountBook.objects(
-        name=account_book.name, status="active"
-    ).first()
-    if db_account_book:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already account_book name",
-        )
-    db_account_book = models.AccountBook.objects(
-        code=account_book.code, status="active"
-    ).first()
-    if db_account_book:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already account_book code",
-        )
-
     data = account_book.dict()
-    db_account_book = models.AccountBook(**data)
-    db_account_book.created_date = datetime.datetime.now()
-    db_account_book.updated_date = datetime.datetime.now()
-    db_account_book.save()
 
+    account = await models.accounts.Account.find_one(
+        models.accounts.Account.id == bson.ObjectId(data["account_id"]),
+        models.accounts.Account.status == "active",
+        models.accounts.Account.creator.id == current_user.id,
+    )
+
+    data["creator"] = current_user
+    data["updated_by"] = current_user
+    data["account"] = account
+    db_account_book = models.account_books.AccountBook.parse_obj(data)
+    await db_account_book.save()
+    print(db_account_book)
     return db_account_book
 
 
@@ -64,7 +64,7 @@ async def create(
     response_model_by_alias=False,
     response_model=schemas.account_books.AccountBook,
 )
-def get(
+async def get(
     account_book_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):
@@ -83,7 +83,7 @@ def get(
     response_model_by_alias=False,
     response_model=schemas.account_books.AccountBook,
 )
-def update(
+async def update(
     account_book_id: str,
     account_book: schemas.account_books.CreatedAccountBook,
     current_user: models.users.User = Depends(deps.get_current_user),
@@ -125,7 +125,7 @@ def update(
     response_model_by_alias=False,
     response_model=schemas.account_books.AccountBook,
 )
-def delete(
+async def delete(
     account_book_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
 ):

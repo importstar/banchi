@@ -6,11 +6,13 @@ from beanie import PydanticObjectId
 
 from . import users
 from . import spaces
+from . import bases
 from .system_settings import BaseAuthorizedSignatory
 
 
 class CurrencyEnum(str, enum.Enum):
     THB = "THB"
+    USD = "USD"
 
 
 class BaseAccount(BaseModel):
@@ -20,13 +22,14 @@ class BaseAccount(BaseModel):
     currency: CurrencyEnum = Field(..., example=CurrencyEnum.THB)
 
 
-class Account(BaseAccount):
-    id: PydanticObjectId = Field(
-        default_factory=PydanticObjectId, alias="_id", example="0"
-    )
-
+class Account(bases.BaseSchema, BaseAccount):
     space: spaces.Space
     creator: users.User
+
+    status: str = Field(
+        default="active",
+        example="active",
+    )
 
 
 class CreatedAccount(BaseAccount):

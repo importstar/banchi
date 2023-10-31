@@ -1,25 +1,25 @@
 {% extends '/base/default-dashboard.html' %}
 
 {% block dashboard_title %}
-Account
+Account Book
 {% endblock %}
 
 {% block breadcrumbs %}
-  {% if request.endpoint == 'accounts.index' %}
-    <a class="active section">Accounts</a>
+  {% if request.endpoint == 'account_books.index' %}
+    <a class="active section">Account Books</a>
   {% else %}
-    <a href="{{ url_for('accounts.index') }}" class="section">Accounts</a>
+    <a href="{{ url_for('account_books.index') }}" class="section">Account Books</a>
   {% endif %}
 {% endblock %}
 
 
 {% block content %}
   <div class="ui segment">
-      <a class="ui button primary" href="{{ url_for('accounts.create_or_edit') }}">Create</a>
+      <a class="ui button primary" href="{{ url_for('account_books.create_or_edit') }}">Create</a>
   </div>
   <div class="ui cards">
 
-    {% for account in accounts %}
+    {% for account in account_books %}
     <div class="card">
       <div class="content">
         <div class="header">{{ account.name }}</div>
@@ -44,7 +44,7 @@ Account
         </div>
       </div>
       <div class="extra content">
-        <a class="ui button primary" href="{{ url_for('accounts.view', account_id=account.id) }}">View Account</a>
+        <a class="ui button primary" href="{{ url_for('account_books.view', account_id=account.id) }}">View Account Book</a>
       </div>
     </div>
     {% endfor %}

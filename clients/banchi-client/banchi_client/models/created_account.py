@@ -7,6 +7,9 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 
+from ..models.currency_enum import CurrencyEnum
+
+
 T = TypeVar("T", bound="CreatedAccount")
 
 
@@ -16,20 +19,21 @@ class CreatedAccount:
     Attributes:
         name (str):  Example: Account Name.
         description (str):  Example: Description.
-        currency (str):
+        currency (CurrencyEnum):
         space_id (str):  Example: 0.
     """
 
     name: str
     description: str
-    currency: str
+    currency: CurrencyEnum
     space_id: str
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         name = self.name
         description = self.description
-        currency = self.currency
+        currency = self.currency.value
+
         space_id = self.space_id
 
         field_dict: Dict[str, Any] = {}
@@ -52,7 +56,7 @@ class CreatedAccount:
 
         description = d.pop("description")
 
-        currency = d.pop("currency")
+        currency = CurrencyEnum(d.pop("currency"))
 
         space_id = d.pop("space_id")
 

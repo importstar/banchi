@@ -34,7 +34,9 @@ Space
           <td>{{ account.name }}</td>
           <td>{{ account.currency }}</td>
           <td>{{ account.description }}</td>
-          <td></td>
+          <td>
+            <a class="ui primary icon circular button" href="{{ url_for('accounts.view', account_id=account.id) }}"><i class="eye icon"></i></a>
+          </td>
         </tr>
       {% endfor %}
       </tbody>
