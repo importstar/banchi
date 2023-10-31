@@ -1,0 +1,40 @@
+{% extends '/accounts/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+
+{% block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+{% if 'edit' not in request.path %}
+  <div class="active section">Add Transaction</div>
+{% else %}
+  <div class="active section">Edit Transaction</div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+  <div class="ui segment">
+    <h2>Transaction</h2>
+    <form method="POST" class="ui form" enctype="multipart/form-data">
+      {{ form.csrf_token }}
+      {{ renderer.render_field(form.name) }}
+      {{ renderer.render_select(form.parent_id) }}
+      {{ renderer.render_field(form.description) }}
+      <div class="three fields">
+      {{ renderer.render_select(form.type) }}
+      {{ renderer.render_select(form.smallest_fraction) }}
+      {{ renderer.render_select(form.currency) }}
+      </div>
+      <button name="subnit" type="submit" class="ui primary button">
+        {% if 'edit' not in request.path %}
+          Add
+        {% else %}
+          Edit
+        {% endif %}
+      </button>
+    </form>
+  </div>
+{% endblock content %}
+
+{% block additional_js %}
+{% endblock additional_js %}

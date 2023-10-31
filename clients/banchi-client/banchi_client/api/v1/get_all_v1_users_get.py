@@ -3,15 +3,11 @@ from typing import Any, Dict, Optional, Union
 
 import httpx
 
-from ...client import AuthenticatedClient, Client
-from ...types import Response, UNSET
 from ... import errors
-
-from typing import Union
-from typing import Dict
-from ...models.user_list import UserList
+from ...client import AuthenticatedClient, Client
 from ...models.http_validation_error import HTTPValidationError
-from ...types import UNSET, Unset
+from ...models.user_list import UserList
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(

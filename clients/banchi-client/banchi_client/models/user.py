@@ -1,20 +1,11 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+import datetime
+from typing import Any, Dict, List, Type, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-
-from ..types import UNSET, Unset
-
-from typing import Union
-from typing import cast, Union
-import datetime
-from ..types import UNSET, Unset
 from dateutil.parser import isoparse
-from typing import cast
 
+from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="User")
 

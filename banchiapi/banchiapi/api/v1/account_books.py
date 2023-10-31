@@ -55,22 +55,29 @@ async def create(
     data["account"] = account
     db_account_book = models.account_books.AccountBook.parse_obj(data)
     await db_account_book.save()
-    print(db_account_book)
+
+    db_account_book = await models.account_books.AccountBook.get(
+        db_account_book.id, fetch_links=True
+    )
+
     return db_account_book
 
 
 @router.get(
     "/{account_book_id}",
     response_model_by_alias=False,
-    response_model=schemas.account_books.AccountBook,
 )
 async def get(
     account_book_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
-    try:
-        db_account_book = models.AccountBook.objects.get(id=account_book_id)
-    except Exception:
+) -> schemas.account_books.AccountBook:
+    db_account_book = await models.account_books.AccountBook.find_one(
+        models.account_books.AccountBook.id == bson.ObjectId(account_book_id),
+        models.account_books.AccountBook.creator.id == current_user.id,
+        models.account_books.AccountBook.status == "active",
+        fetch_links=True,
+    )
+    if not db_account_book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Not found this account_book",

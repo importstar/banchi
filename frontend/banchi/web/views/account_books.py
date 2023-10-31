@@ -5,6 +5,7 @@ import datetime
 from banchi_client import models
 from banchi_client.api.v1 import (
     create_v1_account_books_create_post,
+    update_v1_account_books_account_book_id_update_put,
     get_all_v1_account_books_get,
     get_v1_account_books_account_book_id_get,
 )
@@ -58,7 +59,6 @@ def create_or_edit(account_book_id):
         return render_template("/account_books/create-or-edit.html", form=form)
 
     data = form.data.copy()
-    print("data", data)
     if data["parent_id"] == "-":
         data["parent_id"] = None
     if account_id:
@@ -68,19 +68,19 @@ def create_or_edit(account_book_id):
 
     if not account_book:
         account_book = models.CreatedAccountBook.from_dict(data)
-        response = create_v1_account_books_create_put.sync(
+        response = create_v1_account_books_create_post.sync(
             client=client, json_body=account_book
         )
     else:
         account_book = models.UpdatedAccountBook.from_dict(data)
-        response = update_v1_account_books_update_post.sync(
+        response = update_v1_account_books_account_book_id_update_put.sync(
             client=client, json_body=account_book
         )
 
     if not response:
         print("error cannot save")
 
-    return redirect(url_for("account_books.index"))
+    return redirect(url_for("accounts.view", account_id=account_id))
 
 
 @module.route("/<account_book_id>")
@@ -89,5 +89,22 @@ def view(account_book_id):
     account_book = get_v1_account_books_account_book_id_get.sync(
         client=client, account_book_id=account_book_id
     )
+    print(account_book)
 
     return render_template("/account_books/view.html", account_book=account_book)
+
+
+@module.route("/<account_book_id>/add-transaction")
+def add_transaction(account_book_id):
+    client = banchi_api_clients.client.get_current_client()
+    account_book = get_v1_account_books_account_book_id_get.sync(
+        client=client, account_book_id=account_book_id
+    )
+
+    form = forms.transactions.TransactionForm()
+    if not form.validate_on_submit():
+        return render_template(
+            "/account_books/add-transaction.html", account_book=account_book, form=form
+        )
+
+    return redirect(url_for("account_books.view", account_book_id=account_book.id))

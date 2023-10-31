@@ -3,9 +3,9 @@ from typing import Any, Dict, Optional, Union, cast
 
 import httpx
 
+from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...types import Response
-from ... import errors
 
 
 def _get_kwargs() -> Dict[str, Any]:

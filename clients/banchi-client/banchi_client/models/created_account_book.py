@@ -1,17 +1,11 @@
-from typing import Any, Dict, Type, TypeVar
-
-from typing import List
-
+from typing import Any, Dict, List, Type, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-
 from ..models.account_type_enum import AccountTypeEnum
-from ..models.smallest_fraction_enum import SmallestFractionEnum
 from ..models.currency_enum import CurrencyEnum
-from typing import cast, Union
-
+from ..models.smallest_fraction_enum import SmallestFractionEnum
 
 T = TypeVar("T", bound="CreatedAccountBook")
 

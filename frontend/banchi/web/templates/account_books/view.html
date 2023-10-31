@@ -17,6 +17,26 @@ Account Book {{ account_book.name }}
 
 {% block content %}
   <div>
-    <a class="ui primary button" href="{{ url_for('account_books.create_or_edit') }}">Create Account Book</a>
+    <a class="ui primary icon button" href="{{ url_for('account_books.add_transaction', account_book_id=account_book.id) }}"><i class="add icon"></i>Add</a>
+  </div>
+  <div>
+    <table class="ui table">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Income</th>
+          <th>Express</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 {% endblock %}
