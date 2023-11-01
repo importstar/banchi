@@ -17,14 +17,9 @@
     <h2>Transaction</h2>
     <form method="POST" class="ui form" enctype="multipart/form-data">
       {{ form.csrf_token }}
-      {{ renderer.render_field(form.name) }}
-      {{ renderer.render_select(form.parent_id) }}
       {{ renderer.render_field(form.description) }}
-      <div class="three fields">
-      {{ renderer.render_select(form.type) }}
-      {{ renderer.render_select(form.smallest_fraction) }}
-      {{ renderer.render_select(form.currency) }}
-      </div>
+      {{ renderer.render_select(form.to_account_book_id) }}
+      {{ renderer.render_field(form.value) }}
       <button name="subnit" type="submit" class="ui primary button">
         {% if 'edit' not in request.path %}
           Add
