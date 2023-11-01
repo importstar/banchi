@@ -2,7 +2,7 @@ import datetime
 
 from banchiapi import schemas
 
-from beanie import Document, Indexed
+from beanie import Document, Indexed, PydanticObjectId
 from pydantic import Field
 
 from passlib.context import CryptContext
@@ -11,6 +11,11 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class User(schemas.users.User, Document):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId,
+        alias="_id",
+    )
+
     password: str
     roles: list[str] = ["user"]
 

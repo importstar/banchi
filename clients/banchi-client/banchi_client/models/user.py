@@ -18,7 +18,7 @@ class User:
         username (str):  Example: admin.
         first_name (str):  Example: Firstname.
         last_name (str):  Example: Lastname.
-        field_id (Union[Unset, str]):  Example: 0.
+        id (str):  Example: 0.
         last_login_date (Union[None, Unset, datetime.datetime]):  Example: 2023-01-01T00:00:00.000000.
     """
 
@@ -26,7 +26,7 @@ class User:
     username: str
     first_name: str
     last_name: str
-    field_id: Union[Unset, str] = UNSET
+    id: str
     last_login_date: Union[None, Unset, datetime.datetime] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -35,7 +35,7 @@ class User:
         username = self.username
         first_name = self.first_name
         last_name = self.last_name
-        field_id = self.field_id
+        id = self.id
         last_login_date: Union[None, Unset, str]
         if isinstance(self.last_login_date, Unset):
             last_login_date = UNSET
@@ -56,10 +56,9 @@ class User:
                 "username": username,
                 "first_name": first_name,
                 "last_name": last_name,
+                "id": id,
             }
         )
-        if field_id is not UNSET:
-            field_dict["_id"] = field_id
         if last_login_date is not UNSET:
             field_dict["last_login_date"] = last_login_date
 
@@ -76,7 +75,7 @@ class User:
 
         last_name = d.pop("last_name")
 
-        field_id = d.pop("_id", UNSET)
+        id = d.pop("id")
 
         def _parse_last_login_date(data: object) -> Union[None, Unset, datetime.datetime]:
             if data is None:
@@ -105,7 +104,7 @@ class User:
             username=username,
             first_name=first_name,
             last_name=last_name,
-            field_id=field_id,
+            id=id,
             last_login_date=last_login_date,
         )
 

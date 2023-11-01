@@ -3,6 +3,8 @@ import datetime
 from pydantic import BaseModel, EmailStr, Field
 from beanie import PydanticObjectId
 
+from . import bases
+
 
 class BaseUser(BaseModel):
     email: str = Field(example="admin@email.local")
@@ -11,14 +13,16 @@ class BaseUser(BaseModel):
     last_name: str = Field(example="Lastname")
 
 
-class User(BaseUser):
-    id: PydanticObjectId = Field(
-        default_factory=PydanticObjectId, alias="_id", example="0"
-    )
-
+class User(bases.BaseSchema, BaseUser):
     last_login_date: datetime.datetime | None = Field(
         example="2023-01-01T00:00:00.000000", default=None
     )
+
+
+class ReferenceUser(bases.BaseSchema):
+    username: str = Field(example="admin")
+    first_name: str = Field(example="Firstname")
+    last_name: str = Field(example="Lastname")
 
 
 class UserList(BaseModel):

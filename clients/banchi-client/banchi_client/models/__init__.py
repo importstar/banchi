@@ -13,6 +13,8 @@ from .created_account_book import CreatedAccountBook
 from .created_space import CreatedSpace
 from .currency_enum import CurrencyEnum
 from .http_validation_error import HTTPValidationError
+from .reference_space import ReferenceSpace
+from .reference_user import ReferenceUser
 from .registered_user import RegisteredUser
 from .smallest_fraction_enum import SmallestFractionEnum
 from .space import Space
@@ -39,6 +41,8 @@ __all__ = (
     "CreatedSpace",
     "CurrencyEnum",
     "HTTPValidationError",
+    "ReferenceSpace",
+    "ReferenceUser",
     "RegisteredUser",
     "SmallestFractionEnum",
     "Space",

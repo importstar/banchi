@@ -7,8 +7,8 @@ from ..models.currency_enum import CurrencyEnum
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.space import Space
-    from ..models.user import User
+    from ..models.reference_space import ReferenceSpace
+    from ..models.reference_user import ReferenceUser
 
 
 T = TypeVar("T", bound="Account")
@@ -21,18 +21,18 @@ class Account:
         name (str):  Example: Account Name.
         description (str):  Example: Description.
         currency (CurrencyEnum):
-        space (Space):
-        creator (User):
-        field_id (Union[Unset, str]):  Example: 0.
+        id (str):  Example: 0.
+        space (ReferenceSpace):
+        creator (ReferenceUser):
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
     name: str
     description: str
     currency: CurrencyEnum
-    space: "Space"
-    creator: "User"
-    field_id: Union[Unset, str] = UNSET
+    id: str
+    space: "ReferenceSpace"
+    creator: "ReferenceUser"
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -41,11 +41,11 @@ class Account:
         description = self.description
         currency = self.currency.value
 
+        id = self.id
         space = self.space.to_dict()
 
         creator = self.creator.to_dict()
 
-        field_id = self.field_id
         status = self.status
 
         field_dict: Dict[str, Any] = {}
@@ -55,12 +55,11 @@ class Account:
                 "name": name,
                 "description": description,
                 "currency": currency,
+                "id": id,
                 "space": space,
                 "creator": creator,
             }
         )
-        if field_id is not UNSET:
-            field_dict["_id"] = field_id
         if status is not UNSET:
             field_dict["status"] = status
 
@@ -68,8 +67,8 @@ class Account:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.space import Space
-        from ..models.user import User
+        from ..models.reference_space import ReferenceSpace
+        from ..models.reference_user import ReferenceUser
 
         d = src_dict.copy()
         name = d.pop("name")
@@ -78,11 +77,11 @@ class Account:
 
         currency = CurrencyEnum(d.pop("currency"))
 
-        space = Space.from_dict(d.pop("space"))
+        id = d.pop("id")
 
-        creator = User.from_dict(d.pop("creator"))
+        space = ReferenceSpace.from_dict(d.pop("space"))
 
-        field_id = d.pop("_id", UNSET)
+        creator = ReferenceUser.from_dict(d.pop("creator"))
 
         status = d.pop("status", UNSET)
 
@@ -90,9 +89,9 @@ class Account:
             name=name,
             description=description,
             currency=currency,
+            id=id,
             space=space,
             creator=creator,
-            field_id=field_id,
             status=status,
         )
 
