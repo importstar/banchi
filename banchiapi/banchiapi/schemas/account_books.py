@@ -33,7 +33,7 @@ class SmallestFractionEnum(int, enum.Enum):
 
 
 class BaseAccountBook(BaseModel):
-    name: str = Field(..., example="Account Name")
+    name: str = Field(..., example="Account Book Name")
     description: str = Field(..., example="Description")
     type: AccountTypeEnum = Field(
         ...,
@@ -53,6 +53,10 @@ class AccountBook(bases.BaseSchema, BaseAccountBook):
         default="active",
         example="active",
     )
+
+
+class ReferenceAccountBook(bases.BaseSchema):
+    name: str = Field(..., example="Account Book Name")
 
 
 class CreatedAccountBook(BaseAccountBook):

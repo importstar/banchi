@@ -17,7 +17,9 @@ Account Book {{ account_book.name }}
 
 {% block content %}
   <div>
-    <a class="ui primary icon button" href="{{ url_for('account_books.add_transaction', account_book_id=account_book.id) }}"><i class="add icon"></i>Add</a>
+    <a class="ui primary icon button" href="{{ url_for('account_books.add_transaction', account_book_id=account_book.id) }}">
+      <i class="add icon"></i> Add Transaction
+    </a>
   </div>
   <div>
     <table class="ui table">

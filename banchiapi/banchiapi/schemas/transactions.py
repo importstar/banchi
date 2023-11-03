@@ -6,6 +6,7 @@ from beanie import PydanticObjectId
 from . import account_books
 from . import accounts
 from . import spaces
+from . import bases
 
 
 class BaseTransaction(BaseModel):
@@ -14,12 +15,9 @@ class BaseTransaction(BaseModel):
     currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
 
 
-class Transaction(BaseTransaction):
-    id: PydanticObjectId = Field(
-        default_factory=PydanticObjectId, alias="_id", example="0"
-    )
-
-    account_book: account_books.AccountBook = Field(..., example="0")
+class Transaction(bases.BaseSchema, BaseTransaction):
+    from_account_book: account_books.ReferenceAccountBook
+    to_account_book: account_books.ReferenceAccountBook
     status: str = Field(
         default="active",
         example="active",
@@ -27,9 +25,9 @@ class Transaction(BaseTransaction):
 
 
 class TransactionList(BaseModel):
-    spaces: list[Transaction]
+    transactions: list[Transaction]
 
 
 class CreatedTransaction(BaseTransaction):
-    account_id: str = Field(..., example="0")
-    sapce_id: str = Field(..., example="0")
+    from_account_id: str = Field(..., example="0")
+    to_account_id: str = Field(..., example="0")

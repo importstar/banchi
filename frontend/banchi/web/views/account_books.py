@@ -89,7 +89,6 @@ def view(account_book_id):
     account_book = get_v1_account_books_account_book_id_get.sync(
         client=client, account_book_id=account_book_id
     )
-    print(account_book)
 
     return render_template("/account_books/view.html", account_book=account_book)
 
@@ -101,7 +100,20 @@ def add_transaction(account_book_id):
         client=client, account_book_id=account_book_id
     )
 
+    if not account_book:
+        return redirect("sites.index")
+
+    print(account_book.account)
+    account_books = get_all_v1_account_books_get(
+        client=client, account_id=account_book.account.id
+    )
+
     form = forms.transactions.TransactionForm()
+    form.from_account_book_id.choices = [(str(account_book.id), account_book.name)]
+    form.to_account_book_id.choices = [
+        (str(account_book.id), account_book.name) for account_book in account_books
+    ]
+
     if not form.validate_on_submit():
         return render_template(
             "/account_books/add-transaction.html", account_book=account_book, form=form

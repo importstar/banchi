@@ -9,7 +9,7 @@ from banchiapi import models
 from banchiapi import schemas
 from banchiapi.core import deps
 
-router = APIRouter(prefix="/spaces", tags=["space"])
+router = APIRouter(prefix="/spaces", tags=["spaces"])
 
 
 @router.get("", response_model_by_alias=False)

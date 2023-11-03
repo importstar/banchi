@@ -16,4 +16,9 @@ from banchi_client import models
 
 
 class TransactionForm(FlaskForm):
-    description = fields.TextAreaField("Description", validators=[])
+    from_account_book_id = fields.SelectField("From Account Book")
+    to_account_book_id = fields.SelectField("To Account Book")
+    description = fields.StringField(
+        "Description", validators=[validators.InputRequired()]
+    )
+    value = fields.FloatField("Value", validators=[validators.InputRequired()])

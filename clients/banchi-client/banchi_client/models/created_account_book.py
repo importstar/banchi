@@ -14,7 +14,7 @@ T = TypeVar("T", bound="CreatedAccountBook")
 class CreatedAccountBook:
     """
     Attributes:
-        name (str):  Example: Account Name.
+        name (str):  Example: Account Book Name.
         description (str):  Example: Description.
         type (AccountTypeEnum):
         smallest_fraction (SmallestFractionEnum):
