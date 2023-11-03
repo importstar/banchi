@@ -25,9 +25,9 @@ class AccountBook:
         type (AccountTypeEnum):
         smallest_fraction (SmallestFractionEnum):
         currency (CurrencyEnum):
+        id (str):  Example: 0.
         account (Account):
         creator (User):
-        field_id (Union[Unset, str]):  Example: 0.
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
@@ -36,9 +36,9 @@ class AccountBook:
     type: AccountTypeEnum
     smallest_fraction: SmallestFractionEnum
     currency: CurrencyEnum
+    id: str
     account: "Account"
     creator: "User"
-    field_id: Union[Unset, str] = UNSET
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -51,11 +51,11 @@ class AccountBook:
 
         currency = self.currency.value
 
+        id = self.id
         account = self.account.to_dict()
 
         creator = self.creator.to_dict()
 
-        field_id = self.field_id
         status = self.status
 
         field_dict: Dict[str, Any] = {}
@@ -67,12 +67,11 @@ class AccountBook:
                 "type": type,
                 "smallest_fraction": smallest_fraction,
                 "currency": currency,
+                "id": id,
                 "account": account,
                 "creator": creator,
             }
         )
-        if field_id is not UNSET:
-            field_dict["_id"] = field_id
         if status is not UNSET:
             field_dict["status"] = status
 
@@ -94,11 +93,11 @@ class AccountBook:
 
         currency = CurrencyEnum(d.pop("currency"))
 
+        id = d.pop("id")
+
         account = Account.from_dict(d.pop("account"))
 
         creator = User.from_dict(d.pop("creator"))
-
-        field_id = d.pop("_id", UNSET)
 
         status = d.pop("status", UNSET)
 
@@ -108,9 +107,9 @@ class AccountBook:
             type=type,
             smallest_fraction=smallest_fraction,
             currency=currency,
+            id=id,
             account=account,
             creator=creator,
-            field_id=field_id,
             status=status,
         )
 

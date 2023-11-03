@@ -23,8 +23,11 @@ class BaseAccount(BaseModel):
 
 
 class Account(bases.BaseSchema, BaseAccount):
-    space: spaces.Space
-    creator: users.User
+    # space: spaces.Space
+    # creator: users.User
+
+    space: spaces.ReferenceSpace
+    creator: users.ReferenceUser
 
     status: str = Field(
         default="active",

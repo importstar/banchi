@@ -6,6 +6,7 @@ from beanie import PydanticObjectId
 from .system_settings import BaseAuthorizedSignatory
 
 from . import bases
+from . import users
 
 
 class Address(BaseModel):
@@ -29,14 +30,15 @@ class BaseSpace(BaseModel):
 
 
 class Space(bases.BaseSchema, BaseSpace):
-    # id: PydanticObjectId = Field(
-    #     default_factory=PydanticObjectId, alias="_id", example="0"
-    # )
-
+    owner: users.ReferenceUser
     status: str = Field(
         default="active",
         example="active",
     )
+
+
+class ReferenceSpace(bases.BaseSchema):
+    name: str = Field(..., example="Space Name")
 
 
 class SpaceList(BaseModel):

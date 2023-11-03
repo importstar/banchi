@@ -19,6 +19,7 @@ async def get_all(
     spaces = await models.spaces.Space.find(
         models.spaces.Space.status == "active",
         models.spaces.Space.owner.id == current_user.id,
+        fetch_links=True,
     ).to_list()
 
     return dict(spaces=spaces)
@@ -70,6 +71,7 @@ async def get(
     db_space = await models.spaces.Space.find_one(
         models.spaces.Space.id == bson.ObjectId(space_id),
         models.spaces.Space.owner.id == current_user.id,
+        fetch_links=True,
     )
 
     if not db_space:

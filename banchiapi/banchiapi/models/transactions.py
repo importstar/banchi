@@ -1,7 +1,7 @@
 from banchiapi import schemas
 from typing import Optional
 
-from beanie import Document, Indexed, Link
+from beanie import Document, Indexed, Link, PydanticObjectId
 from pydantic import Field
 
 from . import users
@@ -12,7 +12,11 @@ from . import account_books
 import datetime
 
 
-class TransactionForm(schemas.transactions.Transaction, Document):
+class Transaction(schemas.transactions.Transaction, Document):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId,
+        alias="_id",
+    )
     from_account_book: Link[account_books.AccountBook]
     to_account_book: Link[account_books.AccountBook]
 

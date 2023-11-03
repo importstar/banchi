@@ -1,9 +1,13 @@
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 from ..types import UNSET, Unset
+
+if TYPE_CHECKING:
+    from ..models.reference_user import ReferenceUser
+
 
 T = TypeVar("T", bound="Space")
 
@@ -15,14 +19,16 @@ class Space:
         name (str):  Example: Space Name.
         code (Union[None, str]):  Example: Space Code.
         tax_id (Union[None, str]):  Example: Text ID.
-        field_id (Union[Unset, str]):  Example: 0.
+        id (str):  Example: 0.
+        owner (ReferenceUser):
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
     name: str
     code: Union[None, str]
     tax_id: Union[None, str]
-    field_id: Union[Unset, str] = UNSET
+    id: str
+    owner: "ReferenceUser"
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -36,7 +42,9 @@ class Space:
 
         tax_id = self.tax_id
 
-        field_id = self.field_id
+        id = self.id
+        owner = self.owner.to_dict()
+
         status = self.status
 
         field_dict: Dict[str, Any] = {}
@@ -46,10 +54,10 @@ class Space:
                 "name": name,
                 "code": code,
                 "tax_id": tax_id,
+                "id": id,
+                "owner": owner,
             }
         )
-        if field_id is not UNSET:
-            field_dict["_id"] = field_id
         if status is not UNSET:
             field_dict["status"] = status
 
@@ -57,6 +65,8 @@ class Space:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+        from ..models.reference_user import ReferenceUser
+
         d = src_dict.copy()
         name = d.pop("name")
 
@@ -74,7 +84,9 @@ class Space:
 
         tax_id = _parse_tax_id(d.pop("tax_id"))
 
-        field_id = d.pop("_id", UNSET)
+        id = d.pop("id")
+
+        owner = ReferenceUser.from_dict(d.pop("owner"))
 
         status = d.pop("status", UNSET)
 
@@ -82,7 +94,8 @@ class Space:
             name=name,
             code=code,
             tax_id=tax_id,
-            field_id=field_id,
+            id=id,
+            owner=owner,
             status=status,
         )
 

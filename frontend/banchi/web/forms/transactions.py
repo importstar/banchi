@@ -21,4 +21,7 @@ class TransactionForm(FlaskForm):
     description = fields.StringField(
         "Description", validators=[validators.InputRequired()]
     )
-    value = fields.FloatField("Value", validators=[validators.InputRequired()])
+
+    value = fields.FloatField(
+        "Value", validators=[validators.InputRequired()], default=0
+    )
