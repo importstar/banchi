@@ -5,8 +5,10 @@ import datetime
 from banchi_client import models
 from banchi_client.api.v1 import (
     create_v1_account_books_create_post,
+    create_v1_transactions_create_post,
     update_v1_account_books_account_book_id_update_put,
     get_all_v1_account_books_get,
+    get_all_v1_transactions_get,
     get_v1_account_books_account_book_id_get,
 )
 
@@ -90,10 +92,22 @@ def view(account_book_id):
         client=client, account_book_id=account_book_id
     )
 
-    return render_template("/account_books/view.html", account_book=account_book)
+    response = get_all_v1_transactions_get.sync(
+        client=client,
+        from_account_book_id=account_book.id,
+        to_account_book_id=account_book.id,
+    )
+
+    print("->", response.transactions)
+
+    return render_template(
+        "/account_books/view.html",
+        account_book=account_book,
+        transactions=response.transactions,
+    )
 
 
-@module.route("/<account_book_id>/add-transaction")
+@module.route("/<account_book_id>/add-transaction", methods=["GET", "POST"])
 def add_transaction(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = get_v1_account_books_account_book_id_get.sync(
@@ -103,20 +117,33 @@ def add_transaction(account_book_id):
     if not account_book:
         return redirect("sites.index")
 
-    print(account_book.account)
-    account_books = get_all_v1_account_books_get(
+    response = get_all_v1_account_books_get.sync(
         client=client, account_id=account_book.account.id
     )
 
-    form = forms.transactions.TransactionForm()
-    form.from_account_book_id.choices = [(str(account_book.id), account_book.name)]
-    form.to_account_book_id.choices = [
-        (str(account_book.id), account_book.name) for account_book in account_books
+    account_book_choices = [
+        (str(account_book.id), account_book.name)
+        for account_book in response.account_books
     ]
 
+    form = forms.transactions.TransactionForm()
+    form.from_account_book_id.choices = [(str(account_book.id), account_book.name)]
+
+    form.to_account_book_id.choices = account_book_choices
+
     if not form.validate_on_submit():
+        form.from_account_book_id.data = str(account_book.id)
+        form.from_account_book_id.render_kw = {"disabled": ""}
         return render_template(
             "/account_books/add-transaction.html", account_book=account_book, form=form
         )
+
+    data = form.data.copy()
+    data.pop("csrf_token")
+    transaction = models.CreatedTransaction.from_dict(data)
+
+    response = create_v1_transactions_create_post.sync(
+        client=client, json_body=transaction
+    )
 
     return redirect(url_for("account_books.view", account_book_id=account_book.id))

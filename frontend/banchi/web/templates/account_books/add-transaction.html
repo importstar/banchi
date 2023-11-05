@@ -18,10 +18,13 @@
     <form method="POST" class="ui form" enctype="multipart/form-data">
       {{ form.csrf_token }}
       {{ renderer.render_field(form.description) }}
-      {{ renderer.render_select(form.value) }}
       <div class="two fields">
-      {{ renderer.render_select(form.from_account_book_id) }}
-      {{ renderer.render_select(form.to_account_book_id) }}
+        {{ renderer.render_select(form.value) }}
+        {{ renderer.render_select(form.currency) }}
+      </div>
+      <div class="two fields">
+        {{ renderer.render_select(form.from_account_book_id) }}
+        {{ renderer.render_select(form.to_account_book_id) }}
       </div>
       <button name="subnit" type="submit" class="ui primary button">
         {% if 'edit' not in request.path %}

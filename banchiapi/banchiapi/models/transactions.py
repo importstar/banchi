@@ -22,7 +22,7 @@ class Transaction(schemas.transactions.Transaction, Document):
 
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
-    owner: Link[users.User]
+    creator: Link[users.User]
     updated_by: Link[users.User]
 
     class Settings:

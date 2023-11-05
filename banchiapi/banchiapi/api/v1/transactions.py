@@ -21,13 +21,28 @@ router = APIRouter(prefix="/transactions", tags=["transactions"])
     response_model_by_alias=False,
 )
 async def get_all(
+    from_account_book_id: str | None,
+    to_account_book_id: str | None,
     current_user: models.users.User = Depends(deps.get_current_user),
-) -> schemas.transactions.AccountList:
-    db_transactions = await models.transactions.Account.find(
-        models.transactions.Account.status == "active",
-        models.transactions.Account.creator.id == current_user.id,
+) -> schemas.transactions.TransactionList:
+    query = models.transactions.Transaction.find(
+        models.transactions.Transaction.status == "active",
+        models.transactions.Transaction.creator.id == current_user.id,
         fetch_links=True,
-    ).to_list()
+    )
+
+    if from_account_book_id:
+        query.update(
+            models.transactions.Transaction.from_account_book.id
+            == bson.ObjectId(from_account_book_id)
+        )
+    if to_account_book_id:
+        query.update(
+            models.transactions.Transaction.to_account_book.id
+            == bson.ObjectId(to_account_book_id)
+        )
+
+    db_transactions = await query.to_list()
 
     return dict(transactions=db_transactions)
 
@@ -37,26 +52,33 @@ async def get_all(
     response_model_by_alias=False,
 )
 async def create(
-    transaction: schemas.transactions.CreatedAccount,
+    transaction: schemas.transactions.CreatedTransaction,
     current_user: Annotated[models.users.User, Depends(deps.get_current_user)],
-) -> schemas.transactions.Account:
-    db_space = await models.spaces.Space.find_one(
-        models.spaces.Space.id == bson.ObjectId(transaction.space_id),
-        models.spaces.Space.owner.id == current_user.id,
+) -> schemas.transactions.Transaction:
+    db_from_account_book = await models.account_books.AccountBook.find_one(
+        models.account_books.AccountBook.id
+        == bson.ObjectId(transaction.from_account_book_id),
+        models.account_books.AccountBook.creator.id == current_user.id,
+    )
+    db_to_account_book = await models.account_books.AccountBook.find_one(
+        models.account_books.AccountBook.id
+        == bson.ObjectId(transaction.to_account_book_id),
+        models.account_books.AccountBook.creator.id == current_user.id,
     )
 
-    if not db_space:
+    if not (db_from_account_book and db_to_account_book):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Space id {transaction.space_id} not found",
+            detail=f"AccountBook id {transaction.account_book_id} not found",
         )
 
     data = transaction.dict()
-    data.pop("space_id")
     data["creator"] = current_user
     data["updated_by"] = current_user
-    data["space"] = db_space
-    db_transaction = models.transactions.Account.parse_obj(data)
+    data["from_account_book"] = db_from_account_book
+    data["to_account_book"] = db_to_account_book
+
+    db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
 
     return db_transaction
@@ -69,10 +91,10 @@ async def create(
 async def get(
     transaction_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-) -> schemas.transactions.Account:
-    db_transaction = await models.transactions.Account.find_one(
-        models.transactions.Account.id == bson.ObjectId(transaction_id),
-        models.transactions.Account.creator.id == current_user.id,
+) -> schemas.transactions.Transaction:
+    db_transaction = await models.transactions.Transaction.find_one(
+        models.transactions.Transaction.id == bson.ObjectId(transaction_id),
+        models.transactions.Transaction.creator.id == current_user.id,
         fetch_links=True,
     )
 
@@ -90,16 +112,16 @@ async def get(
 )
 async def update(
     transaction_id: str,
-    transaction: schemas.transactions.CreatedAccount,
+    transaction: schemas.transactions.CreatedTransaction,
     current_user: models.users.User = Depends(deps.get_current_user),
-) -> schemas.transactions.Account:
-    db_transaction = models.Account.objects(id=transaction_id).first()
+) -> schemas.transactions.Transaction:
+    db_transaction = models.Transaction.objects(id=transaction_id).first()
     if not db_transaction:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Not found this system setting",
         )
-    db_transactions = models.Account.objects(
+    db_transactions = models.Transaction.objects(
         name=transaction.name, status="active", id__ne=transaction_id
     )
     if db_transactions:
@@ -107,7 +129,7 @@ async def update(
             status_code=status.HTTP_409_CONFLICT,
             detail="There are already transaction name",
         )
-    db_transactions = models.Account.objects(
+    db_transactions = models.Transaction.objects(
         code=transaction.code, status="active", id__ne=transaction_id
     )
     if db_transactions:
@@ -132,9 +154,9 @@ async def update(
 async def delete(
     transaction_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-) -> schemas.transactions.Account:
+) -> schemas.transactions.Transaction:
     try:
-        db_transaction = models.Account.objects.get(id=transaction_id)
+        db_transaction = models.Transaction.objects.get(id=transaction_id)
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

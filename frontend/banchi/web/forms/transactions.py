@@ -25,3 +25,9 @@ class TransactionForm(FlaskForm):
     value = fields.FloatField(
         "Value", validators=[validators.InputRequired()], default=0
     )
+
+    currency = fields.SelectField(
+        "Currency",
+        validators=[validators.InputRequired()],
+        choices=[(e.value, e.value.upper()) for e in models.CurrencyEnum],
+    )

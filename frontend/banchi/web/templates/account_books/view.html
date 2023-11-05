@@ -21,23 +21,42 @@ Account Book {{ account_book.name }}
       <i class="add icon"></i> Add Transaction
     </a>
   </div>
-  <div>
+  <div style="padding-top:1vh;">
     <table class="ui table">
       <thead>
         <tr>
           <th>Description</th>
+          <th>Transfer</th>
           <th>Income</th>
           <th>Express</th>
           <th>Total</th>
         </tr>
       </thead>
       <tbody>
+        {% set total = 0 %}
+        {% for transaction in transactions %}
         <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td>{{ transaction.description }}</td>
+          <td>
+            {% if  transaction.from_account_book != account_book %}
+              {{ transaction.from_account_book.name }}
+            {% else %}
+              {{ transaction.to_account_book.name }}
+            {% endif %}
+          </td>
+          {% if transaction.value >= 0 %}
+            <td>{{ "{:.2f}".format(transaction.value) }}</td>
+            <td></td>
+          {% else %}
+            <td></td>
+            <td>{{ "{:.2f}".format(-1*transaction.value) }}</td>
+          {% endif %}
+          <td>
+            {% set total = total + transaction.value %}
+            {{ total }}
+          </td>
         </tr>
+        {% endfor %}
       </tbody>
     </table>
   </div>
