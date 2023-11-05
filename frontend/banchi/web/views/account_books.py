@@ -98,8 +98,6 @@ def view(account_book_id):
         to_account_book_id=account_book.id,
     )
 
-    print("->", response.transactions)
-
     return render_template(
         "/account_books/view.html",
         account_book=account_book,

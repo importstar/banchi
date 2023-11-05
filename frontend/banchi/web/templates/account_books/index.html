@@ -7,6 +7,8 @@ Account Book
 {% block breadcrumbs %}
   {% if request.endpoint == 'account_books.index' %}
     <a class="active section">Account Books</a>
+  {% elif request.args.get('account_id') %}
+    <a href="{{ url_for('account_books.index', account_id=request.args.get('account_id')) }}" class="section">Account Books</a>
   {% else %}
     <a href="{{ url_for('account_books.index') }}" class="section">Account Books</a>
   {% endif %}
@@ -17,37 +19,26 @@ Account Book
   <div class="ui segment">
       <a class="ui button primary" href="{{ url_for('account_books.create_or_edit') }}">Create</a>
   </div>
-  <div class="ui cards">
-
-    {% for account in account_books %}
-    <div class="card">
-      <div class="content">
-        <div class="header">{{ account.name }}</div>
-      </div>
-      <div class="content">
-        <h4 class="ui sub header">Infomation</h4>
-        <div class="ui small feed">
-          <div class="event">
-            <div class="content">
-              <div class="summary">
-                <b>Code:</b> {{ account.code }}
-              </div>
-            </div>
-          </div>
-          <div class="event">
-            <div class="content">
-              <div class="summary">
-                <b>Tax ID:</b> {{ account.tax_id }}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="extra content">
-        <a class="ui button primary" href="{{ url_for('account_books.view', account_id=account.id) }}">View Account Book</a>
-      </div>
-    </div>
-    {% endfor %}
-
+    
+  <div>
+    <h2 class="ui head">Account Book</h2>
+    <table class="ui table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for account_book in account_books %}
+          <tr>
+            <td>{{ account_book.name }}</td>
+            <td>{{ account_book.type.title() }}</td>
+            <td></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 {% endblock %}
