@@ -10,6 +10,7 @@ from banchi_client.api.v1 import (
     get_all_v1_account_books_get,
     get_all_v1_transactions_get,
     get_v1_account_books_account_book_id_get,
+    get_v1_transactions_transaction_id_get,
 )
 
 from .. import banchi_api_clients
@@ -105,8 +106,15 @@ def view(account_book_id):
     )
 
 
-@module.route("/<account_book_id>/add-transaction", methods=["GET", "POST"])
-def add_transaction(account_book_id):
+@module.route(
+    "/<account_book_id>/transactions/add",
+    methods=["GET", "POST"],
+    defaults=dict(transaction_id=None),
+)
+@module.route(
+    "/<account_book_id>/transactions/<transaction_id>/edit", methods=["GET", "POST"]
+)
+def add_or_edit_transaction(account_book_id, transaction_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = get_v1_account_books_account_book_id_get.sync(
         client=client, account_book_id=account_book_id
@@ -125,12 +133,21 @@ def add_transaction(account_book_id):
     ]
 
     form = forms.transactions.TransactionForm()
-    form.from_account_book_id.choices = [(str(account_book.id), account_book.name)]
 
+    transaction = None
+    if transaction_id:
+        transaction = get_v1_transactions_transaction_id_get.sync(
+            client=client, transaction_id=transaction_id
+        )
+
+        form = forms.transactions.TransactionForm(obj=transaction)
+    else:
+        form.from_account_book_id.data = str(account_book.id)
+
+    form.from_account_book_id.choices = [(str(account_book.id), account_book.name)]
     form.to_account_book_id.choices = account_book_choices
 
     if not form.validate_on_submit():
-        form.from_account_book_id.data = str(account_book.id)
         form.from_account_book_id.render_kw = {"disabled": ""}
         return render_template(
             "/account_books/add-transaction.html", account_book=account_book, form=form

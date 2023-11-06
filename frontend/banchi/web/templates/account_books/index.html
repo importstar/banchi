@@ -28,6 +28,7 @@ Account Book
           <th>Name</th>
           <th>Type</th>
           <th>Total</th>
+          <th>Operation</th>
         </tr>
       </thead>
       <tbody>
@@ -36,6 +37,9 @@ Account Book
             <td>{{ account_book.name }}</td>
             <td>{{ account_book.type.title() }}</td>
             <td></td>
+            <td>
+              <a href="{{ url_for('account_books.view', account_book_id=account_book.id) }}" class="ui icon primary circular button"><i class="eye icon"></i></a>
+            </td>
           </tr>
         {% endfor %}
       </tbody>

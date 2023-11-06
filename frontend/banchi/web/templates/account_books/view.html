@@ -17,7 +17,7 @@ Account Book {{ account_book.name }}
 
 {% block content %}
   <div>
-    <a class="ui primary icon button" href="{{ url_for('account_books.add_transaction', account_book_id=account_book.id) }}">
+    <a class="ui primary icon button" href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id) }}">
       <i class="add icon"></i> Add Transaction
     </a>
   </div>
@@ -30,6 +30,7 @@ Account Book {{ account_book.name }}
           <th>Income</th>
           <th>Express</th>
           <th>Total</th>
+          <th>Operation</th>
         </tr>
       </thead>
       <tbody>
@@ -54,6 +55,9 @@ Account Book {{ account_book.name }}
           <td>
             {% set total = total + transaction.value %}
             {{ total }}
+          </td>
+          <td>
+            <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon primary circular button"><i class="edit icon"></i></a>
           </td>
         </tr>
         {% endfor %}
