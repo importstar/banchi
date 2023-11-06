@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -9,8 +9,9 @@ from ..models.smallest_fraction_enum import SmallestFractionEnum
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
-    from ..models.account import Account
-    from ..models.user import User
+    from ..models.reference_account import ReferenceAccount
+    from ..models.reference_account_book import ReferenceAccountBook
+    from ..models.reference_user import ReferenceUser
 
 
 T = TypeVar("T", bound="AccountBook")
@@ -26,8 +27,9 @@ class AccountBook:
         smallest_fraction (SmallestFractionEnum):
         currency (CurrencyEnum):
         id (str):  Example: 0.
-        account (Account):
-        creator (User):
+        account (ReferenceAccount):
+        parent (Union['ReferenceAccountBook', None]):
+        creator (ReferenceUser):
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
@@ -37,12 +39,15 @@ class AccountBook:
     smallest_fraction: SmallestFractionEnum
     currency: CurrencyEnum
     id: str
-    account: "Account"
-    creator: "User"
+    account: "ReferenceAccount"
+    parent: Union["ReferenceAccountBook", None]
+    creator: "ReferenceUser"
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
+        from ..models.reference_account_book import ReferenceAccountBook
+
         name = self.name
         description = self.description
         type = self.type.value
@@ -53,6 +58,14 @@ class AccountBook:
 
         id = self.id
         account = self.account.to_dict()
+
+        parent: Union[Dict[str, Any], None]
+
+        if isinstance(self.parent, ReferenceAccountBook):
+            parent = self.parent.to_dict()
+
+        else:
+            parent = self.parent
 
         creator = self.creator.to_dict()
 
@@ -69,6 +82,7 @@ class AccountBook:
                 "currency": currency,
                 "id": id,
                 "account": account,
+                "parent": parent,
                 "creator": creator,
             }
         )
@@ -79,8 +93,9 @@ class AccountBook:
 
     @classmethod
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        from ..models.account import Account
-        from ..models.user import User
+        from ..models.reference_account import ReferenceAccount
+        from ..models.reference_account_book import ReferenceAccountBook
+        from ..models.reference_user import ReferenceUser
 
         d = src_dict.copy()
         name = d.pop("name")
@@ -95,9 +110,24 @@ class AccountBook:
 
         id = d.pop("id")
 
-        account = Account.from_dict(d.pop("account"))
+        account = ReferenceAccount.from_dict(d.pop("account"))
 
-        creator = User.from_dict(d.pop("creator"))
+        def _parse_parent(data: object) -> Union["ReferenceAccountBook", None]:
+            if data is None:
+                return data
+            try:
+                if not isinstance(data, dict):
+                    raise TypeError()
+                parent_type_0 = ReferenceAccountBook.from_dict(data)
+
+                return parent_type_0
+            except:  # noqa: E722
+                pass
+            return cast(Union["ReferenceAccountBook", None], data)
+
+        parent = _parse_parent(d.pop("parent"))
+
+        creator = ReferenceUser.from_dict(d.pop("creator"))
 
         status = d.pop("status", UNSET)
 
@@ -109,6 +139,7 @@ class AccountBook:
             currency=currency,
             id=id,
             account=account,
+            parent=parent,
             creator=creator,
             status=status,
         )

@@ -14,6 +14,7 @@ from .created_space import CreatedSpace
 from .created_transaction import CreatedTransaction
 from .currency_enum import CurrencyEnum
 from .http_validation_error import HTTPValidationError
+from .reference_account import ReferenceAccount
 from .reference_account_book import ReferenceAccountBook
 from .reference_space import ReferenceSpace
 from .reference_user import ReferenceUser
@@ -46,6 +47,7 @@ __all__ = (
     "CreatedTransaction",
     "CurrencyEnum",
     "HTTPValidationError",
+    "ReferenceAccount",
     "ReferenceAccountBook",
     "ReferenceSpace",
     "ReferenceUser",

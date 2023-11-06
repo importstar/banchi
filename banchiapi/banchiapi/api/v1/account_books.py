@@ -44,15 +44,25 @@ async def create(
 ) -> schemas.account_books.AccountBook:
     data = account_book.dict()
 
-    account = await models.accounts.Account.find_one(
+    db_account = await models.accounts.Account.find_one(
         models.accounts.Account.id == bson.ObjectId(data["account_id"]),
         models.accounts.Account.status == "active",
         models.accounts.Account.creator.id == current_user.id,
     )
 
+    db_parent_account_book = None
+    if data.get("parent_id"):
+        db_parent_account_book = await models.account_books.AccountBook.find_one(
+            models.account_books.AccountBook.id == bson.ObjectId(data["parent_id"]),
+            models.account_books.AccountBook.status == "active",
+            models.account_books.AccountBook.creator.id == current_user.id,
+        )
+
     data["creator"] = current_user
     data["updated_by"] = current_user
-    data["account"] = account
+    data["account"] = db_account
+    data["parent"] = db_parent_account_book
+
     db_account_book = models.account_books.AccountBook.parse_obj(data)
     await db_account_book.save()
 

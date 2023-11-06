@@ -23,7 +23,6 @@ Account {{ account.name }}
     <table class="ui table">
       <thead>
         <tr>
-          <th>ID</th>
           <th>Name</th>
           <th>Tool</th>
 
@@ -32,8 +31,13 @@ Account {{ account.name }}
       <tbody>
         {% for account_book in account_books %}
         <tr>
-          <td>{{ account_book.id }}</td>
-          <td>{{ account_book.name }}</td>
+          <td>
+            {% if account_book.parent %}
+              {{ account_book.parent.name }} > 
+            {% endif %}
+            {{ account_book.name }}
+
+          </td>
           <td>
             <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book.id) }}"><i class="eye icon"></i></a>
           </td>

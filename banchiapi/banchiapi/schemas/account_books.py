@@ -14,12 +14,13 @@ class AccountTypeEnum(str, enum.Enum):
     bank = "bank"
     cash = "cash"
     credit_card = "credit card"
+    expense = "expense"
+    equity = "equity"
+    income = "income"
     liability = "liability"
     stock = "stock"
     multual_fund = "multual fund"
-
-
-# smallest_fractions = [1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001]
+    trading = "trading"
 
 
 class SmallestFractionEnum(int, enum.Enum):
@@ -45,18 +46,19 @@ class BaseAccountBook(BaseModel):
     currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
 
 
+class ReferenceAccountBook(bases.BaseSchema):
+    name: str = Field(..., example="Account Book Name")
+
+
 class AccountBook(bases.BaseSchema, BaseAccountBook):
-    account: accounts.Account
-    creator: users.User
+    account: accounts.ReferenceAccount
+    parent: ReferenceAccountBook | None
+    creator: users.ReferenceUser
 
     status: str = Field(
         default="active",
         example="active",
     )
-
-
-class ReferenceAccountBook(bases.BaseSchema):
-    name: str = Field(..., example="Account Book Name")
 
 
 class CreatedAccountBook(BaseAccountBook):

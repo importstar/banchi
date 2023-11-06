@@ -35,6 +35,10 @@ class Account(bases.BaseSchema, BaseAccount):
     )
 
 
+class ReferenceAccount(bases.BaseSchema):
+    name: str = Field(..., example="Account Name")
+
+
 class CreatedAccount(BaseAccount):
     space_id: str = Field(..., example="0")
 

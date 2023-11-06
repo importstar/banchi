@@ -20,6 +20,8 @@ class AccountBook(schemas.account_books.AccountBook, Document):
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     account: Link[accounts.Account]
+    parent: Optional[Link["AccountBook"]] = None
+
     creator: Link[users.User]
     updated_by: Link[users.User]
 
