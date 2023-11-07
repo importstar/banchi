@@ -7,7 +7,7 @@ from loguru import logger
 
 import bson
 from typing import Annotated
-
+from beanie.odm.operators.find.logical import Or, And
 
 from banchiapi import models
 from banchiapi.core import deps
@@ -30,22 +30,30 @@ async def get_all(
         models.transactions.Transaction.creator.id == current_user.id,
     ]
 
+    from_account_books = []
+    to_account_books = []
+    all_transactions = []
     if from_account_book_id:
-        query_args.append(
+        from_account_books = await models.transactions.Transaction.find(
+            *query_args,
             models.transactions.Transaction.from_account_book.id
-            == bson.ObjectId(from_account_book_id)
-        )
-    if to_account_book_id:
-        query_args.append(
-            models.transactions.Transaction.to_account_book.id
-            == bson.ObjectId(to_account_book_id)
-        )
+            == bson.ObjectId(from_account_book_id),
+            fetch_links=True,
+        ).to_list()
 
-    query = models.transactions.Transaction.find(
-        *query_args,
-        fetch_links=True,
-    )
-    db_transactions = await query.to_list()
+    if to_account_book_id:
+        to_account_books = await models.transactions.Transaction.find(
+            *query_args,
+            models.transactions.Transaction.to_account_book.id
+            == bson.ObjectId(to_account_book_id),
+            fetch_links=True,
+        ).to_list()
+
+    if not from_account_book_id and not to_account_book_id:
+        all_transactions = await query.to_list()
+
+    db_transactions = all_transactions + to_account_books + from_account_books
+    db_transactions.sort(key=lambda t: t.date)
 
     return dict(transactions=db_transactions)
 
@@ -126,19 +134,22 @@ async def update(
         )
 
     data = transaction.dict().copy()
-    data.pop("from_account_book_id")
+    from_account_book_id = data.pop("from_account_book_id")
     to_account_book_id = data.pop("to_account_book_id")
 
-    # await db_transaction.update(**transaction.dict())
     await db_transaction.set(data)
 
     db_transaction.updated_date = datetime.datetime.now()
     db_transaction.updated_by = current_user
-    db_transaction.to_account_book_id = await models.account_books.AccountBook.get(
+    db_transaction.to_account_book = await models.account_books.AccountBook.get(
         to_account_book_id
     )
+    db_transaction.from_account_book = await models.account_books.AccountBook.get(
+        from_account_book_id
+    )
+
     await db_transaction.save()
-    await db_transaction.fetch_link()
+    await db_transaction.fetch_all_links()
     return db_transaction
 
 

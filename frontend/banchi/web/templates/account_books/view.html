@@ -25,24 +25,31 @@ Account Book {{ account_book.name }}
     <table class="ui table">
       <thead>
         <tr>
+          <th>Date</th>
           <th>Description</th>
           <th>Transfer</th>
           <th>Income</th>
           <th>Express</th>
           <th>Total</th>
+          <th>User</th>
           <th>Operation</th>
         </tr>
       </thead>
       <tbody>
-        {% set total = 0 %}
+        {% set ns = namespace(total = 0) %}
         {% for transaction in transactions %}
         <tr>
+          <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M') }}</td>
           <td>{{ transaction.description }}</td>
           <td>
-            {% if  transaction.from_account_book != account_book %}
-              {{ transaction.from_account_book.name }}
+            {% if  transaction.from_account_book.id != account_book.id %}
+              <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
+                {{ transaction.from_account_book.name }}
+              </a>
             {% else %}
-              {{ transaction.to_account_book.name }}
+              <a href="{{ url_for('account_books.view', account_book_id=transaction.to_account_book.id) }}">
+                {{ transaction.to_account_book.name }}
+              </a>
             {% endif %}
           </td>
           {% if transaction.value >= 0 %}
@@ -53,8 +60,11 @@ Account Book {{ account_book.name }}
             <td>{{ "{:.2f}".format(-1*transaction.value) }}</td>
           {% endif %}
           <td>
-            {% set total = total + transaction.value %}
-            {{ total }}
+            {% set ns.total = ns.total + transaction.value %}
+            {{ "{:.2f}".format(ns.total) }}
+          </td>
+          <td>
+            {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
           </td>
           <td>
             <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon primary circular button"><i class="edit icon"></i></a>

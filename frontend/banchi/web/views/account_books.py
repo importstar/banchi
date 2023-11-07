@@ -129,8 +129,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     )
 
     account_book_choices = [
-        (str(account_book.id), account_book.name)
-        for account_book in response.account_books
+        (str(ab.id), ab.name) for ab in response.account_books if ab != account_book
     ]
 
     form = forms.transactions.TransactionForm()
@@ -148,6 +147,9 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     form.to_account_book_id.choices = account_book_choices
 
     if not form.validate_on_submit():
+        if request.method == "GET" and transaction:
+            form.to_account_book_id.data = transaction.to_account_book.id
+
         form.from_account_book_id.render_kw = {"disabled": ""}
         return render_template(
             "/account_books/add-transaction.html", account_book=account_book, form=form
@@ -155,9 +157,11 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
     data = form.data.copy()
     data.pop("csrf_token")
+
+    data["date"] = data["date"].isoformat()
+    data["value"] = float(data["value"])
     if not transaction:
         transaction = models.CreatedTransaction.from_dict(data)
-
         response = create_v1_transactions_create_post.sync(
             client=client, json_body=transaction
         )

@@ -1,7 +1,9 @@
+import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from dateutil.parser import isoparse
 
 from ..models.currency_enum import CurrencyEnum
 from ..types import UNSET, Unset
@@ -26,6 +28,7 @@ class Transaction:
         to_account_book (ReferenceAccountBook):
         creator (ReferenceUser):
         updated_by (ReferenceUser):
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-11-07T22:44:41.532521').
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
@@ -37,6 +40,7 @@ class Transaction:
     to_account_book: "ReferenceAccountBook"
     creator: "ReferenceUser"
     updated_by: "ReferenceUser"
+    date: Union[Unset, datetime.datetime] = isoparse("2023-11-07T22:44:41.532521")
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -54,6 +58,10 @@ class Transaction:
 
         updated_by = self.updated_by.to_dict()
 
+        date: Union[Unset, str] = UNSET
+        if not isinstance(self.date, Unset):
+            date = self.date.isoformat()
+
         status = self.status
 
         field_dict: Dict[str, Any] = {}
@@ -70,6 +78,8 @@ class Transaction:
                 "updated_by": updated_by,
             }
         )
+        if date is not UNSET:
+            field_dict["date"] = date
         if status is not UNSET:
             field_dict["status"] = status
 
@@ -97,6 +107,13 @@ class Transaction:
 
         updated_by = ReferenceUser.from_dict(d.pop("updated_by"))
 
+        _date = d.pop("date", UNSET)
+        date: Union[Unset, datetime.datetime]
+        if isinstance(_date, Unset):
+            date = UNSET
+        else:
+            date = isoparse(_date)
+
         status = d.pop("status", UNSET)
 
         transaction = cls(
@@ -108,6 +125,7 @@ class Transaction:
             to_account_book=to_account_book,
             creator=creator,
             updated_by=updated_by,
+            date=date,
             status=status,
         )
 

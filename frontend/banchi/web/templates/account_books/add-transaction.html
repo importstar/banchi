@@ -17,6 +17,7 @@
     <h2>Transaction</h2>
     <form method="POST" class="ui form" enctype="multipart/form-data">
       {{ form.csrf_token }}
+      {{ renderer.render_calendar(form.date, calendar_id='date_calendar') }}
       {{ renderer.render_field(form.description) }}
       <div class="two fields">
         {{ renderer.render_select(form.value) }}
@@ -38,4 +39,18 @@
 {% endblock content %}
 
 {% block additional_js %}
+  <script type="text/javascript">
+    datetime_formatter = {
+      datetime:"YYYY-M-DD HH:mm",
+      date:"YYYY-MM-DD",
+    };
+
+    $('#date_calendar').calendar({
+      type: 'datetime',
+      today: true,
+      monthFirst: false,
+      formatter: datetime_formatter,
+    });
+  	</script>
+
 {% endblock additional_js %}

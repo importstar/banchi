@@ -1,11 +1,5 @@
-"""
-Created on Oct 13, 2013
-
-@author: boatkrap
-"""
-
-from wtforms import validators
-from wtforms import fields
+import datetime
+from wtforms import validators, fields, widgets
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
@@ -16,14 +10,20 @@ from banchi_client import models
 
 
 class TransactionForm(FlaskForm):
+    date = fields.DateTimeField(
+        "Date",
+        format="%Y-%m-%d %H:%M",
+        widget=widgets.TextInput(),
+        default=datetime.datetime.now,
+    )
     from_account_book_id = fields.SelectField("From Account Book")
     to_account_book_id = fields.SelectField("To Account Book")
     description = fields.StringField(
         "Description", validators=[validators.InputRequired()]
     )
 
-    value = fields.FloatField(
-        "Value", validators=[validators.InputRequired()], default=0
+    value = fields.DecimalField(
+        "Value", validators=[validators.InputRequired()], default=0, places=2
     )
 
     currency = fields.SelectField(
