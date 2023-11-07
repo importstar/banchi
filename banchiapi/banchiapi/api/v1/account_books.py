@@ -21,16 +21,17 @@ async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
     account_id: str | None = None,
 ) -> schemas.account_books.AccountBookList:
-    query = models.account_books.AccountBook.find(
+    query_args = [
         models.account_books.AccountBook.status == "active",
         models.account_books.AccountBook.creator.id == current_user.id,
-    )
+    ]
     if account_id:
-        query.find(
+        query_args.append(
             models.account_books.AccountBook.account.id == bson.ObjectId(account_id)
         )
 
-    account_books = await query.find(fetch_links=True).to_list()
+    query = models.account_books.AccountBook.find(*query_args, fetch_links=True)
+    account_books = await query.to_list()
     return dict(account_books=account_books)
 
 

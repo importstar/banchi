@@ -35,3 +35,8 @@ class TransactionList(BaseModel):
 class CreatedTransaction(BaseTransaction):
     from_account_book_id: str = Field(..., example="0")
     to_account_book_id: str = Field(..., example="0")
+
+
+class UpdatedTransaction(BaseTransaction):
+    from_account_book_id: str = Field(..., example="0")
+    to_account_book_id: str = Field(..., example="0")

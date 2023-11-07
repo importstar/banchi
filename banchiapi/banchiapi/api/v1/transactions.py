@@ -25,8 +25,6 @@ async def get_all(
     to_account_book_id: str | None,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.transactions.TransactionList:
-    print("from ->", from_account_book_id)
-    print("to   ->", to_account_book_id)
     query_args = [
         models.transactions.Transaction.status == "active",
         models.transactions.Transaction.creator.id == current_user.id,
@@ -117,38 +115,30 @@ async def get(
 )
 async def update(
     transaction_id: str,
-    transaction: schemas.transactions.CreatedTransaction,
+    transaction: schemas.transactions.UpdatedTransaction,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.transactions.Transaction:
-    db_transaction = models.Transaction.objects(id=transaction_id).first()
+    db_transaction = await models.transactions.Transaction.get(transaction_id)
     if not db_transaction:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Not found this system setting",
         )
-    db_transactions = models.Transaction.objects(
-        name=transaction.name, status="active", id__ne=transaction_id
-    )
-    if db_transactions:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already transaction name",
-        )
-    db_transactions = models.Transaction.objects(
-        code=transaction.code, status="active", id__ne=transaction_id
-    )
-    if db_transactions:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already transaction code",
-        )
 
-    data = transaction.dict()
-    db_transaction.update(**data)
+    data = transaction.dict().copy()
+    data.pop("from_account_book_id")
+    to_account_book_id = data.pop("to_account_book_id")
+
+    # await db_transaction.update(**transaction.dict())
+    await db_transaction.set(data)
 
     db_transaction.updated_date = datetime.datetime.now()
-    db_transaction.save()
-    db_transaction.reload()
+    db_transaction.updated_by = current_user
+    db_transaction.to_account_book_id = await models.account_books.AccountBook.get(
+        to_account_book_id
+    )
+    await db_transaction.save()
+    await db_transaction.fetch_link()
     return db_transaction
 
 

@@ -27,6 +27,7 @@ from .system_setting_in_response import SystemSettingInResponse
 from .token import Token
 from .transaction import Transaction
 from .transaction_list import TransactionList
+from .updated_transaction import UpdatedTransaction
 from .updated_user import UpdatedUser
 from .user import User
 from .user_list import UserList
@@ -60,6 +61,7 @@ __all__ = (
     "Token",
     "Transaction",
     "TransactionList",
+    "UpdatedTransaction",
     "UpdatedUser",
     "User",
     "UserList",

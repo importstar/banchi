@@ -5,16 +5,16 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.created_transaction import CreatedTransaction
 from ...models.http_validation_error import HTTPValidationError
 from ...models.transaction import Transaction
+from ...models.updated_transaction import UpdatedTransaction
 from ...types import Response
 
 
 def _get_kwargs(
     transaction_id: str,
     *,
-    json_body: CreatedTransaction,
+    json_body: UpdatedTransaction,
 ) -> Dict[str, Any]:
     json_json_body = json_body.to_dict()
 
@@ -59,13 +59,13 @@ def sync_detailed(
     transaction_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedTransaction,
+    json_body: UpdatedTransaction,
 ) -> Response[Union[HTTPValidationError, Transaction]]:
     """Update
 
     Args:
         transaction_id (str):
-        json_body (CreatedTransaction):
+        json_body (UpdatedTransaction):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -91,13 +91,13 @@ def sync(
     transaction_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedTransaction,
+    json_body: UpdatedTransaction,
 ) -> Optional[Union[HTTPValidationError, Transaction]]:
     """Update
 
     Args:
         transaction_id (str):
-        json_body (CreatedTransaction):
+        json_body (UpdatedTransaction):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -118,13 +118,13 @@ async def asyncio_detailed(
     transaction_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedTransaction,
+    json_body: UpdatedTransaction,
 ) -> Response[Union[HTTPValidationError, Transaction]]:
     """Update
 
     Args:
         transaction_id (str):
-        json_body (CreatedTransaction):
+        json_body (UpdatedTransaction):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -148,13 +148,13 @@ async def asyncio(
     transaction_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedTransaction,
+    json_body: UpdatedTransaction,
 ) -> Optional[Union[HTTPValidationError, Transaction]]:
     """Update
 
     Args:
         transaction_id (str):
-        json_body (CreatedTransaction):
+        json_body (UpdatedTransaction):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
