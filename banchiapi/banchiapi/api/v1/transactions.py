@@ -25,23 +25,28 @@ async def get_all(
     to_account_book_id: str | None,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.transactions.TransactionList:
-    query = models.transactions.Transaction.find(
+    print("from ->", from_account_book_id)
+    print("to   ->", to_account_book_id)
+    query_args = [
         models.transactions.Transaction.status == "active",
         models.transactions.Transaction.creator.id == current_user.id,
-        fetch_links=True,
-    )
+    ]
 
     if from_account_book_id:
-        query.update(
+        query_args.append(
             models.transactions.Transaction.from_account_book.id
             == bson.ObjectId(from_account_book_id)
         )
     if to_account_book_id:
-        query.update(
+        query_args.append(
             models.transactions.Transaction.to_account_book.id
             == bson.ObjectId(to_account_book_id)
         )
 
+    query = models.transactions.Transaction.find(
+        *query_args,
+        fetch_links=True,
+    )
     db_transactions = await query.to_list()
 
     return dict(transactions=db_transactions)
