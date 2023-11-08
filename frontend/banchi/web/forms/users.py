@@ -21,3 +21,9 @@ class LoginForm(FlaskForm):
     password = fields.PasswordField(
         "Password", validators=[validators.InputRequired(), validators.Length(min=3)]
     )
+
+
+class UserForm(FlaskForm):
+    username = fields.StringField(
+        "Username", validators=[validators.InputRequired(), validators.Length(min=3)]
+    )
