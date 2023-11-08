@@ -89,6 +89,11 @@ async def create(
     data["from_account_book"] = db_from_account_book
     data["to_account_book"] = db_to_account_book
 
+    if transaction.value < 0:
+        data["from_account_book"] = db_to_account_book
+        data["to_account_book"] = db_from_account_book
+        data["value"] *= -1
+
     db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
 

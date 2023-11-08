@@ -30,7 +30,6 @@ Account Book {{ account_book.name }}
           <th>Transfer</th>
           <th>Income</th>
           <th>Express</th>
-          <th>Total</th>
           <th>User</th>
           <th>Operation</th>
         </tr>
@@ -42,7 +41,7 @@ Account Book {{ account_book.name }}
           <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M') }}</td>
           <td>{{ transaction.description }}</td>
           <td>
-            {% if  transaction.from_account_book.id != account_book.id %}
+            {% if transaction.from_account_book.id != account_book.id %}
               <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
                 {{ transaction.from_account_book.name }}
               </a>
@@ -52,17 +51,15 @@ Account Book {{ account_book.name }}
               </a>
             {% endif %}
           </td>
-          {% if transaction.value >= 0 %}
+          {% if transaction.from_account_book.id != account_book.id %}
+            {% set ns.total = ns.total + transaction.value %}
             <td>{{ "{:.2f}".format(transaction.value) }}</td>
             <td></td>
           {% else %}
+            {% set ns.total = ns.total - transaction.value %}
             <td></td>
-            <td>{{ "{:.2f}".format(-1*transaction.value) }}</td>
+            <td>{{ "{:.2f}".format(transaction.value) }}</td>
           {% endif %}
-          <td>
-            {% set ns.total = ns.total + transaction.value %}
-            {{ "{:.2f}".format(ns.total) }}
-          </td>
           <td>
             {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
           </td>
@@ -73,5 +70,8 @@ Account Book {{ account_book.name }}
         {% endfor %}
       </tbody>
     </table>
+    <div>
+      คงเหลือ {{ "{:.2f}".format(ns.total) }}
+    </div>
   </div>
 {% endblock %}
