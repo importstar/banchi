@@ -19,7 +19,7 @@ class Space(schemas.spaces.Space, Document):
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     owner: Link[users.User]
-    contributors: list[Link[users.User]]
+    contributors: list[Link[users.User]] = []
     updated_by: Link[users.User]
 
     class Settings:

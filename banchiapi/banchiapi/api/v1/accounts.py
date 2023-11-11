@@ -51,6 +51,16 @@ async def create(
             detail=f"Space id {account.space_id} not found",
         )
 
+    db_account = await models.accounts.Account.find_one(
+        models.accounts.Account.space.id == db_space.id
+    )
+
+    if db_account:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="There are already account in space",
+        )
+
     data = account.dict()
     data.pop("space_id")
     data["creator"] = current_user
@@ -58,6 +68,23 @@ async def create(
     data["space"] = db_space
     db_account = models.accounts.Account.parse_obj(data)
     await db_account.save()
+
+    account_book_templates = [
+        ("Assets", "asset"),
+        ("Equity", "equity"),
+        ("Expenses", "expense"),
+        ("Income", "income"),
+        ("Liabilities", " liability"),
+    ]
+    for name, type_ in account_book_templates:
+        db_account_book = models.account_books.AccountBook(
+            name=name,
+            type=type_,
+            account=db_account,
+            creator=current_user,
+            updated_by=current_user,
+        )
+        await db_account_book.save()
 
     return db_account
 

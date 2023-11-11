@@ -24,6 +24,7 @@ Account {{ account.name }}
       <thead>
         <tr>
           <th>Name</th>
+          <th>Type</th>
           <th>Tool</th>
 
         </tr>
@@ -38,6 +39,7 @@ Account {{ account.name }}
             {{ account_book.name }}
 
           </td>
+          <td> {{ account_book.type.title() }} </td>
           <td>
             <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book.id) }}"><i class="eye icon"></i></a>
           </td>

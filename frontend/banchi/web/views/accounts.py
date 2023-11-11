@@ -39,8 +39,10 @@ def create_or_edit(account_id):
 
     data = form.data.copy()
     data["space_id"] = request.args.get("space_id")
+
     if not account:
         account = models.CreatedAccount.from_dict(data)
+        print(">>>", account.to_dict())
         response = create_v1_accounts_create_post.sync(client=client, json_body=account)
     else:
         account = models.UpdatedAccount.from_dict(data)

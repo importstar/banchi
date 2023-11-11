@@ -105,7 +105,6 @@ def view(account_book_id):
         client=client, account_book_id=account_book.id
     )
 
-    print(label)
     return render_template(
         "/account_books/view.html",
         account_book=account_book,

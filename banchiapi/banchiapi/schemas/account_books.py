@@ -35,15 +35,17 @@ class SmallestFractionEnum(int, enum.Enum):
 
 class BaseAccountBook(BaseModel):
     name: str = Field(..., example="Account Book Name")
-    description: str = Field(..., example="Description")
+    description: str = Field(default="", example="Description")
     type: AccountTypeEnum = Field(
-        ...,
+        default=AccountTypeEnum.asset,
         example=AccountTypeEnum.asset,
     )
     smallest_fraction: SmallestFractionEnum = Field(
-        ..., example=SmallestFractionEnum.f0_01
+        default=SmallestFractionEnum.f0_01, example=SmallestFractionEnum.f0_01
     )
-    currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
+    currency: accounts.CurrencyEnum = Field(
+        default=accounts.CurrencyEnum.THB, example=accounts.CurrencyEnum.THB
+    )
 
 
 class ReferenceAccountBook(bases.BaseSchema):
