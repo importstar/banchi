@@ -7,6 +7,7 @@ from banchi_client.api.v1 import (
     create_v1_account_books_create_post,
     create_v1_transactions_create_post,
     update_v1_account_books_account_book_id_update_put,
+    update_v1_transactions_transaction_id_update_put,
     get_all_v1_account_books_get,
     get_all_v1_transactions_get,
     get_v1_account_books_account_book_id_get,
@@ -135,8 +136,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     )
 
     account_book_choices = [
-        (str(account_book.id), account_book.name)
-        for account_book in response.account_books
+        (str(ab.id), ab.name) for ab in response.account_books if ab != account_book
     ]
 
     form = forms.transactions.TransactionForm()
@@ -148,13 +148,15 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         )
 
         form = forms.transactions.TransactionForm(obj=transaction)
-    else:
-        form.from_account_book_id.data = str(account_book.id)
+    form.from_account_book_id.data = str(account_book.id)
 
     form.from_account_book_id.choices = [(str(account_book.id), account_book.name)]
     form.to_account_book_id.choices = account_book_choices
 
     if not form.validate_on_submit():
+        if request.method == "GET" and transaction:
+            form.to_account_book_id.data = transaction.to_account_book.id
+
         form.from_account_book_id.render_kw = {"disabled": ""}
         return render_template(
             "/account_books/add-transaction.html", account_book=account_book, form=form
@@ -162,10 +164,18 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
     data = form.data.copy()
     data.pop("csrf_token")
-    transaction = models.CreatedTransaction.from_dict(data)
 
-    response = create_v1_transactions_create_post.sync(
-        client=client, json_body=transaction
-    )
+    data["date"] = data["date"].isoformat()
+    data["value"] = float(data["value"])
+    if not transaction:
+        transaction = models.CreatedTransaction.from_dict(data)
+        response = create_v1_transactions_create_post.sync(
+            client=client, json_body=transaction
+        )
+    else:
+        transaction = models.UpdatedTransaction.from_dict(data)
+        response = update_v1_transactions_transaction_id_update_put.sync(
+            client=client, json_body=transaction, transaction_id=transaction_id
+        )
 
     return redirect(url_for("account_books.view", account_book_id=account_book.id))

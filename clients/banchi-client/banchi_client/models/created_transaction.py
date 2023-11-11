@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Type, TypeVar
+import datetime
+from typing import Any, Dict, List, Type, TypeVar, Union
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+from dateutil.parser import isoparse
 
 from ..models.currency_enum import CurrencyEnum
+from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="CreatedTransaction")
 
@@ -17,6 +20,7 @@ class CreatedTransaction:
         currency (CurrencyEnum):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-11-07T22:44:41.532521').
     """
 
     description: str
@@ -24,6 +28,7 @@ class CreatedTransaction:
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
+    date: Union[Unset, datetime.datetime] = isoparse("2023-11-07T22:44:41.532521")
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -33,6 +38,9 @@ class CreatedTransaction:
 
         from_account_book_id = self.from_account_book_id
         to_account_book_id = self.to_account_book_id
+        date: Union[Unset, str] = UNSET
+        if not isinstance(self.date, Unset):
+            date = self.date.isoformat()
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -45,6 +53,8 @@ class CreatedTransaction:
                 "to_account_book_id": to_account_book_id,
             }
         )
+        if date is not UNSET:
+            field_dict["date"] = date
 
         return field_dict
 
@@ -61,12 +71,20 @@ class CreatedTransaction:
 
         to_account_book_id = d.pop("to_account_book_id")
 
+        _date = d.pop("date", UNSET)
+        date: Union[Unset, datetime.datetime]
+        if isinstance(_date, Unset):
+            date = UNSET
+        else:
+            date = isoparse(_date)
+
         created_transaction = cls(
             description=description,
             value=value,
             currency=currency,
             from_account_book_id=from_account_book_id,
             to_account_book_id=to_account_book_id,
+            date=date,
         )
 
         created_transaction.additional_properties = d

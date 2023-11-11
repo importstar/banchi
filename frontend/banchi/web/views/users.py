@@ -182,7 +182,7 @@ def index():
     # if current_organization:
     #     form.current_organization.data = str(current_organization.id)
 
-    form = forms.users.User()
+    form = forms.users.UserForm()
     return render_template(
         "/users/index.html", user=current_user, biography=biography, form=form
     )

@@ -1,4 +1,5 @@
 from bson import ObjectId
+import datetime
 
 from pydantic import BaseModel, Field
 from beanie import PydanticObjectId
@@ -11,6 +12,7 @@ from . import bases
 
 
 class BaseTransaction(BaseModel):
+    date: datetime.datetime = datetime.datetime.now()
     description: str = Field(..., example="Desctription")
     value: float = Field(..., example=0.0)
     currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
@@ -33,5 +35,10 @@ class TransactionList(BaseModel):
 
 
 class CreatedTransaction(BaseTransaction):
+    from_account_book_id: str = Field(..., example="0")
+    to_account_book_id: str = Field(..., example="0")
+
+
+class UpdatedTransaction(BaseTransaction):
     from_account_book_id: str = Field(..., example="0")
     to_account_book_id: str = Field(..., example="0")

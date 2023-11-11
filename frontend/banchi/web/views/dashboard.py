@@ -2,7 +2,6 @@ import datetime
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 
-import mongoengine as me
 from .. import models
 from .. import acl
 
