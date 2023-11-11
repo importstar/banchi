@@ -33,7 +33,9 @@ async def gather_documents() -> Sequence[Type[DocumentType]]:
 class BeanieClient:
     async def init_beanie(self, settings):
         self.settings = settings
-        self.client = motor.motor_asyncio.AsyncIOMotorClient(settings.MONGODB_URI)
+        self.client = motor.motor_asyncio.AsyncIOMotorClient(
+            settings.MONGODB_URI, connect=True
+        )
 
         documents = await gather_documents()
         print("Documents >>>")

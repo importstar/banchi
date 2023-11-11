@@ -162,3 +162,37 @@ async def delete(
         division.status = "disactive"
         division.save()
     return db_account_book
+
+
+@router.get(
+    "/{account_book_id}/label",
+    response_model_by_alias=False,
+)
+async def get_label(
+    account_book_id: str,
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> schemas.account_books.AccountBookLabel:
+    db_account_book = await models.account_books.AccountBook.find_one(
+        models.account_books.AccountBook.id == bson.ObjectId(account_book_id),
+        models.account_books.AccountBook.creator.id == current_user.id,
+        models.account_books.AccountBook.status == "active",
+        fetch_links=True,
+    )
+
+    if not db_account_book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found this account_book",
+        )
+
+    labels = dict(
+        asset=dict(positive="increase", negative="decrease"),
+        cash=dict(positive="receive", negative="spend"),
+        bank=dict(positive="deposit", negative="withdrawal"),
+        equity=dict(positive="decrease", negative="increase"),
+        expense=dict(positive="expense", negative="rebate"),
+        income=dict(positive="charge", negative="income"),
+        liability=dict(positive="decrease", negative="increase"),
+        credit_card=dict(positive="payment", negative="charge"),
+    )
+    return labels[db_account_book.type]

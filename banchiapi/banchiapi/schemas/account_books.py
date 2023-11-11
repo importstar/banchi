@@ -61,6 +61,11 @@ class AccountBook(bases.BaseSchema, BaseAccountBook):
     )
 
 
+class AccountBookLabel(BaseModel):
+    positive: str = Field(default="increase", example="increase")
+    negative: str = Field(default="decrease", example="decrease")
+
+
 class CreatedAccountBook(BaseAccountBook):
     parent_id: str | None = Field(..., example=None)
     account_id: str = Field(..., example="0")

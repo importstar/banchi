@@ -11,6 +11,7 @@ from banchi_client.api.v1 import (
     get_all_v1_transactions_get,
     get_v1_account_books_account_book_id_get,
     get_v1_transactions_transaction_id_get,
+    get_label_v1_account_books_account_book_id_label_get,
 )
 
 from .. import banchi_api_clients
@@ -99,10 +100,16 @@ def view(account_book_id):
         to_account_book_id=account_book.id,
     )
 
+    label = get_label_v1_account_books_account_book_id_label_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+
+    print(label)
     return render_template(
         "/account_books/view.html",
         account_book=account_book,
         transactions=response.transactions,
+        label=label,
     )
 
 
