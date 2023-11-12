@@ -16,7 +16,7 @@ from banchiapi import schemas
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 
-def transform_transaction(tranasction):
+async def transform_transaction(tranasction):
     db_from_account_book = await models.account_books.AccountBook.find_one(
         models.account_books.AccountBook.id
         == bson.ObjectId(transaction.from_account_book_id),
@@ -100,7 +100,7 @@ async def create(
     transaction: schemas.transactions.CreatedTransaction,
     current_user: Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
-    data = transform_transaction(transaction)
+    data = await transform_transaction(transaction)
     data["creator"] = current_user
     data["updated_by"] = current_user
 
@@ -148,7 +148,7 @@ async def update(
             detail="Not found this system setting",
         )
 
-    data = transform_transaction(transaction)
+    data = await transform_transaction(transaction)
 
     data["updated_by"] = current_user
     await db_transaction.set(data)
