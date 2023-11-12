@@ -16,6 +16,40 @@ from banchiapi import schemas
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 
+def transform_transaction(tranasction):
+    db_from_account_book = await models.account_books.AccountBook.find_one(
+        models.account_books.AccountBook.id
+        == bson.ObjectId(transaction.from_account_book_id),
+        models.account_books.AccountBook.creator.id == current_user.id,
+    )
+    db_to_account_book = await models.account_books.AccountBook.find_one(
+        models.account_books.AccountBook.id
+        == bson.ObjectId(transaction.to_account_book_id),
+        models.account_books.AccountBook.creator.id == current_user.id,
+    )
+
+    if not (db_from_account_book and db_to_account_book):
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"AccountBook id {transaction.account_book_id} not found",
+        )
+
+    data = transaction.dict()
+    data["from_account_book"] = db_from_account_book
+    data["to_account_book"] = db_to_account_book
+
+    if transaction.value < 0:
+        data["from_account_book"] = db_to_account_book
+        data["to_account_book"] = db_from_account_book
+        data["value"] *= -1
+
+    data["amount"] = data["value"] * db_from_account_book.smallest_fraction
+
+    data["updated_date"] = datetime.datetime.now()
+
+    return data
+
+
 @router.get(
     "",
     response_model_by_alias=False,
@@ -66,33 +100,9 @@ async def create(
     transaction: schemas.transactions.CreatedTransaction,
     current_user: Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
-    db_from_account_book = await models.account_books.AccountBook.find_one(
-        models.account_books.AccountBook.id
-        == bson.ObjectId(transaction.from_account_book_id),
-        models.account_books.AccountBook.creator.id == current_user.id,
-    )
-    db_to_account_book = await models.account_books.AccountBook.find_one(
-        models.account_books.AccountBook.id
-        == bson.ObjectId(transaction.to_account_book_id),
-        models.account_books.AccountBook.creator.id == current_user.id,
-    )
-
-    if not (db_from_account_book and db_to_account_book):
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"AccountBook id {transaction.account_book_id} not found",
-        )
-
-    data = transaction.dict()
+    data = transform_transaction(transaction)
     data["creator"] = current_user
     data["updated_by"] = current_user
-    data["from_account_book"] = db_from_account_book
-    data["to_account_book"] = db_to_account_book
-
-    if transaction.value < 0:
-        data["from_account_book"] = db_to_account_book
-        data["to_account_book"] = db_from_account_book
-        data["value"] *= -1
 
     db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
@@ -138,22 +148,11 @@ async def update(
             detail="Not found this system setting",
         )
 
-    data = transaction.dict().copy()
-    from_account_book_id = data.pop("from_account_book_id")
-    to_account_book_id = data.pop("to_account_book_id")
+    data = transform_transaction(transaction)
 
+    data["updated_by"] = current_user
     await db_transaction.set(data)
 
-    db_transaction.updated_date = datetime.datetime.now()
-    db_transaction.updated_by = current_user
-    db_transaction.to_account_book = await models.account_books.AccountBook.get(
-        to_account_book_id
-    )
-    db_transaction.from_account_book = await models.account_books.AccountBook.get(
-        from_account_book_id
-    )
-
-    await db_transaction.save()
     await db_transaction.fetch_all_links()
     return db_transaction
 
