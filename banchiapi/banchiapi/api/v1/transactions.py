@@ -43,8 +43,6 @@ async def transform_transaction(transaction, current_user):
         data["to_account_book"] = db_from_account_book
         data["value"] *= -1
 
-    data["amount"] = data["value"] * db_from_account_book.smallest_fraction
-
     data["updated_date"] = datetime.datetime.now()
     data["updated_by"] = current_user
 

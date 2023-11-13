@@ -21,8 +21,6 @@ class Transaction(schemas.transactions.Transaction, Document):
     to_account_book: Link[account_books.AccountBook]
     value: DecimalAnnotation
 
-    amount: int
-
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     creator: Link[users.User]
