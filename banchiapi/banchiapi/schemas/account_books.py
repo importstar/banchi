@@ -1,6 +1,7 @@
 from bson import ObjectId
 
 import enum
+import decimal
 from pydantic import BaseModel, Field
 from beanie import PydanticObjectId
 
@@ -31,6 +32,12 @@ class SmallestFractionEnum(int, enum.Enum):
     f0_0001 = 10000
     f0_00001 = 100000
     f0_000001 = 1000000
+
+
+class AccountBookBalance(BaseModel):
+    balance: decimal.Decimal
+    increse: decimal.Decimal
+    decrese: decimal.Decimal
 
 
 class BaseAccountBook(BaseModel):

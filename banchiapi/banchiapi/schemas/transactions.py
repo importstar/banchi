@@ -1,5 +1,6 @@
 from bson import ObjectId
 import datetime
+import decimal
 
 from pydantic import BaseModel, Field
 from beanie import PydanticObjectId
@@ -14,7 +15,7 @@ from . import bases
 class BaseTransaction(BaseModel):
     date: datetime.datetime = datetime.datetime.now()
     description: str = Field(..., example="Desctription")
-    value: float = Field(..., example=0.0)
+    value: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
     currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
 
 

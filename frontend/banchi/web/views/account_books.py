@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 import datetime
+import decimal
 
 
 from banchi_client import models
@@ -13,6 +14,7 @@ from banchi_client.api.v1 import (
     get_v1_account_books_account_book_id_get,
     get_v1_transactions_transaction_id_get,
     get_label_v1_account_books_account_book_id_label_get,
+    get_balance_v1_account_books_account_book_id_balance_get,
 )
 
 from .. import banchi_api_clients
@@ -104,12 +106,16 @@ def view(account_book_id):
     label = get_label_v1_account_books_account_book_id_label_get.sync(
         client=client, account_book_id=account_book.id
     )
+    balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
+        client=client, account_book_id=account_book.id
+    )
 
     return render_template(
         "/account_books/view.html",
         account_book=account_book,
         transactions=response.transactions,
         label=label,
+        balance=balance,
     )
 
 

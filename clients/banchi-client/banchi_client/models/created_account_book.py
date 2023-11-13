@@ -6,6 +6,7 @@ from attrs import field as _attrs_field
 from ..models.account_type_enum import AccountTypeEnum
 from ..models.currency_enum import CurrencyEnum
 from ..models.smallest_fraction_enum import SmallestFractionEnum
+from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="CreatedAccountBook")
 
@@ -15,51 +16,60 @@ class CreatedAccountBook:
     """
     Attributes:
         name (str):  Example: Account Book Name.
-        description (str):  Example: Description.
-        type (AccountTypeEnum):
-        smallest_fraction (SmallestFractionEnum):
-        currency (CurrencyEnum):
         parent_id (Union[None, str]):
         account_id (str):  Example: 0.
+        description (Union[Unset, str]):  Default: ''. Example: Description.
+        type (Union[Unset, AccountTypeEnum]):  Default: AccountTypeEnum.ASSET.
+        smallest_fraction (Union[Unset, SmallestFractionEnum]):  Default: 100.
+        currency (Union[Unset, CurrencyEnum]):  Default: CurrencyEnum.THB.
     """
 
     name: str
-    description: str
-    type: AccountTypeEnum
-    smallest_fraction: SmallestFractionEnum
-    currency: CurrencyEnum
     parent_id: Union[None, str]
     account_id: str
+    description: Union[Unset, str] = ""
+    type: Union[Unset, AccountTypeEnum] = AccountTypeEnum.ASSET
+    smallest_fraction: Union[Unset, SmallestFractionEnum] = 100
+    currency: Union[Unset, CurrencyEnum] = CurrencyEnum.THB
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         name = self.name
-        description = self.description
-        type = self.type.value
-
-        smallest_fraction = self.smallest_fraction.value
-
-        currency = self.currency.value
-
         parent_id: Union[None, str]
 
         parent_id = self.parent_id
 
         account_id = self.account_id
+        description = self.description
+        type: Union[Unset, str] = UNSET
+        if not isinstance(self.type, Unset):
+            type = self.type.value
+
+        smallest_fraction: Union[Unset, int] = UNSET
+        if not isinstance(self.smallest_fraction, Unset):
+            smallest_fraction = self.smallest_fraction.value
+
+        currency: Union[Unset, str] = UNSET
+        if not isinstance(self.currency, Unset):
+            currency = self.currency.value
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "name": name,
-                "description": description,
-                "type": type,
-                "smallest_fraction": smallest_fraction,
-                "currency": currency,
                 "parent_id": parent_id,
                 "account_id": account_id,
             }
         )
+        if description is not UNSET:
+            field_dict["description"] = description
+        if type is not UNSET:
+            field_dict["type"] = type
+        if smallest_fraction is not UNSET:
+            field_dict["smallest_fraction"] = smallest_fraction
+        if currency is not UNSET:
+            field_dict["currency"] = currency
 
         return field_dict
 
@@ -67,14 +77,6 @@ class CreatedAccountBook:
     def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
         d = src_dict.copy()
         name = d.pop("name")
-
-        description = d.pop("description")
-
-        type = AccountTypeEnum(d.pop("type"))
-
-        smallest_fraction = SmallestFractionEnum(d.pop("smallest_fraction"))
-
-        currency = CurrencyEnum(d.pop("currency"))
 
         def _parse_parent_id(data: object) -> Union[None, str]:
             if data is None:
@@ -85,14 +87,37 @@ class CreatedAccountBook:
 
         account_id = d.pop("account_id")
 
+        description = d.pop("description", UNSET)
+
+        _type = d.pop("type", UNSET)
+        type: Union[Unset, AccountTypeEnum]
+        if isinstance(_type, Unset):
+            type = UNSET
+        else:
+            type = AccountTypeEnum(_type)
+
+        _smallest_fraction = d.pop("smallest_fraction", UNSET)
+        smallest_fraction: Union[Unset, SmallestFractionEnum]
+        if isinstance(_smallest_fraction, Unset):
+            smallest_fraction = UNSET
+        else:
+            smallest_fraction = SmallestFractionEnum(_smallest_fraction)
+
+        _currency = d.pop("currency", UNSET)
+        currency: Union[Unset, CurrencyEnum]
+        if isinstance(_currency, Unset):
+            currency = UNSET
+        else:
+            currency = CurrencyEnum(_currency)
+
         created_account_book = cls(
             name=name,
+            parent_id=parent_id,
+            account_id=account_id,
             description=description,
             type=type,
             smallest_fraction=smallest_fraction,
             currency=currency,
-            parent_id=parent_id,
-            account_id=account_id,
         )
 
         created_account_book.additional_properties = d

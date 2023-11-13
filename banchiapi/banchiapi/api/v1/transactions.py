@@ -16,7 +16,7 @@ from banchiapi import schemas
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 
-async def transform_transaction(tranasction):
+async def transform_transaction(transaction, current_user):
     db_from_account_book = await models.account_books.AccountBook.find_one(
         models.account_books.AccountBook.id
         == bson.ObjectId(transaction.from_account_book_id),
@@ -46,6 +46,7 @@ async def transform_transaction(tranasction):
     data["amount"] = data["value"] * db_from_account_book.smallest_fraction
 
     data["updated_date"] = datetime.datetime.now()
+    data["updated_by"] = current_user
 
     return data
 
@@ -87,7 +88,7 @@ async def get_all(
         all_transactions = await query.to_list()
 
     db_transactions = all_transactions + to_account_books + from_account_books
-    db_transactions.sort(key=lambda t: t.date)
+    db_transactions.sort(key=lambda t: t.date, reverse=True)
 
     return dict(transactions=db_transactions)
 
@@ -100,9 +101,8 @@ async def create(
     transaction: schemas.transactions.CreatedTransaction,
     current_user: Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
-    data = await transform_transaction(transaction)
+    data = await transform_transaction(transaction, current_user)
     data["creator"] = current_user
-    data["updated_by"] = current_user
 
     db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
@@ -148,9 +148,8 @@ async def update(
             detail="Not found this system setting",
         )
 
-    data = await transform_transaction(transaction)
+    data = await transform_transaction(transaction, current_user)
 
-    data["updated_by"] = current_user
     await db_transaction.set(data)
 
     await db_transaction.fetch_all_links()

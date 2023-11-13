@@ -2,6 +2,7 @@
 
 from .account import Account
 from .account_book import AccountBook
+from .account_book_balance import AccountBookBalance
 from .account_book_label import AccountBookLabel
 from .account_book_list import AccountBookList
 from .account_list import AccountList
@@ -37,6 +38,7 @@ from .validation_error import ValidationError
 __all__ = (
     "Account",
     "AccountBook",
+    "AccountBookBalance",
     "AccountBookLabel",
     "AccountBookList",
     "AccountList",

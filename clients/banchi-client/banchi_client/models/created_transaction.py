@@ -1,5 +1,5 @@
 import datetime
-from typing import Any, Dict, List, Type, TypeVar, Union
+from typing import Any, Dict, List, Type, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -16,24 +16,27 @@ class CreatedTransaction:
     """
     Attributes:
         description (str):  Example: Desctription.
-        value (float):
+        value (Union[float, str]):
         currency (CurrencyEnum):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-11-07T22:44:41.532521').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-11-13T20:39:15.006280').
     """
 
     description: str
-    value: float
+    value: Union[float, str]
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2023-11-07T22:44:41.532521")
+    date: Union[Unset, datetime.datetime] = isoparse("2023-11-13T20:39:15.006280")
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         description = self.description
+        value: Union[float, str]
+
         value = self.value
+
         currency = self.currency.value
 
         from_account_book_id = self.from_account_book_id
@@ -63,7 +66,10 @@ class CreatedTransaction:
         d = src_dict.copy()
         description = d.pop("description")
 
-        value = d.pop("value")
+        def _parse_value(data: object) -> Union[float, str]:
+            return cast(Union[float, str], data)
+
+        value = _parse_value(d.pop("value"))
 
         currency = CurrencyEnum(d.pop("currency"))
 

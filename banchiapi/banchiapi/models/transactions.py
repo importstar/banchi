@@ -1,7 +1,7 @@
 from banchiapi import schemas
 from typing import Optional
 
-from beanie import Document, Indexed, Link, PydanticObjectId
+from beanie import Document, Indexed, Link, PydanticObjectId, DecimalAnnotation
 from pydantic import Field
 
 from . import users
@@ -19,6 +19,7 @@ class Transaction(schemas.transactions.Transaction, Document):
     )
     from_account_book: Link[account_books.AccountBook]
     to_account_book: Link[account_books.AccountBook]
+    value: DecimalAnnotation
 
     amount: int
 

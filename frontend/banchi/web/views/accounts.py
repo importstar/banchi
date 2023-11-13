@@ -7,6 +7,7 @@ from banchi_client.api.v1 import (
     create_v1_accounts_create_post,
     get_all_v1_accounts_get,
     get_all_v1_account_books_get,
+    get_balance_v1_account_books_account_book_id_balance_get,
     get_v1_accounts_account_id_get,
 )
 
@@ -59,7 +60,18 @@ def view(account_id):
     client = banchi_api_clients.client.get_current_client()
     account = get_v1_accounts_account_id_get.sync(client=client, account_id=account_id)
     response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
+    balances = dict()
+
+    for account_book in response.account_books:
+        balances[
+            account_book.id
+        ] = get_balance_v1_account_books_account_book_id_balance_get.sync(
+            client=client, account_book_id=account_book.id
+        )
 
     return render_template(
-        "/accounts/view.html", account=account, account_books=response.account_books
+        "/accounts/view.html",
+        account=account,
+        account_books=response.account_books,
+        balances=balances,
     )

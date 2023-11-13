@@ -21,26 +21,26 @@ class Transaction:
     """
     Attributes:
         description (str):  Example: Desctription.
-        value (float):
+        value (str):
         currency (CurrencyEnum):
         id (str):  Example: 0.
         from_account_book (ReferenceAccountBook):
         to_account_book (ReferenceAccountBook):
         creator (ReferenceUser):
         updated_by (ReferenceUser):
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-11-07T22:44:41.532521').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-11-13T20:39:15.006280').
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
     description: str
-    value: float
+    value: str
     currency: CurrencyEnum
     id: str
     from_account_book: "ReferenceAccountBook"
     to_account_book: "ReferenceAccountBook"
     creator: "ReferenceUser"
     updated_by: "ReferenceUser"
-    date: Union[Unset, datetime.datetime] = isoparse("2023-11-07T22:44:41.532521")
+    date: Union[Unset, datetime.datetime] = isoparse("2023-11-13T20:39:15.006280")
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
