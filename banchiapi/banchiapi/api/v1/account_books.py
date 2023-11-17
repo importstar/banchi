@@ -21,6 +21,8 @@ router = APIRouter(prefix="/account-books", tags=["account_books"])
 async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
     account_id: str | None = None,
+    parent_id: str | None = None,
+    recursive: bool = True,
 ) -> schemas.account_books.AccountBookList:
     query_args = [
         models.account_books.AccountBook.status == "active",
@@ -29,6 +31,10 @@ async def get_all(
     if account_id:
         query_args.append(
             models.account_books.AccountBook.account.id == bson.ObjectId(account_id)
+        )
+    if parent_id:
+        query_args.append(
+            models.account_books.AccountBook.parent.id == bson.ObjectId(parent_id)
         )
 
     query = models.account_books.AccountBook.find(*query_args, fetch_links=True)
