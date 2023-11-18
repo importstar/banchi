@@ -31,7 +31,7 @@ Account {{ account.name }}
         </tr>
       </thead>
       <tbody>
-        {% for account_book in account_books %}
+        {% for account_book in account_books | sort(attribute='name') %}
         <tr>
           <td>
             {% if account_book.parent %}

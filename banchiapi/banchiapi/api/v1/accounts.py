@@ -74,8 +74,9 @@ async def create(
         ("Equity", "equity"),
         ("Expenses", "expense"),
         ("Income", "income"),
-        ("Liabilities", " liability"),
+        ("Liabilities", "liability"),
     ]
+
     for name, type_ in account_book_templates:
         db_account_book = models.account_books.AccountBook(
             name=name,

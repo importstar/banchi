@@ -21,6 +21,29 @@ Account Book {{ account_book.name }}
       <i class="add icon"></i> Add Transaction
     </a>
   </div>
+
+  <div style="padding-top:1vh;">
+    <div class="ui cards">
+      {% for child in account_book.children %}
+        <div class="card">
+          <div class="content">
+            <div class="header">
+              {{ child.name }}
+            </div>
+            <div class="description">
+              
+            </div>
+          </div>
+          <div class="extra content">
+            <div class="ui two buttons">
+              <a class="ui basic primary button" href="{{ url_for('account_books.view', account_book_id=child.id) }}">View</a>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
   <div style="padding-top:1vh;">
     <table class="ui table">
       <thead>

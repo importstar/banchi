@@ -21,8 +21,7 @@ router = APIRouter(prefix="/account-books", tags=["account_books"])
 async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
     account_id: str | None = None,
-    parent_id: str | None = None,
-    recursive: bool = True,
+    account_book_parent_id: str | None = None,
 ) -> schemas.account_books.AccountBookList:
     query_args = [
         models.account_books.AccountBook.status == "active",
@@ -32,9 +31,10 @@ async def get_all(
         query_args.append(
             models.account_books.AccountBook.account.id == bson.ObjectId(account_id)
         )
-    if parent_id:
+    if account_book_parent_id:
         query_args.append(
-            models.account_books.AccountBook.parent.id == bson.ObjectId(parent_id)
+            models.account_books.AccountBook.parent.id
+            == bson.ObjectId(account_book_parent_id)
         )
 
     query = models.account_books.AccountBook.find(*query_args, fetch_links=True)
@@ -95,6 +95,7 @@ async def get(
         models.account_books.AccountBook.status == "active",
         fetch_links=True,
     )
+
     if not db_account_book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

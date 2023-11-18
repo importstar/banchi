@@ -63,6 +63,7 @@ class AccountBook(bases.BaseSchema, BaseAccountBook):
     account: accounts.ReferenceAccount
     parent: ReferenceAccountBook | None
     creator: users.ReferenceUser
+    children: list[ReferenceAccountBook] = []
 
     status: str = Field(
         default="active",

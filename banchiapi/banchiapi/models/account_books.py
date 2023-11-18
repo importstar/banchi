@@ -1,7 +1,7 @@
 from banchiapi import schemas
 from typing import Optional
 
-from beanie import Document, Indexed, Link, PydanticObjectId
+from beanie import Document, Indexed, Link, PydanticObjectId, BackLink
 from pydantic import Field
 
 from . import users
@@ -24,6 +24,8 @@ class AccountBook(schemas.account_books.AccountBook, Document):
 
     creator: Link[users.User]
     updated_by: Link[users.User]
+
+    children: list[BackLink["AccountBook"]] = Field(original_field="parent")
 
     class Settings:
         name = "account_books"
