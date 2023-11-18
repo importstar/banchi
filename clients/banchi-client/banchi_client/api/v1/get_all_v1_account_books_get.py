@@ -13,6 +13,7 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     *,
     account_id: Union[None, Unset, str] = UNSET,
+    account_book_parent_id: Union[None, Unset, str] = UNSET,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
     json_account_id: Union[None, Unset, str]
@@ -23,6 +24,15 @@ def _get_kwargs(
         json_account_id = account_id
 
     params["account_id"] = json_account_id
+
+    json_account_book_parent_id: Union[None, Unset, str]
+    if isinstance(account_book_parent_id, Unset):
+        json_account_book_parent_id = UNSET
+
+    else:
+        json_account_book_parent_id = account_book_parent_id
+
+    params["account_book_parent_id"] = json_account_book_parent_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -65,11 +75,13 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     account_id: Union[None, Unset, str] = UNSET,
+    account_book_parent_id: Union[None, Unset, str] = UNSET,
 ) -> Response[Union[AccountBookList, HTTPValidationError]]:
     """Get All
 
     Args:
         account_id (Union[None, Unset, str]):
+        account_book_parent_id (Union[None, Unset, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -81,6 +93,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
+        account_book_parent_id=account_book_parent_id,
     )
 
     response = client.get_httpx_client().request(
@@ -94,11 +107,13 @@ def sync(
     *,
     client: AuthenticatedClient,
     account_id: Union[None, Unset, str] = UNSET,
+    account_book_parent_id: Union[None, Unset, str] = UNSET,
 ) -> Optional[Union[AccountBookList, HTTPValidationError]]:
     """Get All
 
     Args:
         account_id (Union[None, Unset, str]):
+        account_book_parent_id (Union[None, Unset, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -111,6 +126,7 @@ def sync(
     return sync_detailed(
         client=client,
         account_id=account_id,
+        account_book_parent_id=account_book_parent_id,
     ).parsed
 
 
@@ -118,11 +134,13 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     account_id: Union[None, Unset, str] = UNSET,
+    account_book_parent_id: Union[None, Unset, str] = UNSET,
 ) -> Response[Union[AccountBookList, HTTPValidationError]]:
     """Get All
 
     Args:
         account_id (Union[None, Unset, str]):
+        account_book_parent_id (Union[None, Unset, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -134,6 +152,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
+        account_book_parent_id=account_book_parent_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -145,11 +164,13 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     account_id: Union[None, Unset, str] = UNSET,
+    account_book_parent_id: Union[None, Unset, str] = UNSET,
 ) -> Optional[Union[AccountBookList, HTTPValidationError]]:
     """Get All
 
     Args:
         account_id (Union[None, Unset, str]):
+        account_book_parent_id (Union[None, Unset, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -163,5 +184,6 @@ async def asyncio(
         await asyncio_detailed(
             client=client,
             account_id=account_id,
+            account_book_parent_id=account_book_parent_id,
         )
     ).parsed

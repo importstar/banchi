@@ -30,6 +30,7 @@ class AccountBook:
         type (Union[Unset, AccountTypeEnum]):  Default: AccountTypeEnum.ASSET.
         smallest_fraction (Union[Unset, SmallestFractionEnum]):  Default: 100.
         currency (Union[Unset, CurrencyEnum]):  Default: CurrencyEnum.THB.
+        children (Union[Unset, List['ReferenceAccountBook']]):
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
@@ -42,6 +43,7 @@ class AccountBook:
     type: Union[Unset, AccountTypeEnum] = AccountTypeEnum.ASSET
     smallest_fraction: Union[Unset, SmallestFractionEnum] = 100
     currency: Union[Unset, CurrencyEnum] = CurrencyEnum.THB
+    children: Union[Unset, List["ReferenceAccountBook"]] = UNSET
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -75,6 +77,14 @@ class AccountBook:
         if not isinstance(self.currency, Unset):
             currency = self.currency.value
 
+        children: Union[Unset, List[Dict[str, Any]]] = UNSET
+        if not isinstance(self.children, Unset):
+            children = []
+            for children_item_data in self.children:
+                children_item = children_item_data.to_dict()
+
+                children.append(children_item)
+
         status = self.status
 
         field_dict: Dict[str, Any] = {}
@@ -96,6 +106,8 @@ class AccountBook:
             field_dict["smallest_fraction"] = smallest_fraction
         if currency is not UNSET:
             field_dict["currency"] = currency
+        if children is not UNSET:
+            field_dict["children"] = children
         if status is not UNSET:
             field_dict["status"] = status
 
@@ -154,6 +166,13 @@ class AccountBook:
         else:
             currency = CurrencyEnum(_currency)
 
+        children = []
+        _children = d.pop("children", UNSET)
+        for children_item_data in _children or []:
+            children_item = ReferenceAccountBook.from_dict(children_item_data)
+
+            children.append(children_item)
+
         status = d.pop("status", UNSET)
 
         account_book = cls(
@@ -166,6 +185,7 @@ class AccountBook:
             type=type,
             smallest_fraction=smallest_fraction,
             currency=currency,
+            children=children,
             status=status,
         )
 
