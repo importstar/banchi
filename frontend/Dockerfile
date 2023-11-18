@@ -9,12 +9,17 @@ RUN apt install -y python3 python3-dev python3-pip python3-venv npm git locales
 # ENV LC_ALL th_TH.UTF-8
 
 
-ENV BANCHI_SETTINGS=/app/banchi-production.cfg
+ENV BANCHI_SETTINGS=/app/.env
 
 RUN python3 -m venv /venv
 ENV PYTHON=/venv/bin/python3
 
-RUN $PYTHON -m pip install poetry
+RUN $PYTHON -m pip install poetry gunicorn
+
+
+WORKDIR /app/clients/banchi-client
+COPY clients/banchi-client /app/clients/banchi-client
+RUN $PYTHON -m poetry config virtualenvs.create false && $PYTHON -m poetry install --no-interaction --only main
 
 WORKDIR /app
 COPY banchi/cmd /app/banchi/cmd
