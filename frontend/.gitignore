@@ -4,7 +4,6 @@
 *.cfg
 __pycache__
 node_modules
-package-lock.json
 *.egg-*
 .vscode
 .env
