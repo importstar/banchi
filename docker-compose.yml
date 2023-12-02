@@ -83,9 +83,11 @@ services:
             - 9081:9000
         networks:
             - default
+        env_file:
+            - .env
         restart: always
         environment:
-            BANCHI_SETTINGS: .env
+            BANCHI_SETTINGS: /app/.env
         command: /venv/bin/gunicorn -w 8 --keep-alive 10 --timeout 1200 --bind 0.0.0.0:9000 "banchi.web:create_app()"
         logging:
             options:
