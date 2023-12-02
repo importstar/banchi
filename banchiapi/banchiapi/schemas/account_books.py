@@ -2,7 +2,9 @@ from bson import ObjectId
 
 import enum
 import decimal
+import typing
 from pydantic import BaseModel, Field
+
 from beanie import PydanticObjectId
 
 from . import bases
@@ -57,6 +59,7 @@ class BaseAccountBook(BaseModel):
 
 class ReferenceAccountBook(bases.BaseSchema):
     name: str = Field(..., example="Account Book Name")
+    parent: typing.Annotated["ReferenceAccountBook", ...] | None
 
 
 class AccountBook(bases.BaseSchema, BaseAccountBook):

@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 import datetime
+from collections import OrderedDict
 
 
 from banchi_client import models
@@ -43,7 +44,6 @@ def create_or_edit(account_id):
 
     if not account:
         account = models.CreatedAccount.from_dict(data)
-        print(">>>", account.to_dict())
         response = create_v1_accounts_create_post.sync(client=client, json_body=account)
     else:
         account = models.UpdatedAccount.from_dict(data)
@@ -60,18 +60,35 @@ def view(account_id):
     client = banchi_api_clients.client.get_current_client()
     account = get_v1_accounts_account_id_get.sync(client=client, account_id=account_id)
     response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
-    balances = dict()
 
-    for account_book in response.account_books:
-        balances[
-            account_book.id
-        ] = get_balance_v1_account_books_account_book_id_balance_get.sync(
-            client=client, account_book_id=account_book.id
+    account_books = response.account_books
+    balances = dict()
+    display_account_books = dict()
+
+    for account_book in account_books:
+        display_account_books[account_book.id] = dict(
+            name=get_account_book_display_name(account_book),
+            account_balance=get_balance_v1_account_books_account_book_id_balance_get.sync(
+                client=client, account_book_id=account_book.id
+            ),
+            obj=account_book,
         )
+
+    display_account_books = OrderedDict(
+        sorted(display_account_books.items(), key=lambda a: a[1]["name"])
+    )
 
     return render_template(
         "/accounts/view.html",
         account=account,
-        account_books=response.account_books,
+        account_books=account_books,
         balances=balances,
+        display_account_books=display_account_books,
     )
+
+
+def get_account_book_display_name(account_book):
+    if hasattr(account_book, "parent") and account_book.parent:
+        return f"{get_account_book_display_name(account_book.parent)} >> {account_book.name}"
+
+    return account_book.name

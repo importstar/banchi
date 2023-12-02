@@ -31,22 +31,19 @@ Account {{ account.name }}
         </tr>
       </thead>
       <tbody>
-        {% for account_book in account_books | sort(attribute='name') %}
-        <tr>
-          <td>
-            {% if account_book.parent %}
-              {{ account_book.parent.name }} > 
-            {% endif %}
-            {{ account_book.name }}
-          </td>
-          <td> {{ account_book.type.title() }} </td>
-          <td> {{ balances[account_book.id]['balance'] }} </td>
-          <td>
-            <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book.id) }}">
-              <i class="eye icon"></i>
-            </a>
-          </td>
-        </tr>
+        {% for account_book_id, account_book in display_account_books.items() %}
+          <tr class="{{ 'blue' if not account_book['obj'].parent }}">
+            <td>
+              {{ account_book['name'] }}
+            </td>
+            <td> {{ account_book['obj'].type.title() }} </td>
+            <td> {{ account_book['account_balance'].balance }} </td>
+            <td>
+              <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
+                <i class="eye icon"></i>
+              </a>
+            </td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
