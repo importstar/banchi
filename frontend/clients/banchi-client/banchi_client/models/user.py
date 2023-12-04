@@ -19,6 +19,7 @@ class User:
         first_name (str):  Example: Firstname.
         last_name (str):  Example: Lastname.
         id (str):  Example: 0.
+        roles (Union[List[str], None]):  Example: ['user'].
         last_login_date (Union[None, Unset, datetime.datetime]):  Example: 2023-01-01T00:00:00.000000.
     """
 
@@ -27,6 +28,7 @@ class User:
     first_name: str
     last_name: str
     id: str
+    roles: Union[List[str], None]
     last_login_date: Union[None, Unset, datetime.datetime] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -36,6 +38,14 @@ class User:
         first_name = self.first_name
         last_name = self.last_name
         id = self.id
+        roles: Union[List[str], None]
+
+        if isinstance(self.roles, list):
+            roles = self.roles
+
+        else:
+            roles = self.roles
+
         last_login_date: Union[None, Unset, str]
         if isinstance(self.last_login_date, Unset):
             last_login_date = UNSET
@@ -57,6 +67,7 @@ class User:
                 "first_name": first_name,
                 "last_name": last_name,
                 "id": id,
+                "roles": roles,
             }
         )
         if last_login_date is not UNSET:
@@ -76,6 +87,21 @@ class User:
         last_name = d.pop("last_name")
 
         id = d.pop("id")
+
+        def _parse_roles(data: object) -> Union[List[str], None]:
+            if data is None:
+                return data
+            try:
+                if not isinstance(data, list):
+                    raise TypeError()
+                roles_type_0 = cast(List[str], data)
+
+                return roles_type_0
+            except:  # noqa: E722
+                pass
+            return cast(Union[List[str], None], data)
+
+        roles = _parse_roles(d.pop("roles"))
 
         def _parse_last_login_date(data: object) -> Union[None, Unset, datetime.datetime]:
             if data is None:
@@ -105,6 +131,7 @@ class User:
             first_name=first_name,
             last_name=last_name,
             id=id,
+            roles=roles,
             last_login_date=last_login_date,
         )
 

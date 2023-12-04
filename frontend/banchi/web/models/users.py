@@ -20,6 +20,8 @@ class User(UserMixin):
 
     def has_roles(self, role) -> bool:
         roles = self.data.get("roles", [])
+        print("data", self.data)
+        print("check====>", roles, role)
         return role in roles
 
     def get_picture(self) -> str | None:

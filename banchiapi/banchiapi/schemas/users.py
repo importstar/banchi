@@ -18,6 +18,8 @@ class User(bases.BaseSchema, BaseUser):
         example="2023-01-01T00:00:00.000000", default=None
     )
 
+    roles: list[str] | None = Field(example=["user"])
+
 
 class ReferenceUser(bases.BaseSchema):
     username: str = Field(example="admin")
