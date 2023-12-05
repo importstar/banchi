@@ -1,0 +1,41 @@
+{% extends '/admin/users/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+
+{% block dashboard_title %}
+Add User
+{% endblock %}
+
+{% block breadcrumbs %}
+  {{ super() }}
+  <div class="divider"> / </div>
+  <div class="active section">Add User</div>
+{% endblock %}
+
+{% block content %}
+{# start div container #}
+<div class="ui segment">
+  <h2>Transaction</h2>
+  <form method="POST" class="ui form">
+    {{ form.csrf_token }}
+    <div class="two fields">
+      {{ renderer.render_field(form.username) }}
+      {{ renderer.render_field(form.email) }}
+    </div>
+    <div class="two fields">
+      {{ renderer.render_field(form.first_name) }}
+      {{ renderer.render_field(form.last_name) }}
+    </div>
+    <div class="two fields">
+      {{ renderer.render_field(form.password) }}
+      {{ renderer.render_field(form.confirm_password) }}
+    </div>
+
+
+    <button type="submit">Register</button>
+  </form>
+
+</div> 
+{# end div container #}
+{% endblock %}
+

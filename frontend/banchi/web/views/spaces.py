@@ -32,7 +32,7 @@ def create_or_edit(space_id):
     space = None
     if space_id:
         space = get_v1_space_id_get.sync(client=client, id=space_id)
-        form = forms.spaces.SpaceForm(obj=response.to_dict())
+        form = forms.spaces.SpaceForm(obj=space.to_dict())
 
     if not form.validate_on_submit():
         return render_template("/spaces/create-or-edit.html", form=form)

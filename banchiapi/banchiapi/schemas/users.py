@@ -17,6 +17,9 @@ class User(bases.BaseSchema, BaseUser):
     last_login_date: datetime.datetime | None = Field(
         example="2023-01-01T00:00:00.000000", default=None
     )
+    register_date: datetime.datetime | None = Field(
+        example="2023-01-01T00:00:00.000000", default=None
+    )
 
     roles: list[str] | None = Field(example=["user"])
 

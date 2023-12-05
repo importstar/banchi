@@ -4,6 +4,6 @@ import datetime
 module = Blueprint("admin", __name__, url_prefix="/admin")
 
 
-@module.route("/")
+@module.route("")
 def index():
     return render_template("/admin/index.html")

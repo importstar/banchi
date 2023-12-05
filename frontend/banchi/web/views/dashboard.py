@@ -9,6 +9,8 @@ from .. import acl
 module = Blueprint("dashboard", __name__, url_prefix="/dashboard")
 
 
+@module.route("/admin")
+@acl.roles_required("admin")
 def index_admin():
     now = datetime.datetime.now()
 
@@ -18,21 +20,13 @@ def index_admin():
     )
 
 
-def index_user():
-    now = datetime.datetime.now()
-    return render_template(
-        "/dashboard/index-user.html",
-    )
-
-
-@module.route("/")
+@module.route("")
 @login_required
 def index():
     user = current_user._get_current_object()
-    if user.has_roles("admin"):
-        return index_admin()
-
-    return index_user()
+    return render_template(
+        "/dashboard/index-user.html",
+    )
 
 
 @module.route("/me")
