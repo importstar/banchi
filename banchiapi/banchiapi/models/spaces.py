@@ -19,8 +19,26 @@ class Space(schemas.spaces.Space, Document):
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     owner: Link[users.User]
-    contributors: list[Link[users.User]] = []
     updated_by: Link[users.User]
 
     class Settings:
         name = "spaces"
+
+
+class SpaceRole(schemas.spaces.SpaceRole, Document):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId,
+        alias="_id",
+    )
+
+    creator: Link[users.User]
+    contributor: Link[users.User]
+
+    created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
+    created_by: Link[users.User]
+    updated_by: Link[users.User]
+
+    class Settings:
+        name = "space_roles"
