@@ -2,6 +2,9 @@ from bson import ObjectId
 
 from pydantic import BaseModel, Field
 from beanie import PydanticObjectId
+import typing
+
+import datetime
 
 from .system_settings import BaseAuthorizedSignatory
 
@@ -46,4 +49,19 @@ class SpaceList(BaseModel):
 
 
 class CreatedSpace(BaseSpace):
+    pass
+
+
+class BaseSpaceRole(BaseModel):
+    role: typing.Literal["admin", "member"] = Field(..., choices=["admin", "member"])
+    member: users.ReferenceUser
+
+
+class SpaceRole(bases.BaseSchema, BaseSpaceRole):
+    adder: users.ReferenceUser
+    created_date: datetime.datetime
+    updated_date: datetime.datetime
+
+
+class CreatedSpaceRole(BaseSpaceRole):
     pass
