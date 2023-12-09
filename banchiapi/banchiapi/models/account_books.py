@@ -29,3 +29,10 @@ class AccountBook(schemas.account_books.AccountBook, Document):
 
     class Settings:
         name = "account_books"
+
+    @property
+    def display_name(self) -> str:
+        if self.parent:
+            return f"{self.display_name()} >> {self.name}"
+
+        return self.name

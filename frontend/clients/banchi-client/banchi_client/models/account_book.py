@@ -26,11 +26,11 @@ class AccountBook:
         account (ReferenceAccount):
         parent (Union['ReferenceAccountBook', None]):
         creator (ReferenceUser):
+        display_name (str):
         description (Union[Unset, str]):  Default: ''. Example: Description.
         type (Union[Unset, AccountTypeEnum]):  Default: AccountTypeEnum.ASSET.
         smallest_fraction (Union[Unset, SmallestFractionEnum]):  Default: 100.
         currency (Union[Unset, CurrencyEnum]):  Default: CurrencyEnum.THB.
-        children (Union[Unset, List['ReferenceAccountBook']]):
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
@@ -39,11 +39,11 @@ class AccountBook:
     account: "ReferenceAccount"
     parent: Union["ReferenceAccountBook", None]
     creator: "ReferenceUser"
+    display_name: str
     description: Union[Unset, str] = ""
     type: Union[Unset, AccountTypeEnum] = AccountTypeEnum.ASSET
     smallest_fraction: Union[Unset, SmallestFractionEnum] = 100
     currency: Union[Unset, CurrencyEnum] = CurrencyEnum.THB
-    children: Union[Unset, List["ReferenceAccountBook"]] = UNSET
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -64,6 +64,7 @@ class AccountBook:
 
         creator = self.creator.to_dict()
 
+        display_name = self.display_name
         description = self.description
         type: Union[Unset, str] = UNSET
         if not isinstance(self.type, Unset):
@@ -77,14 +78,6 @@ class AccountBook:
         if not isinstance(self.currency, Unset):
             currency = self.currency.value
 
-        children: Union[Unset, List[Dict[str, Any]]] = UNSET
-        if not isinstance(self.children, Unset):
-            children = []
-            for children_item_data in self.children:
-                children_item = children_item_data.to_dict()
-
-                children.append(children_item)
-
         status = self.status
 
         field_dict: Dict[str, Any] = {}
@@ -96,6 +89,7 @@ class AccountBook:
                 "account": account,
                 "parent": parent,
                 "creator": creator,
+                "display_name": display_name,
             }
         )
         if description is not UNSET:
@@ -106,8 +100,6 @@ class AccountBook:
             field_dict["smallest_fraction"] = smallest_fraction
         if currency is not UNSET:
             field_dict["currency"] = currency
-        if children is not UNSET:
-            field_dict["children"] = children
         if status is not UNSET:
             field_dict["status"] = status
 
@@ -143,6 +135,8 @@ class AccountBook:
 
         creator = ReferenceUser.from_dict(d.pop("creator"))
 
+        display_name = d.pop("display_name")
+
         description = d.pop("description", UNSET)
 
         _type = d.pop("type", UNSET)
@@ -166,13 +160,6 @@ class AccountBook:
         else:
             currency = CurrencyEnum(_currency)
 
-        children = []
-        _children = d.pop("children", UNSET)
-        for children_item_data in _children or []:
-            children_item = ReferenceAccountBook.from_dict(children_item_data)
-
-            children.append(children_item)
-
         status = d.pop("status", UNSET)
 
         account_book = cls(
@@ -181,11 +168,11 @@ class AccountBook:
             account=account,
             parent=parent,
             creator=creator,
+            display_name=display_name,
             description=description,
             type=type,
             smallest_fraction=smallest_fraction,
             currency=currency,
-            children=children,
             status=status,
         )
 

@@ -10,18 +10,8 @@ class User(UserMixin):
     def __getattr__(self, attr):
         return self.data[attr]
 
-    # def get_id(self) -> str:
-    #     id = self.data.get("id", None)
-    #     if not id:
-    #         additional_properties = self.data.get("additional_properties")
-    #         id = additional_properties.get("id")
-
-    #     return id
-
     def has_roles(self, role) -> bool:
         roles = self.data.get("roles", [])
-        print("data", self.data)
-        print("check====>", roles, role)
         return role in roles
 
     def get_picture(self) -> str | None:

@@ -153,16 +153,22 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         )
 
         form = forms.transactions.TransactionForm(obj=transaction)
+
     form.from_account_book_id.data = str(account_book.id)
 
     form.from_account_book_id.choices = [(str(account_book.id), account_book.name)]
     form.to_account_book_id.choices = account_book_choices
 
+    print("->", response.account_books)
+
     if not form.validate_on_submit():
         if request.method == "GET" and transaction:
             form.to_account_book_id.data = transaction.to_account_book.id
+            form.value.data = float(form.value.data)
 
-        form.from_account_book_id.render_kw = {"disabled": ""}
+        if not transaction:
+            form.from_account_book_id.render_kw = {"disabled": ""}
+
         return render_template(
             "/account_books/add-transaction.html", account_book=account_book, form=form
         )
