@@ -3,7 +3,7 @@ from bson import ObjectId
 import enum
 import decimal
 import typing
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_serializer, computed_field
 
 from beanie import PydanticObjectId
 
@@ -61,17 +61,32 @@ class ReferenceAccountBook(bases.BaseSchema):
     name: str = Field(..., example="Account Book Name")
     parent: typing.Annotated["ReferenceAccountBook", ...] | None
 
+    @computed_field
+    @property
+    def display_name(self) -> str:
+        if self.parent:
+            return f"{self.parent.display_name} >> {self.name}"
+
+        return self.name
+
 
 class AccountBook(bases.BaseSchema, BaseAccountBook):
     account: accounts.ReferenceAccount
     parent: ReferenceAccountBook | None
     creator: users.ReferenceUser
-    display_name: str | None
 
     status: str = Field(
         default="active",
         example="active",
     )
+
+    @computed_field
+    @property
+    def display_name(self) -> str:
+        if self.parent:
+            return f"{self.parent.display_name} >> {self.name}"
+
+        return self.name
 
 
 class AccountBookLabel(BaseModel):

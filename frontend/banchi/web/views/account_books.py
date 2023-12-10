@@ -56,10 +56,13 @@ def create_or_edit(account_book_id):
         )
 
         form.parent_id.choices.extend(
-            [
-                (account_book.to_dict()["id"], account_book.name)
-                for account_book in response.account_books
-            ]
+            sorted(
+                [
+                    (account_book.to_dict()["id"], account_book.display_name)
+                    for account_book in response.account_books
+                ],
+                key=lambda abn: abn[1],
+            )
         )
 
     if not form.validate_on_submit():
@@ -140,10 +143,6 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         client=client, account_id=account_book.account.id
     )
 
-    account_book_choices = [
-        (str(ab.id), ab.name) for ab in response.account_books if ab != account_book
-    ]
-
     form = forms.transactions.TransactionForm()
 
     transaction = None
@@ -154,17 +153,39 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
         form = forms.transactions.TransactionForm(obj=transaction)
 
-    form.from_account_book_id.data = str(account_book.id)
+    account_book_choices = [
+        (str(ab.id), ab.display_name) for ab in response.account_books
+    ]
+    to_account_book_choices = account_book_choices
 
-    form.from_account_book_id.choices = [(str(account_book.id), account_book.name)]
-    form.to_account_book_id.choices = account_book_choices
+    account_book_choices = sorted(
+        account_book_choices,
+        key=lambda abn: abn[1],
+    )
 
-    print("->", response.account_books)
+    if not transaction:
+        to_account_book_choices = [
+            (str(ab.id), ab.display_name)
+            for ab in response.account_books
+            if ab != account_book
+        ]
+
+        to_account_book_choices = sorted(
+            to_account_book_choices,
+            key=lambda abn: abn[1],
+        )
+
+    form.to_account_book_id.choices = to_account_book_choices
+    form.from_account_book_id.choices = account_book_choices
 
     if not form.validate_on_submit():
+        if request.method == "GET":
+            form.from_account_book_id.data = str(account_book.id)
+
         if request.method == "GET" and transaction:
             form.to_account_book_id.data = transaction.to_account_book.id
-            form.value.data = float(form.value.data)
+            form.from_account_book_id.data = transaction.from_account_book.id
+            form.value.data = decimal.Decimal(form.value.data)
 
         if not transaction:
             form.from_account_book_id.render_kw = {"disabled": ""}

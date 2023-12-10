@@ -11,6 +11,9 @@ import datetime
 
 
 class AccountBook(schemas.account_books.AccountBook, Document):
+    class Settings:
+        name = "account_books"
+
     id: PydanticObjectId = Field(
         default_factory=PydanticObjectId,
         alias="_id",
@@ -26,13 +29,3 @@ class AccountBook(schemas.account_books.AccountBook, Document):
     updated_by: Link[users.User]
 
     children: list[BackLink["AccountBook"]] = Field(original_field="parent")
-
-    class Settings:
-        name = "account_books"
-
-    @property
-    def display_name(self) -> str:
-        if self.parent:
-            return f"{self.display_name()} >> {self.name}"
-
-        return self.name

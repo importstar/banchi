@@ -39,6 +39,7 @@ async def get_all(
 
     query = models.account_books.AccountBook.find(*query_args, fetch_links=True)
     account_books = await query.to_list()
+
     return dict(account_books=account_books)
 
 

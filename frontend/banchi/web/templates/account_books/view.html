@@ -65,11 +65,11 @@ Account Book {{ account_book.name }}
           <td>
             {% if transaction.from_account_book.id != account_book.id %}
               <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
-                {{ transaction.from_account_book.name }}
+                {{ transaction.from_account_book.display_name }}
               </a>
             {% else %}
               <a href="{{ url_for('account_books.view', account_book_id=transaction.to_account_book.id) }}">
-                {{ transaction.to_account_book.name }}
+                {{ transaction.to_account_book.display_name }}
               </a>
             {% endif %}
           </td>
