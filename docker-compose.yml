@@ -73,7 +73,9 @@ services:
     #             max-file: "3"
 
     web:
-        build: ./frontend
+        build: 
+            context: ./
+            dockerfile: ./frontend/Dockerfile
         image: banchi-web-image
         container_name: banchi-web
         volumes:

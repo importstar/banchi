@@ -16,18 +16,18 @@ RUN $PYTHON -m pip install poetry gunicorn
 
 
 WORKDIR /app/clients/banchi-client
-COPY clients/banchi-client /app/clients/banchi-client
+ADD clients/banchi-client /app/clients/banchi-client
 RUN $PYTHON -m poetry config virtualenvs.create false && $PYTHON -m poetry install --no-interaction --only main
 
 WORKDIR /app
-COPY banchi/cmd /app/banchi/cmd
-COPY poetry.lock pyproject.toml README.md /app/
+COPY frontend/banchi/cmd /app/banchi/cmd
+COPY frontend/poetry.lock frontend/pyproject.toml frontend/README.md /app/
 RUN $PYTHON -m poetry config virtualenvs.create false && $PYTHON -m poetry install --no-interaction --only main
 
-COPY banchi/web/static/package.json banchi/web/static/package-lock.json banchi/web/static/
+COPY frontend/banchi/web/static/package.json frontend/banchi/web/static/package-lock.json banchi/web/static/
 RUN npm install --prefix banchi/web/static
 
-COPY . /app
+COPY frontend /app
 
 
 
