@@ -64,7 +64,7 @@ def sync_detailed(
     """Update
 
     Args:
-        space_id (str):
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         json_body (CreatedSpace):
 
     Raises:
@@ -96,7 +96,7 @@ def sync(
     """Update
 
     Args:
-        space_id (str):
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         json_body (CreatedSpace):
 
     Raises:
@@ -123,7 +123,7 @@ async def asyncio_detailed(
     """Update
 
     Args:
-        space_id (str):
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         json_body (CreatedSpace):
 
     Raises:
@@ -153,7 +153,7 @@ async def asyncio(
     """Update
 
     Args:
-        space_id (str):
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         json_body (CreatedSpace):
 
     Raises:

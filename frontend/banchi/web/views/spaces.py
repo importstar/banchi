@@ -57,3 +57,11 @@ def view(space_id):
     response = get_all_v1_accounts_get.sync(client=client)
 
     return render_template("/spaces/view.html", space=space, accounts=response.accounts)
+
+
+@module.route("/<space_id>/roles")
+def list_roles(space_id):
+    client = banchi_api_clients.client.get_current_client()
+    response = get_all_v1_spaces_get.sync(client=client)
+
+    return render_template("/spaces/list-roles.html", spaces=response.spaces)

@@ -53,14 +53,23 @@ class CreatedSpace(BaseSpace):
 
 
 class BaseSpaceRole(BaseModel):
-    role: typing.Literal["admin", "member"] = Field(..., choices=["admin", "member"])
+    role: typing.Literal["owner", "member"] = Field(..., choices=["owner", "member"])
     member: users.ReferenceUser
 
 
 class SpaceRole(bases.BaseSchema, BaseSpaceRole):
-    adder: users.ReferenceUser
+    added_by: users.ReferenceUser
+    updated_by: users.ReferenceUser
+    space: ReferenceSpace
+
     created_date: datetime.datetime
     updated_date: datetime.datetime
+
+    status: typing.Literal["active", "delete"] = Field(default="active")
+
+
+class SpaceRoleList(BaseModel):
+    space_roles: list[SpaceRole]
 
 
 class CreatedSpaceRole(BaseSpaceRole):

@@ -31,14 +31,13 @@ class SpaceRole(schemas.spaces.SpaceRole, Document):
         alias="_id",
     )
 
-    creator: Link[users.User]
-    contributor: Link[users.User]
+    added_by: Link[users.User]
+    member: Link[users.User]
+    updated_by: Link[users.User]
+    space: Link[Space]
 
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
-
-    created_by: Link[users.User]
-    updated_by: Link[users.User]
 
     class Settings:
         name = "space_roles"

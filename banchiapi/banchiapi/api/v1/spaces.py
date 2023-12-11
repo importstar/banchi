@@ -9,6 +9,10 @@ from banchiapi import models
 from banchiapi import schemas
 from banchiapi.core import deps
 
+from beanie import PydanticObjectId
+from beanie.odm.operators.find import comparison
+
+
 router = APIRouter(prefix="/spaces", tags=["spaces"])
 
 
@@ -16,18 +20,37 @@ router = APIRouter(prefix="/spaces", tags=["spaces"])
 async def get_all(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.SpaceList:
+    space_roles = await models.spaces.SpaceRole.find(
+        models.spaces.SpaceRole.member.id == current_user.id,
+        models.spaces.SpaceRole.status == "active",
+        fetch_links=True,
+    ).to_list()
+
     spaces = await models.spaces.Space.find(
+        comparison.In(
+            models.spaces.Space.id, [space_role.space.id for space_role in space_roles]
+        ),
         models.spaces.Space.status == "active",
-        models.spaces.Space.owner.id == current_user.id,
         fetch_links=True,
     ).to_list()
 
     return dict(spaces=spaces)
 
+    # spaces = []
+
+    # for space_role in space_roles:
+    #     subspaces = await models.spaces.Space.find(
+    #         models.spaces.Space.id == space_role.space.id,
+    #         models.spaces.Space.status == "active",
+    #         fetch_links=True,
+    #     ).to_list()
+    #     spaces.extend(subspaces)
+
+    # return dict(spaces=spaces)
+
 
 @router.post(
     "/create",
-    response_model_by_alias=False,
 )
 async def create(
     space: schemas.spaces.CreatedSpace,
@@ -57,19 +80,27 @@ async def create(
     db_space = models.spaces.Space.parse_obj(data)
     await db_space.save()
 
+    db_space_role = models.spaces.SpaceRole(
+        added_by=current_user,
+        updated_by=current_user,
+        member=current_user,
+        role="owner",
+        space=db_space,
+    )
+    await db_space_role.save()
+
     return db_space
 
 
 @router.get(
     "/{space_id}",
-    response_model_by_alias=False,
 )
 async def get(
-    space_id: str,
+    space_id: PydanticObjectId,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
     db_space = await models.spaces.Space.find_one(
-        models.spaces.Space.id == bson.ObjectId(space_id),
+        models.spaces.Space.id == space_id,
         models.spaces.Space.owner.id == current_user.id,
         fetch_links=True,
     )
@@ -84,14 +115,12 @@ async def get(
 
 @router.put(
     "/{space_id}/update",
-    response_model_by_alias=False,
-    response_model=schemas.spaces.Space,
 )
 async def update(
-    space_id: str,
+    space_id: PydanticObjectId,
     space: schemas.spaces.CreatedSpace,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.spaces.Space:
     db_space = models.Space.objects(id=space_id).first()
     if not db_space:
         raise HTTPException(
@@ -122,13 +151,11 @@ async def update(
 
 @router.delete(
     "/{space_id}/delete",
-    response_model_by_alias=False,
-    response_model=schemas.spaces.Space,
 )
 async def delete(
-    space_id: str,
+    space_id: PydanticObjectId,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.spaces.Space:
     try:
         db_space = models.Space.objects.get(id=space_id)
     except Exception:
