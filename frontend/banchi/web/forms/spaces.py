@@ -19,3 +19,13 @@ class SpaceForm(FlaskForm):
     )
     code = fields.StringField("Code", validators=[])
     tax_id = fields.StringField("Tax ID", validators=[])
+
+
+class SpaceRoleForm(FlaskForm):
+    member = fields.SelectField("Member", validators=[validators.InputRequired()])
+
+    role = fields.SelectField(
+        "Role",
+        validators=[validators.InputRequired()],
+        choices=[(role, role.title()) for role in ["owner", "member"]],
+    )

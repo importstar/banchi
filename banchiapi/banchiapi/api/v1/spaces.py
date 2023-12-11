@@ -50,7 +50,7 @@ async def get_all(
 
 
 @router.post(
-    "/create",
+    "",
 )
 async def create(
     space: schemas.spaces.CreatedSpace,
@@ -114,7 +114,7 @@ async def get(
 
 
 @router.put(
-    "/{space_id}/update",
+    "/{space_id}",
 )
 async def update(
     space_id: PydanticObjectId,
@@ -150,7 +150,7 @@ async def update(
 
 
 @router.delete(
-    "/{space_id}/delete",
+    "/{space_id}",
 )
 async def delete(
     space_id: PydanticObjectId,

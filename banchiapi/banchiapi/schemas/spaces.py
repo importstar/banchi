@@ -54,12 +54,12 @@ class CreatedSpace(BaseSpace):
 
 class BaseSpaceRole(BaseModel):
     role: typing.Literal["owner", "member"] = Field(..., choices=["owner", "member"])
-    member: users.ReferenceUser
 
 
 class SpaceRole(bases.BaseSchema, BaseSpaceRole):
     added_by: users.ReferenceUser
     updated_by: users.ReferenceUser
+    member: users.ReferenceUser
     space: ReferenceSpace
 
     created_date: datetime.datetime
@@ -73,4 +73,8 @@ class SpaceRoleList(BaseModel):
 
 
 class CreatedSpaceRole(BaseSpaceRole):
+    member_id: PydanticObjectId
+
+
+class UpdatetedSpaceRole(CreatedSpaceRole):
     pass

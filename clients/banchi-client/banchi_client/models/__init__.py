@@ -24,10 +24,6 @@ from .registered_user import RegisteredUser
 from .smallest_fraction_enum import SmallestFractionEnum
 from .space import Space
 from .space_list import SpaceList
-from .space_role import SpaceRole
-from .space_role_list import SpaceRoleList
-from .space_role_role import SpaceRoleRole
-from .space_role_status import SpaceRoleStatus
 from .system_setting_in_create import SystemSettingInCreate
 from .system_setting_in_response import SystemSettingInResponse
 from .token import Token
@@ -64,10 +60,6 @@ __all__ = (
     "SmallestFractionEnum",
     "Space",
     "SpaceList",
-    "SpaceRole",
-    "SpaceRoleList",
-    "SpaceRoleRole",
-    "SpaceRoleStatus",
     "SystemSettingInCreate",
     "SystemSettingInResponse",
     "Token",

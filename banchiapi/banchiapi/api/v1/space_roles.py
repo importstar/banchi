@@ -4,18 +4,20 @@ import io
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 from loguru import logger
 import bson
+from beanie import PydanticObjectId
+import typing
 
 from banchiapi import models
 from banchiapi import schemas
 from banchiapi.core import deps
 
-router = APIRouter(prefix="/spaces/<space_id>/roles", tags=["space roles"])
+router = APIRouter(prefix="/spaces/{space_id}/roles", tags=["space roles"])
 
 
 @router.get("")
 async def get_all(
-    space_id: str,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    space_id: PydanticObjectId,
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.spaces.SpaceRoleList:
     space = await models.spaces.Space.get(space_id)
 
@@ -32,16 +34,16 @@ async def get_all(
 
 
 @router.post(
-    "/add",
+    "",
     response_model_by_alias=False,
 )
 async def add(
-    space_id: str,
+    space_id: PydanticObjectId,
     space_role: schemas.spaces.CreatedSpace,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.spaces.SpaceRole:
     db_space_role = await models.spaces.SpaceRole.find_one(
-        models.spaces.SpaceRole.name == space_role.name,
+        models.spaces.SpaceRole.member.id == space_role.member.id,
         models.spaces.SpaceRole.status == "active",
     )
     if db_space_role:
@@ -50,18 +52,8 @@ async def add(
             detail="There are already space_role name",
         )
 
-    db_space_role = await models.spaces.SpaceRole.find_one(
-        models.spaces.SpaceRole.code == space_role.code,
-        models.spaces.SpaceRole.status == "active",
-    )
-    if db_space_role:
-        raise status.HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already space_role code",
-        )
-
     data = space_role.dict()
-    data["owner"] = current_user
+    data["added_by"] = current_user
     data["updated_by"] = current_user
     db_space_role = models.spaces.SpaceRole.parse_obj(data)
     await db_space_role.save()
@@ -71,16 +63,14 @@ async def add(
 
 @router.get(
     "/{space_role_id}",
-    response_model_by_alias=False,
 )
 async def get(
-    space_id: str,
-    space_role_id: str,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    space_id: PydanticObjectId,
+    space_role_id: PydanticObjectId,
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.spaces.SpaceRole:
     db_space_role = await models.spaces.SpaceRole.find_one(
-        models.spaces.SpaceRole.id == bson.ObjectId(space_role_id),
-        models.spaces.SpaceRole.owner.id == current_user.id,
+        models.spaces.SpaceRole.id == space_role_id,
         fetch_links=True,
     )
 
@@ -93,16 +83,14 @@ async def get(
 
 
 @router.put(
-    "/{space_role_id}/update",
-    response_model_by_alias=False,
-    response_model=schemas.spaces.SpaceRole,
+    "/{space_role_id}",
 )
 async def update(
-    spaces_id: str,
-    space_role_id: str,
-    space_role: schemas.spaces.CreatedSpace,
-    current_user: models.users.User = Depends(deps.get_current_user),
-):
+    spaces_id: PydanticObjectId,
+    space_role_id: PydanticObjectId,
+    space_role: schemas.spaces.UpdatedSpace,
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
+) -> schemas.spaces.SpaceRole:
     db_space_role = models.Space.objects(id=space_role_id).first()
     if not db_space_role:
         raise HTTPException(
@@ -136,15 +124,13 @@ async def update(
 
 
 @router.delete(
-    "/{space_role_id}/delete",
-    response_model_by_alias=False,
-    response_model=schemas.spaces.SpaceRole,
+    "/{space_role_id}",
 )
 async def delete(
-    space_id: str,
-    space_role_id: str,
-    current_user: models.users.User = Depends(deps.get_current_user),
-):
+    space_id: PydanticObjectId,
+    space_role_id: PydanticObjectId,
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
+) -> schemas.spaces.SpaceRole:
     try:
         db_space_role = models.Space.objects.get(id=space_role_id)
     except Exception:

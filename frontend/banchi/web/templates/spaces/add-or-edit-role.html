@@ -1,0 +1,31 @@
+{% extends '/spaces/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+{% block dashboard_title %}
+Space Role
+{% endblock %}
+
+{% block breadcrumbs %}
+  {{ super() }}
+{% endblock %}
+
+{% block title %}
+{% endblock %}
+
+{% block content %}
+  <div class="ui segment">
+    <a class="ui button primary" href="{{ url_for('spaces.index') }}">Space</a>
+  </div>
+  <div>
+    <h2>Space Role</h2>
+    <form class="ui form" method="POST">
+      {{ form.csrf_token }}
+      <div class="two fields">
+        {{ renderer.render_select(form.member) }}
+        {{ renderer.render_select(form.role) }}
+      </div>
+      <button type="submit" class="ui primary button">Submit</button>
+    </form>
+  </div>
+  
+{% endblock %}
