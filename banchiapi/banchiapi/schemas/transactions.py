@@ -36,10 +36,9 @@ class TransactionList(BaseModel):
 
 
 class CreatedTransaction(BaseTransaction):
-    from_account_book_id: str = Field(..., example="0")
-    to_account_book_id: str = Field(..., example="0")
+    from_account_book_id: PydanticObjectId = Field(..., example="0")
+    to_account_book_id: PydanticObjectId = Field(..., example="0")
 
 
-class UpdatedTransaction(BaseTransaction):
-    from_account_book_id: str = Field(..., example="0")
-    to_account_book_id: str = Field(..., example="0")
+class UpdatedTransaction(CreatedTransaction):
+    pass

@@ -5,10 +5,10 @@ import decimal
 
 from banchi_client import models
 from banchi_client.api.v1 import (
-    create_v1_account_books_create_post,
-    create_v1_transactions_create_post,
-    update_v1_account_books_account_book_id_update_put,
-    update_v1_transactions_transaction_id_update_put,
+    create_v1_account_books_post,
+    create_v1_transactions_post,
+    update_v1_account_books_account_book_id_put,
+    update_v1_transactions_transaction_id_put,
     get_all_v1_account_books_get,
     get_all_v1_transactions_get,
     get_v1_account_books_account_book_id_get,
@@ -178,13 +178,16 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     form.to_account_book_id.choices = to_account_book_choices
     form.from_account_book_id.choices = account_book_choices
 
+    if not transaction:
+        form.from_account_book_id.data = str(account_book.id)
+
     if not form.validate_on_submit():
-        if request.method == "GET":
-            form.from_account_book_id.data = str(account_book.id)
+        # if request.method == "GET":
+        #     form.from_account_book_id.data = str(account_book.id)
 
         if request.method == "GET" and transaction:
-            form.to_account_book_id.data = transaction.to_account_book.id
-            form.from_account_book_id.data = transaction.from_account_book.id
+            form.to_account_book_id.data = str(transaction.to_account_book.id)
+            form.from_account_book_id.data = str(transaction.from_account_book.id)
             form.value.data = decimal.Decimal(form.value.data)
 
         if not transaction:
@@ -201,12 +204,12 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     data["value"] = float(data["value"])
     if not transaction:
         transaction = models.CreatedTransaction.from_dict(data)
-        response = create_v1_transactions_create_post.sync(
+        response = create_v1_transactions_post.sync(
             client=client, json_body=transaction
         )
     else:
         transaction = models.UpdatedTransaction.from_dict(data)
-        response = update_v1_transactions_transaction_id_update_put.sync(
+        response = update_v1_transactions_transaction_id_put.sync(
             client=client, json_body=transaction, transaction_id=transaction_id
         )
 

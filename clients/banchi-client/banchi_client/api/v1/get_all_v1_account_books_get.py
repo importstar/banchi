@@ -7,32 +7,15 @@ from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.account_book_list import AccountBookList
 from ...models.http_validation_error import HTTPValidationError
-from ...types import UNSET, Response, Unset
+from ...types import UNSET, Response
 
 
 def _get_kwargs(
     *,
-    account_id: Union[None, Unset, str] = UNSET,
-    account_book_parent_id: Union[None, Unset, str] = UNSET,
+    account_id: str,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
-    json_account_id: Union[None, Unset, str]
-    if isinstance(account_id, Unset):
-        json_account_id = UNSET
-
-    else:
-        json_account_id = account_id
-
-    params["account_id"] = json_account_id
-
-    json_account_book_parent_id: Union[None, Unset, str]
-    if isinstance(account_book_parent_id, Unset):
-        json_account_book_parent_id = UNSET
-
-    else:
-        json_account_book_parent_id = account_book_parent_id
-
-    params["account_book_parent_id"] = json_account_book_parent_id
+    params["account_id"] = account_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -74,14 +57,12 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    account_id: Union[None, Unset, str] = UNSET,
-    account_book_parent_id: Union[None, Unset, str] = UNSET,
+    account_id: str,
 ) -> Response[Union[AccountBookList, HTTPValidationError]]:
     """Get All
 
     Args:
-        account_id (Union[None, Unset, str]):
-        account_book_parent_id (Union[None, Unset, str]):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -93,7 +74,6 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-        account_book_parent_id=account_book_parent_id,
     )
 
     response = client.get_httpx_client().request(
@@ -106,14 +86,12 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    account_id: Union[None, Unset, str] = UNSET,
-    account_book_parent_id: Union[None, Unset, str] = UNSET,
+    account_id: str,
 ) -> Optional[Union[AccountBookList, HTTPValidationError]]:
     """Get All
 
     Args:
-        account_id (Union[None, Unset, str]):
-        account_book_parent_id (Union[None, Unset, str]):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -126,21 +104,18 @@ def sync(
     return sync_detailed(
         client=client,
         account_id=account_id,
-        account_book_parent_id=account_book_parent_id,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    account_id: Union[None, Unset, str] = UNSET,
-    account_book_parent_id: Union[None, Unset, str] = UNSET,
+    account_id: str,
 ) -> Response[Union[AccountBookList, HTTPValidationError]]:
     """Get All
 
     Args:
-        account_id (Union[None, Unset, str]):
-        account_book_parent_id (Union[None, Unset, str]):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -152,7 +127,6 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_id=account_id,
-        account_book_parent_id=account_book_parent_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -163,14 +137,12 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    account_id: Union[None, Unset, str] = UNSET,
-    account_book_parent_id: Union[None, Unset, str] = UNSET,
+    account_id: str,
 ) -> Optional[Union[AccountBookList, HTTPValidationError]]:
     """Get All
 
     Args:
-        account_id (Union[None, Unset, str]):
-        account_book_parent_id (Union[None, Unset, str]):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -184,6 +156,5 @@ async def asyncio(
         await asyncio_detailed(
             client=client,
             account_id=account_id,
-            account_book_parent_id=account_book_parent_id,
         )
     ).parsed

@@ -17,15 +17,13 @@ router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 
 async def transform_transaction(transaction, current_user):
-    db_from_account_book = await models.account_books.AccountBook.find_one(
-        models.account_books.AccountBook.id
-        == bson.ObjectId(transaction.from_account_book_id),
-        models.account_books.AccountBook.creator.id == current_user.id,
+    print("xxx>", transaction, current_user)
+    db_from_account_book = await deps.get_account_book(
+        transaction.from_account_book_id, current_user
     )
-    db_to_account_book = await models.account_books.AccountBook.find_one(
-        models.account_books.AccountBook.id
-        == bson.ObjectId(transaction.to_account_book_id),
-        models.account_books.AccountBook.creator.id == current_user.id,
+    print("xxx>", db_from_account_book)
+    db_to_account_book = await deps.get_account_book(
+        transaction.to_account_book_id, current_user
     )
 
     if not (db_from_account_book and db_to_account_book):
@@ -91,27 +89,24 @@ async def get_all(
     return dict(transactions=db_transactions)
 
 
-@router.post(
-    "/create",
-    response_model_by_alias=False,
-)
+@router.post("")
 async def create(
     transaction: schemas.transactions.CreatedTransaction,
     current_user: Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
+    print("xxxx", transaction)
     data = await transform_transaction(transaction, current_user)
     data["creator"] = current_user
 
     db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
 
+    print("---->", db_transaction)
+
     return db_transaction
 
 
-@router.get(
-    "/{transaction_id}",
-    response_model_by_alias=False,
-)
+@router.get("/{transaction_id}")
 async def get(
     transaction_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
@@ -130,10 +125,7 @@ async def get(
     return db_transaction
 
 
-@router.put(
-    "/{transaction_id}/update",
-    response_model_by_alias=False,
-)
+@router.put("/{transaction_id}")
 async def update(
     transaction_id: str,
     transaction: schemas.transactions.UpdatedTransaction,
@@ -155,8 +147,7 @@ async def update(
 
 
 @router.delete(
-    "/{transaction_id}/delete",
-    response_model_by_alias=False,
+    "/{transaction_id}",
 )
 async def delete(
     transaction_id: str,

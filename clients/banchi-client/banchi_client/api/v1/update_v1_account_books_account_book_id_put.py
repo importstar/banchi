@@ -5,30 +5,33 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.created_transaction import CreatedTransaction
+from ...models.account_book import AccountBook
+from ...models.created_account_book import CreatedAccountBook
 from ...models.http_validation_error import HTTPValidationError
-from ...models.transaction import Transaction
 from ...types import Response
 
 
 def _get_kwargs(
+    account_book_id: str,
     *,
-    json_body: CreatedTransaction,
+    json_body: CreatedAccountBook,
 ) -> Dict[str, Any]:
     json_json_body = json_body.to_dict()
 
     return {
-        "method": "post",
-        "url": "/v1/transactions/create",
+        "method": "put",
+        "url": "/v1/account-books/{account_book_id}".format(
+            account_book_id=account_book_id,
+        ),
         "json": json_json_body,
     }
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[HTTPValidationError, Transaction]]:
+) -> Optional[Union[AccountBook, HTTPValidationError]]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = Transaction.from_dict(response.json())
+        response_200 = AccountBook.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -43,7 +46,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[HTTPValidationError, Transaction]]:
+) -> Response[Union[AccountBook, HTTPValidationError]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -53,24 +56,27 @@ def _build_response(
 
 
 def sync_detailed(
+    account_book_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedTransaction,
-) -> Response[Union[HTTPValidationError, Transaction]]:
-    """Create
+    json_body: CreatedAccountBook,
+) -> Response[Union[AccountBook, HTTPValidationError]]:
+    """Update
 
     Args:
-        json_body (CreatedTransaction):
+        account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        json_body (CreatedAccountBook):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, Transaction]]
+        Response[Union[AccountBook, HTTPValidationError]]
     """
 
     kwargs = _get_kwargs(
+        account_book_id=account_book_id,
         json_body=json_body,
     )
 
@@ -82,48 +88,54 @@ def sync_detailed(
 
 
 def sync(
+    account_book_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedTransaction,
-) -> Optional[Union[HTTPValidationError, Transaction]]:
-    """Create
+    json_body: CreatedAccountBook,
+) -> Optional[Union[AccountBook, HTTPValidationError]]:
+    """Update
 
     Args:
-        json_body (CreatedTransaction):
+        account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        json_body (CreatedAccountBook):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, Transaction]
+        Union[AccountBook, HTTPValidationError]
     """
 
     return sync_detailed(
+        account_book_id=account_book_id,
         client=client,
         json_body=json_body,
     ).parsed
 
 
 async def asyncio_detailed(
+    account_book_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedTransaction,
-) -> Response[Union[HTTPValidationError, Transaction]]:
-    """Create
+    json_body: CreatedAccountBook,
+) -> Response[Union[AccountBook, HTTPValidationError]]:
+    """Update
 
     Args:
-        json_body (CreatedTransaction):
+        account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        json_body (CreatedAccountBook):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, Transaction]]
+        Response[Union[AccountBook, HTTPValidationError]]
     """
 
     kwargs = _get_kwargs(
+        account_book_id=account_book_id,
         json_body=json_body,
     )
 
@@ -133,25 +145,28 @@ async def asyncio_detailed(
 
 
 async def asyncio(
+    account_book_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedTransaction,
-) -> Optional[Union[HTTPValidationError, Transaction]]:
-    """Create
+    json_body: CreatedAccountBook,
+) -> Optional[Union[AccountBook, HTTPValidationError]]:
+    """Update
 
     Args:
-        json_body (CreatedTransaction):
+        account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        json_body (CreatedAccountBook):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, Transaction]
+        Union[AccountBook, HTTPValidationError]
     """
 
     return (
         await asyncio_detailed(
+            account_book_id=account_book_id,
             client=client,
             json_body=json_body,
         )

@@ -17,10 +17,7 @@ from banchiapi import schemas
 router = APIRouter(prefix="/account-books", tags=["account_books"])
 
 
-@router.get(
-    "",
-    response_model_by_alias=False,
-)
+@router.get("")
 async def get_all(
     account_id: PydanticObjectId,
     account_books: typing.Annotated[
@@ -32,29 +29,18 @@ async def get_all(
     return dict(account_books=account_books)
 
 
-@router.post(
-    "/create",
-    response_model_by_alias=False,
-)
+@router.post("")
 async def create(
     account_book: schemas.account_books.CreatedAccountBook,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBook:
     data = account_book.dict()
 
-    db_account = await models.accounts.Account.find_one(
-        models.accounts.Account.id == bson.ObjectId(data["account_id"]),
-        models.accounts.Account.status == "active",
-        models.accounts.Account.creator.id == current_user.id,
-    )
+    db_account = await deps.get_account(account_book.account_id, user)
 
     db_parent_account_book = None
     if data.get("parent_id"):
-        db_parent_account_book = await models.account_books.AccountBook.find_one(
-            models.account_books.AccountBook.id == bson.ObjectId(data["parent_id"]),
-            models.account_books.AccountBook.status == "active",
-            models.account_books.AccountBook.creator.id == current_user.id,
-        )
+        db_parent_account_book = await deps.get_account(account_book.parent_id, user)
 
     data["creator"] = current_user
     data["updated_by"] = current_user
@@ -71,18 +57,15 @@ async def create(
     return db_account_book
 
 
-@router.get(
-    "/{account_book_id}",
-    response_model_by_alias=False,
-)
+@router.get("/{account_book_id}")
 async def get(
     account_book_id: PydanticObjectId,
-    account_book: typing.Annotated[
+    db_account_book: typing.Annotated[
         models.account_books.AccountBook, Depends(deps.get_account_book)
     ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBook:
-    return account_book
+    return db_account_book
 
 
 @router.get(
@@ -90,28 +73,18 @@ async def get(
     response_model_by_alias=False,
 )
 async def get_balance(
-    account_book_id: str,
+    account_book_id: PydanticObjectId,
+    db_account_book: typing.Annotated[
+        models.account_books.AccountBook, Depends(deps.get_account_book)
+    ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBookBalance:
-    db_account_book = await models.account_books.AccountBook.find_one(
-        models.account_books.AccountBook.id == bson.ObjectId(account_book_id),
-        models.account_books.AccountBook.creator.id == current_user.id,
-        models.account_books.AccountBook.status == "active",
-    )
-    if not db_account_book:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this account_book",
-        )
-
     from_account_book_values = models.transactions.Transaction.find(
-        models.transactions.Transaction.from_account_book.id
-        == bson.ObjectId(account_book_id)
+        models.transactions.Transaction.from_account_book.id == account_book_id
     )
 
     to_account_book_values = models.transactions.Transaction.find(
-        models.transactions.Transaction.to_account_book.id
-        == bson.ObjectId(account_book_id)
+        models.transactions.Transaction.to_account_book.id == account_book_id
     )
 
     from_values = await from_account_book_values.sum(
@@ -129,17 +102,15 @@ async def get_balance(
     return dict(balance=to_values - from_values, decrese=from_values, increse=to_values)
 
 
-@router.put(
-    "/{account_book_id}/update",
-    response_model_by_alias=False,
-    response_model=schemas.account_books.AccountBook,
-)
+@router.put("/{account_book_id}")
 async def update(
     account_book_id: str,
     account_book: schemas.account_books.CreatedAccountBook,
+    db_account_book: typing.Annotated[
+        models.account_books.AccountBook, Depends(deps.get_account_book)
+    ],
     current_user: models.users.User = Depends(deps.get_current_user),
-):
-    db_account_book = models.AccountBook.objects(id=account_book_id).first()
+) -> schemas.account_books.AccountBook:
     if not db_account_book:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -171,15 +142,11 @@ async def update(
     return db_account_book
 
 
-@router.delete(
-    "/{account_book_id}/delete",
-    response_model_by_alias=False,
-    response_model=schemas.account_books.AccountBook,
-)
+@router.delete("/{account_book_id}/delete")
 async def delete(
     account_book_id: str,
     current_user: models.users.User = Depends(deps.get_current_user),
-):
+) -> schemas.account_books.AccountBook:
     try:
         db_account_book = models.AccountBook.objects.get(id=account_book_id)
     except Exception:
@@ -200,25 +167,14 @@ async def delete(
 
 @router.get(
     "/{account_book_id}/label",
-    response_model_by_alias=False,
 )
 async def get_label(
     account_book_id: str,
+    db_account_book: typing.Annotated[
+        models.account_books.AccountBook, Depends(deps.get_account_book)
+    ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBookLabel:
-    db_account_book = await models.account_books.AccountBook.find_one(
-        models.account_books.AccountBook.id == bson.ObjectId(account_book_id),
-        models.account_books.AccountBook.creator.id == current_user.id,
-        models.account_books.AccountBook.status == "active",
-        fetch_links=True,
-    )
-
-    if not db_account_book:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this account_book",
-        )
-
     labels = dict(
         asset=dict(positive="increase", negative="decrease"),
         cash=dict(positive="receive", negative="spend"),
