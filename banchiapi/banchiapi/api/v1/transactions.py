@@ -6,8 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from loguru import logger
 
 import bson
-from typing import Annotated
+import typing
 from beanie.odm.operators.find.logical import Or, And
+from beanie import PydanticObjectId
 
 from banchiapi import models
 from banchiapi.core import deps
@@ -17,11 +18,9 @@ router = APIRouter(prefix="/transactions", tags=["transactions"])
 
 
 async def transform_transaction(transaction, current_user):
-    print("xxx>", transaction, current_user)
     db_from_account_book = await deps.get_account_book(
         transaction.from_account_book_id, current_user
     )
-    print("xxx>", db_from_account_book)
     db_to_account_book = await deps.get_account_book(
         transaction.to_account_book_id, current_user
     )
@@ -47,14 +46,11 @@ async def transform_transaction(transaction, current_user):
     return data
 
 
-@router.get(
-    "",
-    response_model_by_alias=False,
-)
+@router.get("")
 async def get_all(
-    from_account_book_id: str | None,
-    to_account_book_id: str | None,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    from_account_book_id: PydanticObjectId | None,
+    to_account_book_id: PydanticObjectId | None,
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.TransactionList:
     query_args = [
         models.transactions.Transaction.status == "active",
@@ -92,44 +88,33 @@ async def get_all(
 @router.post("")
 async def create(
     transaction: schemas.transactions.CreatedTransaction,
-    current_user: Annotated[models.users.User, Depends(deps.get_current_user)],
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
-    print("xxxx", transaction)
     data = await transform_transaction(transaction, current_user)
     data["creator"] = current_user
 
     db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
 
-    print("---->", db_transaction)
-
     return db_transaction
 
 
 @router.get("/{transaction_id}")
 async def get(
-    transaction_id: str,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    transaction_id: PydanticObjectId,
+    db_transaction: typing.Annotated[
+        models.transactions.Transaction, Depends(deps.get_transaction)
+    ],
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
-    db_transaction = await models.transactions.Transaction.find_one(
-        models.transactions.Transaction.id == bson.ObjectId(transaction_id),
-        models.transactions.Transaction.creator.id == current_user.id,
-        fetch_links=True,
-    )
-
-    if not db_transaction:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this transaction",
-        )
     return db_transaction
 
 
 @router.put("/{transaction_id}")
 async def update(
-    transaction_id: str,
+    transaction_id: PydanticObjectId,
     transaction: schemas.transactions.UpdatedTransaction,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
     db_transaction = await models.transactions.Transaction.get(transaction_id)
     if not db_transaction:
@@ -150,8 +135,8 @@ async def update(
     "/{transaction_id}",
 )
 async def delete(
-    transaction_id: str,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    transaction_id: PydanticObjectId,
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
     try:
         db_transaction = models.Transaction.objects.get(id=transaction_id)

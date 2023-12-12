@@ -16,7 +16,7 @@ Account {{ account.name }}
 {% endblock %}
 
 {% block content %}
-  <div>
+  <div style="padding-bottom: 10px;">
     <a class="ui primary button" href="{{ url_for('account_books.create_or_edit', account_id=account.id) }}">Create Account Book</a>
   </div>
   <div>

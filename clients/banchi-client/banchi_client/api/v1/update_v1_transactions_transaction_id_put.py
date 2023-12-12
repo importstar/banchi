@@ -64,7 +64,7 @@ def sync_detailed(
     """Update
 
     Args:
-        transaction_id (str):
+        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         json_body (UpdatedTransaction):
 
     Raises:
@@ -96,7 +96,7 @@ def sync(
     """Update
 
     Args:
-        transaction_id (str):
+        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         json_body (UpdatedTransaction):
 
     Raises:
@@ -123,7 +123,7 @@ async def asyncio_detailed(
     """Update
 
     Args:
-        transaction_id (str):
+        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         json_body (UpdatedTransaction):
 
     Raises:
@@ -153,7 +153,7 @@ async def asyncio(
     """Update
 
     Args:
-        transaction_id (str):
+        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         json_body (UpdatedTransaction):
 
     Raises:

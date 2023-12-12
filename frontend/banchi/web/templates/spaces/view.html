@@ -17,16 +17,23 @@ Space
     <a class="ui button primary" href="{{ url_for('spaces.list_roles', space_id=space.id) }}">Roles</a>
   </div>
   <div>
-    <a class="ui icon button primary" href="{{ url_for('accounts.create_or_edit', space_id=space.id) }}"><i class="add icon"></i> Create Account</a>
+    {% if not account %}
+      <a class="ui icon button primary" href="{{ url_for('accounts.create_or_edit', space_id=space.id) }}"><i class="add icon"></i> Create Account</a>
+    {% endif %}
   </div>
   <div>
     {% if account %}
-      <div>Name {{ account.name }}</div>
-      <div>Currentcy {{ account.currency }}</div>
-      <div>Description {{ account.description }}</div>
-      <div>
-        <a class="ui primary icon circular button" href="{{ url_for('accounts.view', account_id=account.id) }}"><i class="eye icon"></i></a>
+    <div class="ui card">
+      <div class="content">
+        <div class="header">Account: {{ account.name }}</div>
+        <div class="meta">{{ account.description }}</div>
+        <div class="description">
+          <p>Currentcy {{ account.currency }}</p>
+        </div>
       </div>
+        <a class="ui primary icon button" href="{{ url_for('accounts.view', account_id=account.id) }}"><i class="eye icon"></i> View</a>
+    </div> 
+
     {% endif %}
   </div>
   

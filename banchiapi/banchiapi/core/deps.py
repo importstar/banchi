@@ -190,6 +190,31 @@ async def get_account_book(
     return db_account_book
 
 
+async def get_transaction(
+    transaction_id: typing.Annotated[PydanticObjectId, Path()],
+    user: typing.Annotated[models.users.User, Depends(get_current_user)],
+) -> models.account_books.AccountBook:
+    db_transaction = await models.transactions.Transaction.find_one(
+        models.transactions.Transaction.id == transaction_id, fetch_links=True
+    )
+
+    if not db_transaction:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found transaction",
+        )
+
+    db_account_book = await get_account_book(db_transaction.from_account_book.id, user)
+
+    if not db_account_book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found account book",
+        )
+
+    return db_transaction
+
+
 async def create_logs(action, request, current_user):
     request_log = models.RequestLog(
         user=current_user,
