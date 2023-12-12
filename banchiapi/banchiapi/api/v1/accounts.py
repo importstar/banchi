@@ -1,5 +1,6 @@
 import datetime
 import io
+import typing
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
@@ -16,12 +17,9 @@ from banchiapi import schemas
 router = APIRouter(prefix="/accounts", tags=["accounts"])
 
 
-@router.get(
-    "",
-    response_model_by_alias=False,
-)
+@router.get("")
 async def get_all(
-    current_user: models.users.User = Depends(deps.get_current_user),
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.accounts.AccountList:
     db_accounts = await models.accounts.Account.find(
         models.accounts.Account.status == "active",
@@ -33,8 +31,7 @@ async def get_all(
 
 
 @router.post(
-    "/create",
-    response_model_by_alias=False,
+    "",
 )
 async def create(
     account: schemas.accounts.CreatedAccount,
@@ -92,7 +89,6 @@ async def create(
 
 @router.get(
     "/{account_id}",
-    response_model_by_alias=False,
 )
 async def get(
     account_id: str,
@@ -113,8 +109,7 @@ async def get(
 
 
 @router.put(
-    "/{account_id}/update",
-    response_model_by_alias=False,
+    "/{account_id}",
 )
 async def update(
     account_id: str,
@@ -154,8 +149,7 @@ async def update(
 
 
 @router.delete(
-    "/{account_id}/delete",
-    response_model_by_alias=False,
+    "/{account_id}",
 )
 async def delete(
     account_id: str,

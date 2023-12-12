@@ -19,7 +19,7 @@ def _get_kwargs(
 
     return {
         "method": "post",
-        "url": "/v1/accounts/create",
+        "url": "/v1/accounts",
         "json": json_json_body,
     }
 

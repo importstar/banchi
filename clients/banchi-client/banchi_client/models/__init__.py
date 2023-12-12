@@ -13,6 +13,8 @@ from .changed_password import ChangedPassword
 from .created_account import CreatedAccount
 from .created_account_book import CreatedAccountBook
 from .created_space import CreatedSpace
+from .created_space_role import CreatedSpaceRole
+from .created_space_role_role import CreatedSpaceRoleRole
 from .created_transaction import CreatedTransaction
 from .currency_enum import CurrencyEnum
 from .http_validation_error import HTTPValidationError
@@ -24,11 +26,17 @@ from .registered_user import RegisteredUser
 from .smallest_fraction_enum import SmallestFractionEnum
 from .space import Space
 from .space_list import SpaceList
+from .space_role import SpaceRole
+from .space_role_list import SpaceRoleList
+from .space_role_role import SpaceRoleRole
+from .space_role_status import SpaceRoleStatus
 from .system_setting_in_create import SystemSettingInCreate
 from .system_setting_in_response import SystemSettingInResponse
 from .token import Token
 from .transaction import Transaction
 from .transaction_list import TransactionList
+from .updated_space_role import UpdatedSpaceRole
+from .updated_space_role_role import UpdatedSpaceRoleRole
 from .updated_transaction import UpdatedTransaction
 from .updated_user import UpdatedUser
 from .user import User
@@ -49,6 +57,8 @@ __all__ = (
     "CreatedAccount",
     "CreatedAccountBook",
     "CreatedSpace",
+    "CreatedSpaceRole",
+    "CreatedSpaceRoleRole",
     "CreatedTransaction",
     "CurrencyEnum",
     "HTTPValidationError",
@@ -60,11 +70,17 @@ __all__ = (
     "SmallestFractionEnum",
     "Space",
     "SpaceList",
+    "SpaceRole",
+    "SpaceRoleList",
+    "SpaceRoleRole",
+    "SpaceRoleStatus",
     "SystemSettingInCreate",
     "SystemSettingInResponse",
     "Token",
     "Transaction",
     "TransactionList",
+    "UpdatedSpaceRole",
+    "UpdatedSpaceRoleRole",
     "UpdatedTransaction",
     "UpdatedUser",
     "User",

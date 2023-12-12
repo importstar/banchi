@@ -1,7 +1,8 @@
 import datetime
 import io
+import typing
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Query
 from loguru import logger
 import bson
 
@@ -16,42 +17,17 @@ from beanie.odm.operators.find import comparison
 router = APIRouter(prefix="/spaces", tags=["spaces"])
 
 
-@router.get("", response_model_by_alias=False)
+@router.get("")
 async def get_all(
-    current_user: models.users.User = Depends(deps.get_current_user),
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
+    spaces: typing.Annotated[
+        models.spaces.Space, Depends(deps.get_current_user_spaces)
+    ],
 ) -> schemas.spaces.SpaceList:
-    space_roles = await models.spaces.SpaceRole.find(
-        models.spaces.SpaceRole.member.id == current_user.id,
-        models.spaces.SpaceRole.status == "active",
-        fetch_links=True,
-    ).to_list()
-
-    spaces = await models.spaces.Space.find(
-        comparison.In(
-            models.spaces.Space.id, [space_role.space.id for space_role in space_roles]
-        ),
-        models.spaces.Space.status == "active",
-        fetch_links=True,
-    ).to_list()
-
     return dict(spaces=spaces)
 
-    # spaces = []
 
-    # for space_role in space_roles:
-    #     subspaces = await models.spaces.Space.find(
-    #         models.spaces.Space.id == space_role.space.id,
-    #         models.spaces.Space.status == "active",
-    #         fetch_links=True,
-    #     ).to_list()
-    #     spaces.extend(subspaces)
-
-    # return dict(spaces=spaces)
-
-
-@router.post(
-    "",
-)
+@router.post("")
 async def create(
     space: schemas.spaces.CreatedSpace,
     current_user: models.users.User = Depends(deps.get_current_user),
@@ -92,25 +68,24 @@ async def create(
     return db_space
 
 
-@router.get(
-    "/{space_id}",
-)
+@router.get("/{space_id}")
 async def get(
     space_id: PydanticObjectId,
-    current_user: models.users.User = Depends(deps.get_current_user),
+    space: typing.Annotated[models.spaces.Space, Depends(deps.get_current_user_space)],
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.spaces.Space:
-    db_space = await models.spaces.Space.find_one(
-        models.spaces.Space.id == space_id,
-        models.spaces.Space.owner.id == current_user.id,
-        fetch_links=True,
-    )
+    return space
 
-    if not db_space:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this space",
-        )
-    return db_space
+
+@router.get("/{space_id}/accounts")
+async def get_accounts(
+    space_id: PydanticObjectId,
+    account: typing.Annotated[
+        models.accounts.Account, Depends(deps.get_account_by_space)
+    ],
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
+) -> schemas.accounts.Account:
+    return account
 
 
 @router.put(

@@ -52,6 +52,10 @@ class CreatedSpace(BaseSpace):
     pass
 
 
+class UpdatedSpace(CreatedSpace):
+    pass
+
+
 class BaseSpaceRole(BaseModel):
     role: typing.Literal["owner", "member"] = Field(..., choices=["owner", "member"])
 
@@ -76,5 +80,5 @@ class CreatedSpaceRole(BaseSpaceRole):
     member_id: PydanticObjectId
 
 
-class UpdatetedSpaceRole(CreatedSpaceRole):
+class UpdatedSpaceRole(CreatedSpaceRole):
     pass

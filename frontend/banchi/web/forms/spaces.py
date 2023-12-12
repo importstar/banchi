@@ -22,7 +22,7 @@ class SpaceForm(FlaskForm):
 
 
 class SpaceRoleForm(FlaskForm):
-    member = fields.SelectField("Member", validators=[validators.InputRequired()])
+    member_id = fields.SelectField("Member", validators=[validators.InputRequired()])
 
     role = fields.SelectField(
         "Role",

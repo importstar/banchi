@@ -4,13 +4,16 @@ import datetime
 
 from banchi_client import models
 from banchi_client.api.v1 import (
-    create_v1_spaces_create_post,
+    add_v1_spaces_space_id_roles_post,
+    create_v1_spaces_post,
     get_all_v1_spaces_get,
     get_v1_spaces_space_id_get,
     get_all_v1_accounts_get,
     get_all_v1_spaces_space_id_roles_get,
     get_v1_spaces_space_id_roles_space_role_id_get,
     get_all_v1_users_get,
+    get_accounts_v1_spaces_space_id_accounts_get,
+    update_v1_spaces_space_id_roles_space_role_id_put,
 )
 
 from .. import banchi_api_clients
@@ -42,7 +45,7 @@ def create_or_edit(space_id):
 
     if not space:
         space = models.CreatedSpace.from_dict(form.data)
-        response = create_v1_spaces_create_post.sync(client=client, json_body=space)
+        response = create_v1_spaces_post.sync(client=client, json_body=space)
     else:
         space = models.UpdatedSpace.from_dict(form.data)
         response = update_v1_spaces_update_post.sync(client=client, json_body=space)
@@ -57,9 +60,11 @@ def create_or_edit(space_id):
 def view(space_id):
     client = banchi_api_clients.client.get_current_client()
     space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
-    response = get_all_v1_accounts_get.sync(client=client)
+    account = get_accounts_v1_spaces_space_id_accounts_get.sync(
+        client=client, space_id=space_id
+    )
 
-    return render_template("/spaces/view.html", space=space, accounts=response.accounts)
+    return render_template("/spaces/view.html", space=space, account=account)
 
 
 @module.route("/<space_id>/roles")
@@ -89,13 +94,16 @@ def add_or_edit_role(space_id, space_role_id):
     form = forms.spaces.SpaceRoleForm()
 
     space_role = None
-    if request.method == "GET" and space_role_id:
+    if space_role_id:
         space_role = get_v1_spaces_space_id_roles_space_role_id_get.sync(
             client=client, space_id=space_id, space_role_id=space_role_id
         )
-        form = forms.spaces.SpaceRoleForm(obj=space_role)
 
-    form.member.choices = [
+    if request.method == "GET" and space_role:
+        form = forms.spaces.SpaceRoleForm(obj=space_role)
+        form.member_id.data = space_role.member.id
+
+    form.member_id.choices = [
         (str(user.id), f"{ user.first_name } { user.last_name }")
         for user in user_response.users
     ]
@@ -105,10 +113,17 @@ def add_or_edit_role(space_id, space_role_id):
 
     if not space_role:
         space_role = models.CreatedSpaceRole.from_dict(form.data)
-        response = create_v1_spaces_create_post.sync(client=client, json_body=space)
+        response = add_v1_spaces_space_id_roles_post.sync(
+            client=client, json_body=space_role, space_id=space_id
+        )
     else:
         space_role = models.UpdatedSpaceRole.from_dict(form.data)
-        response = update_v1_spaces_update_post.sync(client=client, json_body=space)
+        response = update_v1_spaces_space_id_roles_space_role_id_put.sync(
+            client=client,
+            json_body=space_role,
+            space_id=space_id,
+            space_role_id=space_role_id,
+        )
 
     if not response:
         print("error cannot save")

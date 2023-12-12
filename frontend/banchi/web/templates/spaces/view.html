@@ -20,28 +20,14 @@ Space
     <a class="ui icon button primary" href="{{ url_for('accounts.create_or_edit', space_id=space.id) }}"><i class="add icon"></i> Create Account</a>
   </div>
   <div>
-    <table class="ui table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Currentcy</th>
-          <th>Description</th>
-          <th>Operation</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for account in accounts %}
-        <tr>
-          <td>{{ account.name }}</td>
-          <td>{{ account.currency }}</td>
-          <td>{{ account.description }}</td>
-          <td>
-            <a class="ui primary icon circular button" href="{{ url_for('accounts.view', account_id=account.id) }}"><i class="eye icon"></i></a>
-          </td>
-        </tr>
-      {% endfor %}
-      </tbody>
-    </table>
+    {% if account %}
+      <div>Name {{ account.name }}</div>
+      <div>Currentcy {{ account.currency }}</div>
+      <div>Description {{ account.description }}</div>
+      <div>
+        <a class="ui primary icon circular button" href="{{ url_for('accounts.view', account_id=account.id) }}"><i class="eye icon"></i></a>
+      </div>
+    {% endif %}
   </div>
   
 {% endblock %}

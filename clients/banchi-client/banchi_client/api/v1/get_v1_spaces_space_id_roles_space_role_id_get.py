@@ -5,33 +5,29 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.account import Account
-from ...models.created_account import CreatedAccount
 from ...models.http_validation_error import HTTPValidationError
+from ...models.space_role import SpaceRole
 from ...types import Response
 
 
 def _get_kwargs(
-    account_id: str,
-    *,
-    json_body: CreatedAccount,
+    space_id: str,
+    space_role_id: str,
 ) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
-
     return {
-        "method": "put",
-        "url": "/v1/accounts/{account_id}/update".format(
-            account_id=account_id,
+        "method": "get",
+        "url": "/v1/spaces/{space_id}/roles/{space_role_id}".format(
+            space_id=space_id,
+            space_role_id=space_role_id,
         ),
-        "json": json_json_body,
     }
 
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[Account, HTTPValidationError]]:
+) -> Optional[Union[HTTPValidationError, SpaceRole]]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = Account.from_dict(response.json())
+        response_200 = SpaceRole.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -46,7 +42,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[Account, HTTPValidationError]]:
+) -> Response[Union[HTTPValidationError, SpaceRole]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -56,28 +52,28 @@ def _build_response(
 
 
 def sync_detailed(
-    account_id: str,
+    space_id: str,
+    space_role_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccount,
-) -> Response[Union[Account, HTTPValidationError]]:
-    """Update
+) -> Response[Union[HTTPValidationError, SpaceRole]]:
+    """Get
 
     Args:
-        account_id (str):
-        json_body (CreatedAccount):
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        space_role_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Account, HTTPValidationError]]
+        Response[Union[HTTPValidationError, SpaceRole]]
     """
 
     kwargs = _get_kwargs(
-        account_id=account_id,
-        json_body=json_body,
+        space_id=space_id,
+        space_role_id=space_role_id,
     )
 
     response = client.get_httpx_client().request(
@@ -88,55 +84,55 @@ def sync_detailed(
 
 
 def sync(
-    account_id: str,
+    space_id: str,
+    space_role_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccount,
-) -> Optional[Union[Account, HTTPValidationError]]:
-    """Update
+) -> Optional[Union[HTTPValidationError, SpaceRole]]:
+    """Get
 
     Args:
-        account_id (str):
-        json_body (CreatedAccount):
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        space_role_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Account, HTTPValidationError]
+        Union[HTTPValidationError, SpaceRole]
     """
 
     return sync_detailed(
-        account_id=account_id,
+        space_id=space_id,
+        space_role_id=space_role_id,
         client=client,
-        json_body=json_body,
     ).parsed
 
 
 async def asyncio_detailed(
-    account_id: str,
+    space_id: str,
+    space_role_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccount,
-) -> Response[Union[Account, HTTPValidationError]]:
-    """Update
+) -> Response[Union[HTTPValidationError, SpaceRole]]:
+    """Get
 
     Args:
-        account_id (str):
-        json_body (CreatedAccount):
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        space_role_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[Account, HTTPValidationError]]
+        Response[Union[HTTPValidationError, SpaceRole]]
     """
 
     kwargs = _get_kwargs(
-        account_id=account_id,
-        json_body=json_body,
+        space_id=space_id,
+        space_role_id=space_role_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -145,29 +141,29 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    account_id: str,
+    space_id: str,
+    space_role_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccount,
-) -> Optional[Union[Account, HTTPValidationError]]:
-    """Update
+) -> Optional[Union[HTTPValidationError, SpaceRole]]:
+    """Get
 
     Args:
-        account_id (str):
-        json_body (CreatedAccount):
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        space_role_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[Account, HTTPValidationError]
+        Union[HTTPValidationError, SpaceRole]
     """
 
     return (
         await asyncio_detailed(
-            account_id=account_id,
+            space_id=space_id,
+            space_role_id=space_role_id,
             client=client,
-            json_body=json_body,
         )
     ).parsed

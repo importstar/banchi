@@ -2,10 +2,13 @@ import datetime
 import io
 import bson
 import decimal
+import typing
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
 
 from loguru import logger
+
+from beanie import PydanticObjectId
 
 from banchiapi import models
 from banchiapi.core import deps
@@ -19,27 +22,13 @@ router = APIRouter(prefix="/account-books", tags=["account_books"])
     response_model_by_alias=False,
 )
 async def get_all(
-    current_user: models.users.User = Depends(deps.get_current_user),
-    account_id: str | None = None,
-    account_book_parent_id: str | None = None,
+    account_id: PydanticObjectId,
+    account_books: typing.Annotated[
+        list[models.account_books.AccountBook],
+        Depends(deps.get_account_books_by_account),
+    ],
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.account_books.AccountBookList:
-    query_args = [
-        models.account_books.AccountBook.status == "active",
-        models.account_books.AccountBook.creator.id == current_user.id,
-    ]
-    if account_id:
-        query_args.append(
-            models.account_books.AccountBook.account.id == bson.ObjectId(account_id)
-        )
-    if account_book_parent_id:
-        query_args.append(
-            models.account_books.AccountBook.parent.id
-            == bson.ObjectId(account_book_parent_id)
-        )
-
-    query = models.account_books.AccountBook.find(*query_args, fetch_links=True)
-    account_books = await query.to_list()
-
     return dict(account_books=account_books)
 
 
@@ -87,22 +76,13 @@ async def create(
     response_model_by_alias=False,
 )
 async def get(
-    account_book_id: str,
+    account_book_id: PydanticObjectId,
+    account_book: typing.Annotated[
+        models.account_books.AccountBook, Depends(deps.get_account_book)
+    ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBook:
-    db_account_book = await models.account_books.AccountBook.find_one(
-        models.account_books.AccountBook.id == bson.ObjectId(account_book_id),
-        models.account_books.AccountBook.creator.id == current_user.id,
-        models.account_books.AccountBook.status == "active",
-        fetch_links=True,
-    )
-
-    if not db_account_book:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this account_book",
-        )
-    return db_account_book
+    return account_book
 
 
 @router.get(

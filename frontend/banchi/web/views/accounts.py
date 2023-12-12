@@ -5,7 +5,7 @@ from collections import OrderedDict
 
 from banchi_client import models
 from banchi_client.api.v1 import (
-    create_v1_accounts_create_post,
+    create_v1_accounts_post,
     get_all_v1_accounts_get,
     get_all_v1_account_books_get,
     get_balance_v1_account_books_account_book_id_balance_get,
@@ -44,7 +44,7 @@ def create_or_edit(account_id):
 
     if not account:
         account = models.CreatedAccount.from_dict(data)
-        response = create_v1_accounts_create_post.sync(client=client, json_body=account)
+        response = create_v1_accounts_post.sync(client=client, json_body=account)
     else:
         account = models.UpdatedAccount.from_dict(data)
         response = update_v1_accounts_update_post.sync(client=client, json_body=account)

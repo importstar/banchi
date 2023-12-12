@@ -21,7 +21,7 @@ Space Role
     <form class="ui form" method="POST">
       {{ form.csrf_token }}
       <div class="two fields">
-        {{ renderer.render_select(form.member) }}
+        {{ renderer.render_select(form.member_id) }}
         {{ renderer.render_select(form.role) }}
       </div>
       <button type="submit" class="ui primary button">Submit</button>

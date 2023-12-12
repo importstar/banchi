@@ -32,7 +32,7 @@ Space
         <tr>
           <td>{{ space_role.member.first_name }} {{ space_role.member.last_name }}</td>
           <td>{{ space_role.role.title() }}</td>
-          <td>{{ space_role.updated_by.first_name }} {{ space_role.member.last_name }}</td>
+          <td>{{ space_role.updated_by.first_name }} {{ space_role.updated_by.last_name }}</td>
           <td>{{ space_role.updated_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
           <td>
             <a class="ui primary icon circular button" href="{{ url_for('spaces.add_or_edit_role', space_id=space_role.space.id, space_role_id=space_role.id) }}"><i class="edit icon"></i></a>
