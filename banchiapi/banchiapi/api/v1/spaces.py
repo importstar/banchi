@@ -33,7 +33,9 @@ async def create(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
     db_space = await models.spaces.Space.find_one(
-        models.spaces.Space.name == space.name, models.spaces.Space.status == "active"
+        models.spaces.Space.name == space.name,
+        models.spaces.Space.owner.id == current_user.id,
+        models.spaces.Space.status == "active",
     )
     if db_space:
         raise HTTPException(
@@ -42,10 +44,12 @@ async def create(
         )
 
     db_space = await models.spaces.Space.find_one(
-        models.spaces.Space.code == space.code, models.spaces.Space.status == "active"
+        models.spaces.Space.code == space.code,
+        models.spaces.Space.status == "active",
+        models.spaces.Space.owner.id == current_user.id,
     )
     if db_space:
-        raise status.HTTPException(
+        raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="There are already space code",
         )
