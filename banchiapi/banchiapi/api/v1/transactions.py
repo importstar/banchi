@@ -54,27 +54,32 @@ async def get_all(
 ) -> schemas.transactions.TransactionList:
     query_args = [
         models.transactions.Transaction.status == "active",
-        models.transactions.Transaction.creator.id == current_user.id,
     ]
 
     from_account_books = []
     to_account_books = []
     all_transactions = []
     if from_account_book_id:
-        from_account_books = await models.transactions.Transaction.find(
-            *query_args,
-            models.transactions.Transaction.from_account_book.id
-            == bson.ObjectId(from_account_book_id),
-            fetch_links=True,
-        ).to_list()
+        from_account_book = await deps.get_account_book(
+            from_account_book_id, current_user
+        )
+        if from_account_book:
+            from_account_books = await models.transactions.Transaction.find(
+                *query_args,
+                models.transactions.Transaction.from_account_book.id
+                == from_account_book_id,
+                fetch_links=True,
+            ).to_list()
 
     if to_account_book_id:
-        to_account_books = await models.transactions.Transaction.find(
-            *query_args,
-            models.transactions.Transaction.to_account_book.id
-            == bson.ObjectId(to_account_book_id),
-            fetch_links=True,
-        ).to_list()
+        to_account_book = await deps.get_account_book(to_account_book_id, current_user)
+        if to_account_book:
+            to_account_books = await models.transactions.Transaction.find(
+                *query_args,
+                models.transactions.Transaction.to_account_book.id
+                == to_account_book_id,
+                fetch_links=True,
+            ).to_list()
 
     if not from_account_book_id and not to_account_book_id:
         all_transactions = await query.to_list()
