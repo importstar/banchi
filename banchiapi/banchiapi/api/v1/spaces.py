@@ -84,12 +84,12 @@ async def get(
 @router.get("/{space_id}/accounts")
 async def get_accounts(
     space_id: PydanticObjectId,
-    account: typing.Annotated[
+    db_account: typing.Annotated[
         models.accounts.Account, Depends(deps.get_account_by_space)
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.accounts.Account:
-    return account
+    return db_account
 
 
 @router.put(

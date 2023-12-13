@@ -25,12 +25,17 @@ module = Blueprint("account_books", __name__, url_prefix="/account-books")
 
 @module.route("")
 def index():
-    client = banchi_api_clients.client.get_current_client()
-    response = get_all_v1_account_books_get.sync(client=client)
+    account_id = request.args.get("account_id")
+    account_books = []
 
-    return render_template(
-        "/account_books/index.html", account_books=response.account_books
-    )
+    if account_id:
+        client = banchi_api_clients.client.get_current_client()
+        response = get_all_v1_account_books_get.sync(
+            client=client, account_id=account_id
+        )
+        account_books = response.account_books
+
+    return render_template("/account_books/index.html", account_books=account_books)
 
 
 @module.route("/create", defaults=dict(account_book_id=None), methods=["GET", "POST"])

@@ -40,7 +40,7 @@ class ReferenceAccount(bases.BaseSchema):
 
 
 class CreatedAccount(BaseAccount):
-    space_id: str = Field(..., example="0")
+    space_id: PydanticObjectId = Field(..., example="0")
 
 
 class AccountList(BaseModel):

@@ -47,7 +47,7 @@ def create_or_edit(account_id):
         response = create_v1_accounts_post.sync(client=client, json_body=account)
     else:
         account = models.UpdatedAccount.from_dict(data)
-        response = update_v1_accounts_update_post.sync(client=client, json_body=account)
+        response = update_v1_accounts_put.sync(client=client, json_body=account)
 
     if not response:
         print("error cannot save")

@@ -104,10 +104,10 @@ async def get_current_user_space(
 
 
 async def get_account_by_space(
-    space: typing.Annotated[models.spaces.Space, Depends(get_current_user_space)],
+    db_space: typing.Annotated[models.spaces.Space, Depends(get_current_user_space)],
 ) -> models.accounts.Account:
     db_account = await models.accounts.Account.find_one(
-        models.accounts.Account.space.id == space.id,
+        models.accounts.Account.space.id == db_space.id,
         models.accounts.Account.status == "active",
         fetch_links=True,
     )
@@ -153,10 +153,10 @@ async def get_account(
 
 
 async def get_account_books_by_account(
-    account: typing.Annotated[models.accounts.Account, Depends(get_account)],
+    db_account: typing.Annotated[models.accounts.Account, Depends(get_account)],
 ) -> list[models.account_books.AccountBook]:
     db_account_books = await models.account_books.AccountBook.find(
-        models.account_books.AccountBook.account.id == account.id,
+        models.account_books.AccountBook.account.id == db_account.id,
         models.account_books.AccountBook.status == "active",
         fetch_links=True,
     ).to_list()

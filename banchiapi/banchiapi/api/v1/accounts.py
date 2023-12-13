@@ -30,17 +30,12 @@ async def get_all(
     return dict(accounts=db_accounts)
 
 
-@router.post(
-    "",
-)
+@router.post("")
 async def create(
     account: schemas.accounts.CreatedAccount,
     current_user: Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.accounts.Account:
-    db_space = await models.spaces.Space.find_one(
-        models.spaces.Space.id == bson.ObjectId(account.space_id),
-        models.spaces.Space.owner.id == current_user.id,
-    )
+    db_space = await deps.get_current_user_space(account.space_id, current_user)
 
     if not db_space:
         raise HTTPException(
