@@ -19,6 +19,7 @@ from banchi_client.api.v1 import (
 
 from .. import banchi_api_clients
 from .. import forms
+from .. import utils
 
 module = Blueprint("account_books", __name__, url_prefix="/account-books")
 
@@ -58,11 +59,15 @@ def create_or_edit(account_book_id):
             client=client, account_id=account_id
         )
 
+        account_books = response.account_books
+
+        display_names = utils.account_books.get_display_names(account_books)
+
         form.parent_id.choices.extend(
             sorted(
                 [
-                    (account_book.to_dict()["id"], account_book.display_name)
-                    for account_book in response.account_books
+                    (account_book.id, display_names[account_book.id])
+                    for account_book in account_books
                 ],
                 key=lambda abn: abn[1],
             )
@@ -146,6 +151,8 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         client=client, account_id=account_book.account.id
     )
 
+    account_books = response.account_books
+
     form = forms.transactions.TransactionForm()
 
     transaction = None
@@ -156,9 +163,8 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
         form = forms.transactions.TransactionForm(obj=transaction)
 
-    account_book_choices = [
-        (str(ab.id), ab.display_name) for ab in response.account_books
-    ]
+    display_names = utils.account_books.get_display_names(account_books)
+    account_book_choices = [(str(ab.id), display_names[ab.id]) for ab in account_books]
     to_account_book_choices = account_book_choices
 
     account_book_choices = sorted(
