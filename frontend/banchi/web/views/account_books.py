@@ -166,35 +166,32 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         key=lambda abn: abn[1],
     )
 
-    if not transaction:
-        to_account_book_choices = [
-            (str(ab.id), ab.display_name)
-            for ab in response.account_books
-            if ab != account_book
-        ]
+    # if not transaction:
+    #     to_account_book_choices = [
+    #         (str(ab.id), ab.display_name)
+    #         for ab in response.account_books
+    #         if ab != account_book
+    #     ]
 
-        to_account_book_choices = sorted(
-            to_account_book_choices,
-            key=lambda abn: abn[1],
-        )
+    #     to_account_book_choices = sorted(
+    #         to_account_book_choices,
+    #         key=lambda abn: abn[1],
+    #     )
 
-    form.to_account_book_id.choices = to_account_book_choices
+    form.to_account_book_id.choices = account_book_choices
     form.from_account_book_id.choices = account_book_choices
 
-    if not transaction:
-        form.from_account_book_id.data = str(account_book.id)
-
     if not form.validate_on_submit():
-        # if request.method == "GET":
-        #     form.from_account_book_id.data = str(account_book.id)
+        if request.method == "GET":
+            form.from_account_book_id.data = str(account_book.id)
 
         if request.method == "GET" and transaction:
             form.to_account_book_id.data = str(transaction.to_account_book.id)
             form.from_account_book_id.data = str(transaction.from_account_book.id)
             form.value.data = decimal.Decimal(form.value.data)
 
-        if not transaction:
-            form.from_account_book_id.render_kw = {"disabled": ""}
+        # if not transaction:
+        #     form.from_account_book_id.render_kw = {"disabled": ""}
 
         return render_template(
             "/account_books/add-transaction.html", account_book=account_book, form=form
