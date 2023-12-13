@@ -34,14 +34,15 @@ async def create(
     account_book: schemas.account_books.CreatedAccountBook,
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBook:
-    data = account_book.dict()
-
-    db_account = await deps.get_account(account_book.account_id, user)
+    db_account = await deps.get_account(account_book.account_id, current_user)
 
     db_parent_account_book = None
-    if data.get("parent_id"):
-        db_parent_account_book = await deps.get_account(account_book.parent_id, user)
+    if account_book.parent_id:
+        db_parent_account_book = await deps.get_account_book(
+            account_book.parent_id, current_user
+        )
 
+    data = account_book.dict()
     data["creator"] = current_user
     data["updated_by"] = current_user
     data["account"] = db_account
@@ -50,9 +51,7 @@ async def create(
     db_account_book = models.account_books.AccountBook.parse_obj(data)
     await db_account_book.save()
 
-    db_account_book = await models.account_books.AccountBook.get(
-        db_account_book.id, fetch_links=True
-    )
+    await db_account_book.fetch_links()
 
     return db_account_book
 

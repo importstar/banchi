@@ -51,11 +51,9 @@ def create_or_edit(account_book_id):
             client=client, id=account_book_id
         )
         form = forms.account_books.AccountBookForm(obj=response.to_dict())
+        account_id = account_book.account.id
 
-    if account_id or account_book_id:
-        if account_book_id:
-            account_id = account_book.account.id
-
+    if account_id:
         response = get_all_v1_account_books_get.sync(
             client=client, account_id=account_id
         )
@@ -83,12 +81,12 @@ def create_or_edit(account_book_id):
 
     if not account_book:
         account_book = models.CreatedAccountBook.from_dict(data)
-        response = create_v1_account_books_create_post.sync(
+        response = create_v1_account_books_post.sync(
             client=client, json_body=account_book
         )
     else:
         account_book = models.UpdatedAccountBook.from_dict(data)
-        response = update_v1_account_books_account_book_id_update_put.sync(
+        response = update_v1_account_books_account_book_id_put.sync(
             client=client, json_body=account_book
         )
 

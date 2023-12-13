@@ -95,8 +95,8 @@ class AccountBookLabel(BaseModel):
 
 
 class CreatedAccountBook(BaseAccountBook):
-    parent_id: str | None = Field(..., example=None)
-    account_id: str = Field(..., example="0")
+    parent_id: PydanticObjectId | None = Field(..., example=None)
+    account_id: PydanticObjectId = Field(..., example="0")
 
 
 class AccountBookList(BaseModel):

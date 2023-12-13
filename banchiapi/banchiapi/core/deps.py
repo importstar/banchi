@@ -129,7 +129,6 @@ async def get_account(
         models.accounts.Account.status == "active",
         fetch_links=True,
     )
-
     if not db_account:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
