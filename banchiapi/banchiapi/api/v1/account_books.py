@@ -90,6 +90,7 @@ async def get_balance(
         await models.transactions.Transaction.find()
         .aggregate(
             [
+                {"$match": {"from_account_book.$id": bson.ObjectId(account_book_id)}},
                 {
                     "$group": {
                         "_id": "$from_account_book._id",
@@ -105,6 +106,7 @@ async def get_balance(
         await models.transactions.Transaction.find()
         .aggregate(
             [
+                {"$match": {"from_account_book.$id": bson.ObjectId(account_book_id)}},
                 {
                     "$group": {
                         "_id": "$to_account_book._id",
@@ -115,6 +117,8 @@ async def get_balance(
         )
         .to_list()
     )
+
+    print(account_book_id)
 
     # from_values = await from_account_book_values.sum(
     #     models.transactions.Transaction.value
