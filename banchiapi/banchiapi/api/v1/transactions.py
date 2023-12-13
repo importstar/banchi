@@ -130,7 +130,7 @@ async def update(
 
     data = await transform_transaction(transaction, current_user)
 
-    await db_transaction.set(data)
+    await db_transaction.update(data)
 
     await db_transaction.fetch_all_links()
     return db_transaction
