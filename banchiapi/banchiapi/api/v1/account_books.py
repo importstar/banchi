@@ -20,13 +20,13 @@ router = APIRouter(prefix="/account-books", tags=["account_books"])
 @router.get("")
 async def get_all(
     account_id: PydanticObjectId,
-    account_books: typing.Annotated[
+    db_account_books: typing.Annotated[
         list[models.account_books.AccountBook],
         Depends(deps.get_account_books_by_account),
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.account_books.AccountBookList:
-    return dict(account_books=account_books)
+    return dict(account_books=db_account_books)
 
 
 @router.post("")
@@ -51,7 +51,7 @@ async def create(
     db_account_book = models.account_books.AccountBook.parse_obj(data)
     await db_account_book.save()
 
-    await db_account_book.fetch_links()
+    # await db_account_book.fetch_links()
 
     return db_account_book
 

@@ -26,7 +26,6 @@ class AccountBook:
         account (ReferenceAccount):
         parent (Union['ReferenceAccountBook', None]):
         creator (ReferenceUser):
-        display_name (str):
         description (Union[Unset, str]):  Default: ''. Example: Description.
         type (Union[Unset, AccountTypeEnum]):  Default: AccountTypeEnum.ASSET.
         smallest_fraction (Union[Unset, SmallestFractionEnum]):  Default: 100.
@@ -39,7 +38,6 @@ class AccountBook:
     account: "ReferenceAccount"
     parent: Union["ReferenceAccountBook", None]
     creator: "ReferenceUser"
-    display_name: str
     description: Union[Unset, str] = ""
     type: Union[Unset, AccountTypeEnum] = AccountTypeEnum.ASSET
     smallest_fraction: Union[Unset, SmallestFractionEnum] = 100
@@ -64,7 +62,6 @@ class AccountBook:
 
         creator = self.creator.to_dict()
 
-        display_name = self.display_name
         description = self.description
         type: Union[Unset, str] = UNSET
         if not isinstance(self.type, Unset):
@@ -89,7 +86,6 @@ class AccountBook:
                 "account": account,
                 "parent": parent,
                 "creator": creator,
-                "display_name": display_name,
             }
         )
         if description is not UNSET:
@@ -135,8 +131,6 @@ class AccountBook:
 
         creator = ReferenceUser.from_dict(d.pop("creator"))
 
-        display_name = d.pop("display_name")
-
         description = d.pop("description", UNSET)
 
         _type = d.pop("type", UNSET)
@@ -168,7 +162,6 @@ class AccountBook:
             account=account,
             parent=parent,
             creator=creator,
-            display_name=display_name,
             description=description,
             type=type,
             smallest_fraction=smallest_fraction,

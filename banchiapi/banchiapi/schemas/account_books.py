@@ -57,17 +57,22 @@ class BaseAccountBook(BaseModel):
     )
 
 
+from typing import ForwardRef
+
+ReferenceAccountBook = ForwardRef("ReferenceAccountBook")
+
+
 class ReferenceAccountBook(bases.BaseSchema):
     name: str = Field(..., example="Account Book Name")
-    parent: typing.Annotated["ReferenceAccountBook", ...] | None
+    parent: ReferenceAccountBook | None
 
-    @computed_field
-    @property
-    def display_name(self) -> str:
-        if self.parent:
-            return f"{self.parent.display_name} >> {self.name}"
+    # @computed_field
+    # @property
+    # def display_name(self) -> str:
+    #     if self.parent and hasattr(self.parent, "display_name"):
+    #         return f"{self.parent.display_name} >> {self.name}"
 
-        return self.name
+    #     return self.name
 
 
 class AccountBook(bases.BaseSchema, BaseAccountBook):
@@ -80,13 +85,15 @@ class AccountBook(bases.BaseSchema, BaseAccountBook):
         example="active",
     )
 
-    @computed_field
-    @property
-    def display_name(self) -> str:
-        if self.parent:
-            return f"{self.parent.display_name} >> {self.name}"
+    # @computed_field
+    # @property
+    # def display_name(self) -> str:
+    #     if self.parent:
+    #         self.parent.fetch_all_links()
+    #         if hasattr(self.parent, "display_name"):
+    #             return f"{self.parent.display_name} >> {self.name}"
 
-        return self.name
+    #     return self.name
 
 
 class AccountBookLabel(BaseModel):

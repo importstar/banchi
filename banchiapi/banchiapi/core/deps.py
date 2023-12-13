@@ -159,12 +159,6 @@ async def get_account_books_by_account(
         models.account_books.AccountBook.status == "active",
         fetch_links=True,
     ).to_list()
-    if not db_account_books:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found account books",
-        )
-
     return db_account_books
 
 

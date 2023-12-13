@@ -34,7 +34,7 @@ Account {{ account.name }}
         {% for account_book_id, account_book in display_account_books.items() %}
           <tr class="{{ 'blue' if not account_book['obj'].parent }}">
             <td>
-              {{ account_book['obj'].display_name }}
+              {{ account_book['obj'].name }}
             </td>
             <td> {{ account_book['obj'].type.title() }} </td>
             <td> {{ account_book['account_balance'].balance }} </td>

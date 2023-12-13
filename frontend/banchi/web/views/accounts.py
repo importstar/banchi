@@ -67,7 +67,8 @@ def view(account_id):
 
     for account_book in account_books:
         display_account_books[account_book.id] = dict(
-            name=get_account_book_display_name(account_book),
+            name=account_book.name,
+            # name=get_account_book_display_name(account_book),
             account_balance=get_balance_v1_account_books_account_book_id_balance_get.sync(
                 client=client, account_book_id=account_book.id
             ),
@@ -78,6 +79,7 @@ def view(account_id):
         sorted(display_account_books.items(), key=lambda a: a[1]["name"])
     )
 
+    print(get_account_book_display_names(account_books))
     return render_template(
         "/accounts/view.html",
         account=account,
@@ -87,8 +89,19 @@ def view(account_id):
     )
 
 
-def get_account_book_display_name(account_book):
-    if hasattr(account_book, "parent") and account_book.parent:
-        return f"{get_account_book_display_name(account_book.parent)} >> {account_book.name}"
+def get_account_book_display_names(account_books):
+    # account_book_display_names = {
+    #     account_book.id: account_book.name for account_book in account_books
+    # }
 
-    return account_book.name
+    def get_nested_name(account_book):
+        if hasattr(account_book, "parent") and account_book.parent:
+            return f"{get_nested_name(account_book.parent)} >> {account_book.name}"
+        print(account_book)
+        # return account_book.name
+
+    account_book_display_names = {}
+    for account_book in account_books:
+        account_book_display_names[account_book.id] = get_nested_name(account_book)
+
+    return account_book_display_names

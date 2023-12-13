@@ -13,13 +13,11 @@ class ReferenceAccountBook:
         id (str):  Example: 0.
         name (str):  Example: Account Book Name.
         parent (Union['ReferenceAccountBook', None]):
-        display_name (str):
     """
 
     id: str
     name: str
     parent: Union["ReferenceAccountBook", None]
-    display_name: str
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -33,8 +31,6 @@ class ReferenceAccountBook:
         else:
             parent = self.parent
 
-        display_name = self.display_name
-
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -42,7 +38,6 @@ class ReferenceAccountBook:
                 "id": id,
                 "name": name,
                 "parent": parent,
-                "display_name": display_name,
             }
         )
 
@@ -70,13 +65,10 @@ class ReferenceAccountBook:
 
         parent = _parse_parent(d.pop("parent"))
 
-        display_name = d.pop("display_name")
-
         reference_account_book = cls(
             id=id,
             name=name,
             parent=parent,
-            display_name=display_name,
         )
 
         reference_account_book.additional_properties = d
