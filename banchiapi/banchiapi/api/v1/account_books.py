@@ -90,7 +90,7 @@ async def get_balance(
         await models.transactions.Transaction.find()
         .aggregate(
             [
-                {"$match": {"from_account_book.$id": bson.ObjectId(account_book_id)}},
+                {"$match": {"from_account_book.$id": account_book_id}},
                 {
                     "$group": {
                         "_id": "$from_account_book._id",
@@ -106,7 +106,7 @@ async def get_balance(
         await models.transactions.Transaction.find()
         .aggregate(
             [
-                {"$match": {"from_account_book.$id": bson.ObjectId(account_book_id)}},
+                {"$match": {"to_account_book.$id": account_book_id}},
                 {
                     "$group": {
                         "_id": "$to_account_book._id",
@@ -118,28 +118,12 @@ async def get_balance(
         .to_list()
     )
 
-    print(account_book_id)
-
-    # from_values = await from_account_book_values.sum(
-    #     models.transactions.Transaction.value
-    # ) or decimal.Decimal(0)
-    # to_values = await to_account_book_values.sum(
-    #     models.transactions.Transaction.value
-    # ) or decimal.Decimal(0)
-
-    # if from_values:
-    #     from_values = from_values.to_decimal()
-    # if to_values:
-    #     to_values = to_values.to_decimal()
-
     to_values = (
         to_account_book_agg[0]["total"].to_decimal() if to_account_book_agg else 0
     )
     from_values = (
         from_account_book_agg[0]["total"].to_decimal() if from_account_book_agg else 0
     )
-
-    print(to_values, from_values)
 
     return dict(balance=to_values - from_values, decrese=from_values, increse=to_values)
 
