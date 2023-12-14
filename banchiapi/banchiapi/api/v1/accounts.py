@@ -19,13 +19,16 @@ router = APIRouter(prefix="/accounts", tags=["accounts"])
 
 @router.get("")
 async def get_all(
+    db_accounts: typing.Annotated[
+        models.accounts.Account, Depends(deps.get_current_user_accounts)
+    ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.accounts.AccountList:
-    db_accounts = await models.accounts.Account.find(
-        models.accounts.Account.status == "active",
-        models.accounts.Account.creator.id == current_user.id,
-        fetch_links=True,
-    ).to_list()
+    # db_accounts = await models.accounts.Account.find(
+    #     models.accounts.Account.status == "active",
+    #     models.accounts.Account.creator.id == current_user.id,
+    #     fetch_links=True,
+    # ).to_list()
 
     return dict(accounts=db_accounts)
 

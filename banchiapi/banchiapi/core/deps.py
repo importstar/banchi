@@ -83,6 +83,21 @@ async def get_current_user_spaces(
     return spaces
 
 
+async def get_current_user_accounts(
+    db_spaces: typing.Annotated[models.spaces.Space, Depends(get_current_user_spaces)],
+    user: typing.Annotated[models.users.User, Depends(get_current_user)],
+) -> list[models.spaces.Space]:
+    db_accounts = await models.accounts.Account.find(
+        comparison.In(
+            models.accounts.Account.space.id, [space.id for space in db_spaces]
+        ),
+        models.accounts.Account.status == "active",
+        fetch_links=True,
+    ).to_list()
+
+    return db_accounts
+
+
 async def get_current_user_space(
     space_id: typing.Annotated[PydanticObjectId, Path()],
     user: typing.Annotated[models.users.User, Depends(get_current_user)],
