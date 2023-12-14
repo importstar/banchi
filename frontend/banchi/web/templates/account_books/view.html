@@ -78,11 +78,11 @@ Account Book {{ account_book.name }}
             {% endif %}
           </td>
           {% if transaction.from_account_book.id != account_book.id %}
-            <td>{{ "{:.2f}".format(transaction.value|float) }}</td>
+            <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
             <td></td>
           {% else %}
             <td></td>
-            <td>{{ "{:.2f}".format(transaction.value|float) }}</td>
+            <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
           {% endif %}
           <td>
             {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
@@ -95,9 +95,9 @@ Account Book {{ account_book.name }}
       </tbody>
     </table>
     <div>
-      balance: {{ "{:.2f}".format(balance['balance']|float) }} <br/>
-      increse: {{ "{:.2f}".format(balance['increse']|float) }} <br/>
-      decrese: {{ "{:.2f}".format(balance['decrese']|float) }} <br/>
+      balance: {{ "{:,.2f}".format(balance['balance']|float) }} <br/>
+      increse: {{ "{:,.2f}".format(balance['increse']|float) }} <br/>
+      decrese: {{ "{:,.2f}".format(balance['decrese']|float) }} <br/>
     </div>
   </div>
 {% endblock %}
