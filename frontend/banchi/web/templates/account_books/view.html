@@ -64,7 +64,7 @@ Account Book {{ account_book.name }}
       <tbody>
         {% for transaction in transactions %}
         <tr>
-          <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M') }}</td>
+          <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
           <td>{{ transaction.description }}</td>
           <td>
             {% if transaction.from_account_book.id != account_book.id %}
