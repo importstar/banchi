@@ -12,7 +12,7 @@ from banchi_client import models
 class TransactionForm(FlaskForm):
     date = fields.DateTimeField(
         "Date",
-        format="%Y-%m-%d %H:%M",
+        format="%Y-%m-%d %H:%M:%S",
         widget=widgets.TextInput(),
         default=datetime.datetime.now,
     )

@@ -129,8 +129,13 @@ async def update(
         )
 
     data = await transform_transaction(transaction, current_user)
-
-    await db_transaction.update(data)
+    db_transaction.date = data["date"]
+    db_transaction.description = data["description"]
+    db_transaction.value = data["value"]
+    db_transaction.currency = data["currency"]
+    db_transaction.to_account_book = data["to_account_book"]
+    db_transaction.from_account_book = data["from_account_book"]
+    await db_transaction.save()
 
     await db_transaction.fetch_all_links()
     return db_transaction

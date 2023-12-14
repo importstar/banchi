@@ -6,8 +6,12 @@ Account Book {{ account_book.name }}
 
 {% block breadcrumbs %}
   {{ super() }}
-  <div class="divider">/</div>
-  <div class="active section">Account Book: {{ account_book.name }} </div>
+  <i class="right angle icon divider"></i>
+  {% if request.endpoint == 'account_books.view' %}
+    <div class="active section">Account Book: {{ account_book.name }} </div>
+  {% elif account_book %}
+    <a class="section" href="{{ url_for('account_books.view', account_book_id=account_book.id ) }}">Account Book: {{ account_book.name }} </a>
+  {% endif %}
 
 {% endblock %}
 
@@ -65,11 +69,11 @@ Account Book {{ account_book.name }}
           <td>
             {% if transaction.from_account_book.id != account_book.id %}
               <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
-                {{ transaction.from_account_book.display_name }}
+                {{ account_book_display_names[transaction.from_account_book.id] }}
               </a>
             {% else %}
               <a href="{{ url_for('account_books.view', account_book_id=transaction.to_account_book.id) }}">
-                {{ transaction.to_account_book.display_name }}
+                {{ account_book_display_names[transaction.to_account_book.id] }}
               </a>
             {% endif %}
           </td>

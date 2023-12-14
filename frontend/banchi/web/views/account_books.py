@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 import datetime
 import decimal
+from collections import OrderedDict
 
 
 from banchi_client import models
@@ -29,14 +30,36 @@ def index():
     account_id = request.args.get("account_id")
     account_books = []
 
-    if account_id:
-        client = banchi_api_clients.client.get_current_client()
-        response = get_all_v1_account_books_get.sync(
-            client=client, account_id=account_id
-        )
-        account_books = response.account_books
+    if not account_id:
+        return redirect("dashboard.index")
 
-    return render_template("/account_books/index.html", account_books=account_books)
+    client = banchi_api_clients.client.get_current_client()
+    response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
+
+    account_books = response.account_books
+    balances = dict()
+    display_account_books = dict()
+
+    display_names = utils.account_books.get_display_names(account_books)
+    for account_book in account_books:
+        display_account_books[account_book.id] = dict(
+            name=display_names[account_book.id],
+            account_balance=get_balance_v1_account_books_account_book_id_balance_get.sync(
+                client=client, account_book_id=account_book.id
+            ),
+            obj=account_book,
+        )
+
+    display_account_books = OrderedDict(
+        sorted(display_account_books.items(), key=lambda a: a[1]["name"])
+    )
+
+    return render_template(
+        "/account_books/index.html",
+        account_books=account_books,
+        balances=balances,
+        display_account_books=display_account_books,
+    )
 
 
 @module.route("/create", defaults=dict(account_book_id=None), methods=["GET", "POST"])
@@ -113,6 +136,7 @@ def view(account_book_id):
         from_account_book_id=account_book.id,
         to_account_book_id=account_book.id,
     )
+    transactions = response.transactions
 
     label = get_label_v1_account_books_account_book_id_label_get.sync(
         client=client, account_book_id=account_book.id
@@ -121,10 +145,18 @@ def view(account_book_id):
         client=client, account_book_id=account_book.id
     )
 
+    response = get_all_v1_account_books_get.sync(
+        client=client, account_id=account_book.account.id
+    )
+    account_books = response.account_books
+
+    display_names = utils.account_books.get_display_names(account_books)
+
     return render_template(
         "/account_books/view.html",
         account_book=account_book,
-        transactions=response.transactions,
+        account_book_display_names=display_names,
+        transactions=transactions,
         label=label,
         balance=balance,
     )
@@ -201,7 +233,9 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         #     form.from_account_book_id.render_kw = {"disabled": ""}
 
         return render_template(
-            "/account_books/add-transaction.html", account_book=account_book, form=form
+            "/account_books/add-or-edit-transaction.html",
+            account_book=account_book,
+            form=form,
         )
 
     data = form.data.copy()

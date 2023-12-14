@@ -1,4 +1,4 @@
-{% extends '/accounts/index.html' %}
+{% extends '/account_books/view.html' %}
 {% import '/base/html-renderer.html' as renderer %}
 
 
@@ -41,7 +41,7 @@
 {% block additional_js %}
   <script type="text/javascript">
     datetime_formatter = {
-      datetime:"YYYY-M-DD HH:mm",
+      datetime:"YYYY-MM-DD HH:mm:ss",
       date:"YYYY-MM-DD",
     };
 

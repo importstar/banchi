@@ -17,32 +17,40 @@ Account Book
 
 {% block content %}
   <div class="ui segment">
-      <a class="ui button primary" href="{{ url_for('account_books.create_or_edit') }}">Create</a>
+    <a class="ui button primary" href="{{ url_for('accounts.view', account_id=request.args.get('account_id')) }}">Account</a>
+    <a class="ui button primary" href="{{ url_for('account_books.create_or_edit', account_id=request.args.get('account_id'))  }}">Create Account Book</a>
   </div>
     
   <div>
     <h2 class="ui head">Account Book</h2>
-    <table class="ui table">
+
+     <table class="ui table">
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
-          <th>Total</th>
-          <th>Operation</th>
+          <th>Balance</th>
+          <th>Tool</th>
+
         </tr>
       </thead>
       <tbody>
-        {% for account_book in account_books %}
-          <tr>
-            <td>{{ account_book.name }}</td>
-            <td>{{ account_book.type.title() }}</td>
-            <td></td>
+        {% for account_book_id, account_book in display_account_books.items() %}
+          <tr class="{{ 'blue' if not account_book['obj'].parent }}">
             <td>
-              <a href="{{ url_for('account_books.view', account_book_id=account_book.id) }}" class="ui icon primary circular button"><i class="eye icon"></i></a>
+              {{ account_book['name'] }}
+            </td>
+            <td> {{ account_book['obj'].type.title() }} </td>
+            <td> {{ account_book['account_balance'].balance }} </td>
+            <td>
+              <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
+                <i class="eye icon"></i>
+              </a>
             </td>
           </tr>
         {% endfor %}
       </tbody>
     </table>
+
   </div>
 {% endblock %}
