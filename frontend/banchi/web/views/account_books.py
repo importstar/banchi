@@ -190,6 +190,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     if not form.validate_on_submit():
         if request.method == "GET":
             form.from_account_book_id.data = str(account_book.id)
+            form.to_account_book_id.data = str(account_book.id)
 
         if request.method == "GET" and transaction:
             form.to_account_book_id.data = str(transaction.to_account_book.id)
