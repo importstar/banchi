@@ -177,6 +177,11 @@ def view(account_book_id):
 
 
 @module.route(
+    "/transactions/add",
+    methods=["GET", "POST"],
+    defaults=dict(account_book_id=None, transaction_id=None),
+)
+@module.route(
     "/<account_book_id>/transactions/add",
     methods=["GET", "POST"],
     defaults=dict(transaction_id=None),
@@ -186,16 +191,18 @@ def view(account_book_id):
 )
 def add_or_edit_transaction(account_book_id, transaction_id):
     client = banchi_api_clients.client.get_current_client()
-    account_book = get_v1_account_books_account_book_id_get.sync(
-        client=client, account_book_id=account_book_id
-    )
+    account_book = None
 
-    if not account_book:
-        return redirect("sites.index")
+    if account_book_id:
+        account_book = get_v1_account_books_account_book_id_get.sync(
+            client=client, account_book_id=account_book_id
+        )
 
-    response = get_all_v1_account_books_get.sync(
-        client=client, account_id=account_book.account.id
-    )
+    account_id = request.args.get("account_id", None)
+    if account_book:
+        account_id = account_book.account.id
+
+    response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
 
     account_books = response.account_books
 
@@ -234,7 +241,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     form.from_account_book_id.choices = account_book_choices
 
     if not form.validate_on_submit():
-        if request.method == "GET":
+        if request.method == "GET" and account_book:
             form.from_account_book_id.data = str(account_book.id)
             form.to_account_book_id.data = str(account_book.id)
 

@@ -6,11 +6,13 @@ Account Book {{ account_book.name }}
 
 {% block breadcrumbs %}
   {{ super() }}
-  <i class="right angle icon divider"></i>
-  {% if request.endpoint == 'account_books.view' %}
-    <div class="active section">Account Book: {{ account_book.name }} </div>
-  {% elif account_book %}
-    <a class="section" href="{{ url_for('account_books.view', account_book_id=account_book.id ) }}">Account Book: {{ account_book.name }} </a>
+  {% if account_book %}
+    <i class="right angle icon divider"></i>
+    {% if request.endpoint == 'account_books.view' %}
+      <div class="active section">Account Book: {{ account_book.name }} </div>
+    {% elif account_book %}
+      <a class="section" href="{{ url_for('account_books.view', account_book_id=account_book.id ) }}">Account Book: {{ account_book.name }} </a>
+    {% endif %}
   {% endif %}
 
 {% endblock %}
@@ -89,37 +91,52 @@ Account Book {{ account_book.name }}
       </thead>
       <tbody>
         {% for transaction in transactions %}
-        <tr>
-          <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
-          <td>{{ transaction.description }}</td>
-          <td>
+          <tr>
+            <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
+            <td>{{ transaction.description }}</td>
+            <td>
+              {% if transaction.from_account_book.id != account_book.id %}
+                <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
+                  {{ account_book_display_names[transaction.from_account_book.id] }}
+                </a>
+              {% else %}
+                <a href="{{ url_for('account_books.view', account_book_id=transaction.to_account_book.id) }}">
+                  {{ account_book_display_names[transaction.to_account_book.id] }}
+                </a>
+              {% endif %}
+            </td>
             {% if transaction.from_account_book.id != account_book.id %}
-              <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
-                {{ account_book_display_names[transaction.from_account_book.id] }}
-              </a>
+              <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+              <td></td>
             {% else %}
-              <a href="{{ url_for('account_books.view', account_book_id=transaction.to_account_book.id) }}">
-                {{ account_book_display_names[transaction.to_account_book.id] }}
-              </a>
+              <td></td>
+              <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
             {% endif %}
-          </td>
-          {% if transaction.from_account_book.id != account_book.id %}
-            <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-            <td></td>
-          {% else %}
-            <td></td>
-            <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-          {% endif %}
-          <td>
-            {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
-          </td>
-          <td>
-            <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon yellow circular button"><i class="edit icon"></i></a>
-            <a href="{{ url_for('account_books.delete_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon red circular button"><i class="trash icon"></i></a>
-          </td>
-        </tr>
+            <td>
+              {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
+            </td>
+            <td>
+              <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon yellow circular button"><i class="edit icon"></i></a>
+              <a href="{{ url_for('account_books.delete_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon red circular button"><i class="trash icon"></i></a>
+            </td>
+          </tr>
         {% endfor %}
       </tbody>
+      <tfoot>
+        <tr>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th class="right aligned">
+            {{ "{:,.2f}".format(balance['increse']|float) }}
+          </th>
+          <th class="right aligned">
+            {{ "{:,.2f}".format(balance['decrese']|float) }}
+          </th>
+          <th></th>
+          <th></th>
+        </tr>
+      </tfoot>
     </table>
     <div class="ui aligned grid">
       <div class="two column row">

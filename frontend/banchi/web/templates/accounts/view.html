@@ -17,14 +17,16 @@ Account {{ account.name }}
 
 {% block content %}
   <div style="padding-bottom: 10px;">
-    <a class="ui primary button" href="{{ url_for('account_books.create_or_edit', account_id=account.id) }}">Create Account Book</a>
+    <a class="ui primary icon button" href="{{ url_for('account_books.add_or_edit_transaction', account_id=account.id) }}"><i class="add icon"></i> Add Transaction</a>
+    <a class="ui primary icon button" href="{{ url_for('account_books.create_or_edit', account_id=account.id) }}"><i class="file icon"></i> Create Account Book</a>
   </div>
   <div>
-    <table class="ui table">
+    <table class="ui large table">
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
+          <th>Children</th>
           <th>Balance</th>
           <th>Tool</th>
 
@@ -33,11 +35,14 @@ Account {{ account.name }}
       <tbody>
         {% for account_book_id, account_book in display_account_books.items() %}
           <tr class="{{ 'blue' if not account_book['obj'].parent }}">
-            <td>
-              {{ account_book['name'] }}
+            <td style="font-weight: bold;">
+              <a href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
+                {{ account_book['name'] }}
+              </a>
             </td>
             <td> {{ account_book['obj'].type.title() }} </td>
-            <td class="right aligned"> {{ "{:,.2f}".format(account_book['account_balance'].net_balance|float) }} </td>
+            <td class="right aligned"> {{ account_book['account_balance'].children | length }} </td>
+            <td class="right aligned" style="font-weight: bold;"> {{ "{:,.2f}".format(account_book['account_balance'].net_balance|float) }} </td>
             <td>
               <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
                 <i class="eye icon"></i>

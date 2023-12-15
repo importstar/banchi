@@ -9,6 +9,9 @@ Account Book
     <a class="active section">Account Books</a>
   {% elif account_book %}
     <a href="{{ url_for('account_books.index', account_id=account_book.account.id) }}" class="section">Account Books</a>
+  {% elif request.args.get('account_id') %}
+    <a href="{{ url_for('account_books.index', account_id=request.args.get('account_id')) }}" class="section">Account Books</a>
+ 
   {% else %}
     <a href="{{ url_for('account_books.index') }}" class="section">Account Books</a>
   {% endif %}
@@ -38,7 +41,9 @@ Account Book
         {% for account_book_id, account_book in display_account_books.items() %}
           <tr class="{{ 'blue' if not account_book['obj'].parent }}">
             <td>
-              {{ account_book['name'] }}
+              <a href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
+                {{ account_book['name'] }}
+              </a>
             </td>
             <td> {{ account_book['obj'].type.title() }} </td>
             <td class="right aligned"> {{ "{:,.2f}".format(account_book['account_balance'].net_balance|float) }} </td>
