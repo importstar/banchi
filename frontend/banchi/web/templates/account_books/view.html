@@ -28,22 +28,29 @@ Account Book {{ account_book.name }}
 
   <div style="padding-top:1vh;">
     <div class="ui cards">
-      {% for child in account_book.children %}
-        <div class="card">
-          <div class="content">
-            <div class="header">
-              {{ child.name }}
+      {% for c_account_book in account_book_children %}
+      <div class="card">
+        <div class="content">
+          <div class="header">{{ c_account_book.name }}</div>
+          <div class="description">
+            {% set sub_balance = get_balance_sub_balance(c_account_book, balance.children) %}
+            <div>
+              <span>net balance:</span> <span class="right floated bold" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_balance|float) }}</span>
             </div>
-            <div class="description">
-              
+            <div>
+              <span>net increse:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_increse|float) }}</span>
             </div>
-          </div>
-          <div class="extra content">
-            <div class="ui two buttons">
-              <a class="ui basic primary button" href="{{ url_for('account_books.view', account_book_id=child.id) }}">View</a>
+            <div>
+              <span>net decrese:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_decrese|float) }}</span>
             </div>
+
           </div>
         </div>
+        <a class="ui primary button" href="{{ url_for('account_books.view', account_book_id=c_account_book.id) }}">
+          <i class="eye icon"></i>
+          View
+        </a>
+      </div>
       {% endfor %}
     </div>
   </div>
@@ -102,7 +109,7 @@ Account Book {{ account_book.name }}
       net balance: {{ "{:,.2f}".format(balance['net_balance']|float) }} <br/>
       net increse: {{ "{:,.2f}".format(balance['net_increse']|float) }} <br/>
       net decrese: {{ "{:,.2f}".format(balance['net_decrese']|float) }} <br/>
-
+    
       
     </div>
   </div>

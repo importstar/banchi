@@ -152,6 +152,16 @@ def view(account_book_id):
 
     display_names = utils.account_books.get_display_names(account_books)
 
+    account_book_children = [
+        ab for ab in account_books if ab.parent and ab.parent.id == account_book.id
+    ]
+
+    def get_balance_sub_balance(account_book, balance):
+        for b in balance:
+            if b.id == account_book.id:
+                return b
+        return None
+
     return render_template(
         "/account_books/view.html",
         account_book=account_book,
@@ -159,6 +169,8 @@ def view(account_book_id):
         transactions=transactions,
         label=label,
         balance=balance,
+        account_book_children=account_book_children,
+        get_balance_sub_balance=get_balance_sub_balance,
     )
 
 
