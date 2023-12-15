@@ -101,16 +101,19 @@ Account Book {{ account_book.name }}
         {% endfor %}
       </tbody>
     </table>
-    <div>
-      balance: {{ "{:,.2f}".format(balance['balance']|float) }} <br/>
-      increse: {{ "{:,.2f}".format(balance['increse']|float) }} <br/>
-      decrese: {{ "{:,.2f}".format(balance['decrese']|float) }} <br/>
-
-      net balance: {{ "{:,.2f}".format(balance['net_balance']|float) }} <br/>
-      net increse: {{ "{:,.2f}".format(balance['net_increse']|float) }} <br/>
-      net decrese: {{ "{:,.2f}".format(balance['net_decrese']|float) }} <br/>
-    
-      
+    <div class="ui aligned grid">
+      <div class="two column row">
+        <div class="column">
+          Balance: {{ "{:,.2f}".format(balance['balance']|float) }} <br/>
+          Increse: {{ "{:,.2f}".format(balance['increse']|float) }} <br/>
+          Decrese: {{ "{:,.2f}".format(balance['decrese']|float) }} <br/>
+        </div>
+        <div class="column">
+          Net balance: {{ "{:,.2f}".format(balance['net_balance']|float) }} <br/>
+          Net increse: {{ "{:,.2f}".format(balance['net_increse']|float) }} <br/>
+          Net decrese: {{ "{:,.2f}".format(balance['net_decrese']|float) }} <br/>
+        </div>
+      </div>
     </div>
   </div>
 {% endblock %}
