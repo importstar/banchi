@@ -20,7 +20,7 @@ class CreatedTransaction:
         currency (CurrencyEnum):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-12-15T13:50:14.445697').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-12-15T16:58:34.661390').
     """
 
     description: str
@@ -28,7 +28,7 @@ class CreatedTransaction:
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2023-12-15T13:50:14.445697")
+    date: Union[Unset, datetime.datetime] = isoparse("2023-12-15T16:58:34.661390")
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:

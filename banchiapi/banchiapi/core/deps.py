@@ -136,7 +136,7 @@ async def get_account_by_space(
 
 
 async def get_account(
-    account_id: typing.Annotated[PydanticObjectId, Query()],
+    account_id: typing.Annotated[PydanticObjectId, Query() or Path()],
     user: typing.Annotated[models.users.User, Depends(get_current_user)],
 ) -> models.accounts.Account:
     db_account = await models.accounts.Account.find_one(
@@ -203,7 +203,9 @@ async def get_transaction(
     user: typing.Annotated[models.users.User, Depends(get_current_user)],
 ) -> models.account_books.AccountBook:
     db_transaction = await models.transactions.Transaction.find_one(
-        models.transactions.Transaction.id == transaction_id, fetch_links=True
+        models.transactions.Transaction.id == transaction_id,
+        models.transactions.Transaction.status == "active",
+        fetch_links=True,
     )
 
     if not db_transaction:

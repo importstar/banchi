@@ -57,7 +57,7 @@ def sync_detailed(
     """Delete
 
     Args:
-        account_id (str):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -86,7 +86,7 @@ def sync(
     """Delete
 
     Args:
-        account_id (str):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -110,7 +110,7 @@ async def asyncio_detailed(
     """Delete
 
     Args:
-        account_id (str):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -137,7 +137,7 @@ async def asyncio(
     """Delete
 
     Args:
-        account_id (str):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

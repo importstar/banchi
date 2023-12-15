@@ -15,7 +15,7 @@ def _get_kwargs(
 ) -> Dict[str, Any]:
     return {
         "method": "delete",
-        "url": "/v1/account-books/{account_book_id}/delete".format(
+        "url": "/v1/account-books/{account_book_id}".format(
             account_book_id=account_book_id,
         ),
     }
@@ -57,7 +57,7 @@ def sync_detailed(
     """Delete
 
     Args:
-        account_book_id (str):
+        account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -86,7 +86,7 @@ def sync(
     """Delete
 
     Args:
-        account_book_id (str):
+        account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -110,7 +110,7 @@ async def asyncio_detailed(
     """Delete
 
     Args:
-        account_book_id (str):
+        account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -137,7 +137,7 @@ async def asyncio(
     """Delete
 
     Args:
-        account_book_id (str):
+        account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.

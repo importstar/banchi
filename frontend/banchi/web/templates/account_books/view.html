@@ -22,8 +22,15 @@ Account Book {{ account_book.name }}
 {% block content %}
   <div>
     <a class="ui primary icon button" href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id) }}">
-      <i class="add icon"></i> Add Transaction
+      <i class="money icon"></i> Add Transaction
     </a>
+    <a class="ui primary icon button" href="{{ url_for('account_books.create_or_edit', account_id=account_book.account.id) }}">
+      <i class="add icon"></i> Add Sub Account Book
+    </a>
+    <a class="ui yellow icon button" href="{{ url_for('account_books.create_or_edit', account_book_id=account_book.id) }}">
+      <i class="edit icon"></i> Edit Account Book
+    </a>
+
   </div>
 
   <div style="padding-top:1vh;">
@@ -46,10 +53,22 @@ Account Book {{ account_book.name }}
 
           </div>
         </div>
-        <a class="ui primary button" href="{{ url_for('account_books.view', account_book_id=c_account_book.id) }}">
-          <i class="eye icon"></i>
-          View
-        </a>
+
+        <div class="extra content">
+          <div class="ui two buttons">
+
+            <a class="ui icon primary button" href="{{ url_for('account_books.view', account_book_id=c_account_book.id) }}">
+              <i class="eye icon"></i>
+              View
+            </a>
+            <a class="ui icon yellow button" href="{{ url_for('account_books.create_or_edit', account_book_id=c_account_book.id) }}">
+              <i class="edit icon"></i>
+              Edit
+            </a>
+
+          </div>
+        </div>
+
       </div>
       {% endfor %}
     </div>
@@ -95,7 +114,8 @@ Account Book {{ account_book.name }}
             {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
           </td>
           <td>
-            <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon primary circular button"><i class="edit icon"></i></a>
+            <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon yellow circular button"><i class="edit icon"></i></a>
+            <a href="{{ url_for('account_books.delete_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon red circular button"><i class="trash icon"></i></a>
           </td>
         </tr>
         {% endfor %}

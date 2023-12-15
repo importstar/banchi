@@ -9,6 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from loguru import logger
 
 from beanie import PydanticObjectId
+from beanie.operators import Inc, Set
 
 from banchiapi import models
 from banchiapi.core import deps
@@ -181,63 +182,32 @@ async def get_balance(
 @router.put("/{account_book_id}")
 async def update(
     account_book_id: str,
-    account_book: schemas.account_books.CreatedAccountBook,
+    account_book: schemas.account_books.UpdatedAccountBook,
     db_account_book: typing.Annotated[
         models.account_books.AccountBook, Depends(deps.get_account_book)
     ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBook:
-    if not db_account_book:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this system setting",
-        )
-    db_account_books = models.AccountBook.objects(
-        name=account_book.name, status="active", id__ne=account_book_id
-    )
-    if db_account_books:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already account_book name",
-        )
-    db_account_books = models.AccountBook.objects(
-        code=account_book.code, status="active", id__ne=account_book_id
-    )
-    if db_account_books:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail="There are already account_book code",
-        )
-
     data = account_book.dict()
-    db_account_book.update(**data)
+    await db_account_book.update(Set(data))
 
     db_account_book.updated_date = datetime.datetime.now()
-    db_account_book.save()
-    db_account_book.reload()
+    # db_account_book.save()
+    # db_account_book.reload()
     return db_account_book
 
 
-@router.delete("/{account_book_id}/delete")
+@router.delete("/{account_book_id}")
 async def delete(
-    account_book_id: str,
+    db_account_book: typing.Annotated[
+        models.account_books.AccountBook, Depends(deps.get_account_book)
+    ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBook:
-    try:
-        db_account_book = models.AccountBook.objects.get(id=account_book_id)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this account_book",
-        )
-    db_account_book.update(status="disactive", updated_date=datetime.datetime.now())
-    db_account_book.reload()
-    db_account_book.save()
-
-    divisions = models.Division.objects(account_book=db_account_book, status="active")
-    for division in divisions:
-        division.status = "disactive"
-        division.save()
+    db_account_book.status = "delete"
+    db_account_book.updated_date = datetime.datetime.now()
+    db_account_book.updated_by = current_user
+    await db_account_book.save()
     return db_account_book
 
 

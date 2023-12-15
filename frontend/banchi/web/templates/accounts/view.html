@@ -42,6 +42,14 @@ Account {{ account.name }}
               <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
                 <i class="eye icon"></i>
               </a>
+
+              <a class="ui yellow circular icon button" href="{{ url_for('account_books.create_or_edit', account_book_id=account_book_id) }}">
+                <i class="edit icon"></i>
+              </a>
+
+              <a class="ui red circular icon button" href="{{ url_for('account_books.delete', account_book_id=account_book_id) }}">
+                <i class="trash icon"></i>
+              </a>
             </td>
           </tr>
         {% endfor %}

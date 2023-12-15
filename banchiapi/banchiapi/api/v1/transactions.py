@@ -8,6 +8,8 @@ from loguru import logger
 import bson
 import typing
 from beanie.odm.operators.find.logical import Or, And
+from beanie.operators import Inc, Set
+
 from beanie import PydanticObjectId
 
 from banchiapi import models
@@ -119,20 +121,16 @@ async def get(
 async def update(
     transaction_id: PydanticObjectId,
     transaction: schemas.transactions.UpdatedTransaction,
+    db_transaction: typing.Annotated[
+        models.transactions.Transaction, Depends(deps.get_transaction)
+    ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
-    db_transaction = await models.transactions.Transaction.get(transaction_id)
-    if not db_transaction:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this system setting",
-        )
+    data = transaction.dict()
+    await db_transaction.update(Set(data))
 
     data = await transform_transaction(transaction, current_user)
-    db_transaction.date = data["date"]
-    db_transaction.description = data["description"]
     db_transaction.value = data["value"]
-    db_transaction.currency = data["currency"]
     db_transaction.to_account_book = data["to_account_book"]
     db_transaction.from_account_book = data["from_account_book"]
     await db_transaction.save()
@@ -146,21 +144,14 @@ async def update(
 )
 async def delete(
     transaction_id: PydanticObjectId,
+    db_transaction: typing.Annotated[
+        models.transactions.Transaction, Depends(deps.get_transaction)
+    ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
-    try:
-        db_transaction = models.Transaction.objects.get(id=transaction_id)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this transaction",
-        )
-    db_transaction.update(status="disactive", updated_date=datetime.datetime.now())
-    db_transaction.reload()
-    db_transaction.save()
+    db_transaction.status = "delete"
+    db_transaction.updated_date = datetime.datetime.now()
+    db_transaction.updated_by = current_user
+    await db_transaction.save()
 
-    divisions = models.Division.objects(transaction=db_transaction, status="active")
-    for division in divisions:
-        division.status = "disactive"
-        division.save()
     return db_transaction

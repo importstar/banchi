@@ -43,5 +43,9 @@ class CreatedAccount(BaseAccount):
     space_id: PydanticObjectId = Field(..., example="0")
 
 
+class UpdatedAccount(CreatedAccount):
+    pass
+
+
 class AccountList(BaseModel):
     accounts: list[Account]

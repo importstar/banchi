@@ -16,6 +16,8 @@ from banchi_client.api.v1 import (
     get_v1_transactions_transaction_id_get,
     get_label_v1_account_books_account_book_id_label_get,
     get_balance_v1_account_books_account_book_id_balance_get,
+    delete_v1_account_books_account_book_id_delete,
+    delete_v1_transactions_transaction_id_delete,
 )
 
 from .. import banchi_api_clients
@@ -72,9 +74,9 @@ def create_or_edit(account_book_id):
 
     if account_book_id:
         account_book = get_v1_account_books_account_book_id_get.sync(
-            client=client, id=account_book_id
+            client=client, account_book_id=account_book_id
         )
-        form = forms.account_books.AccountBookForm(obj=response.to_dict())
+        form = forms.account_books.AccountBookForm(obj=account_book)
         account_id = account_book.account.id
 
     if account_id:
@@ -115,7 +117,7 @@ def create_or_edit(account_book_id):
     else:
         account_book = models.UpdatedAccountBook.from_dict(data)
         response = update_v1_account_books_account_book_id_put.sync(
-            client=client, json_body=account_book
+            client=client, account_book_id=account_book_id, json_body=account_book
         )
 
     if not response:
@@ -267,3 +269,23 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         )
 
     return redirect(url_for("account_books.view", account_book_id=account_book.id))
+
+
+@module.route("/<account_book_id>/transactions/<transaction_id>/delete")
+def delete_transaction(account_book_id, transaction_id):
+    client = banchi_api_clients.client.get_current_client()
+    transaction = delete_v1_transactions_transaction_id_delete.sync(
+        client=client, transaction_id=transaction_id
+    )
+
+    return redirect(url_for("account_books.view", account_book_id=account_book_id))
+
+
+@module.route("/<account_book_id>/delete")
+def delete(account_book_id):
+    client = banchi_api_clients.client.get_current_client()
+    account_book = delete_v1_account_books_account_book_id_delete.sync(
+        client=client, account_book_id=account_book_id
+    )
+
+    return redirect(url_for("account_books.index", account_id=account_book.account.id))

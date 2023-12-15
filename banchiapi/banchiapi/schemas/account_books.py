@@ -113,5 +113,9 @@ class CreatedAccountBook(BaseAccountBook):
     account_id: PydanticObjectId = Field(..., example="0")
 
 
+class UpdatedAccountBook(CreatedAccountBook):
+    pass
+
+
 class AccountBookList(BaseModel):
     account_books: list[AccountBook]

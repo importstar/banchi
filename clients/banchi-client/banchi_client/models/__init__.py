@@ -35,6 +35,8 @@ from .system_setting_in_response import SystemSettingInResponse
 from .token import Token
 from .transaction import Transaction
 from .transaction_list import TransactionList
+from .updated_account import UpdatedAccount
+from .updated_account_book import UpdatedAccountBook
 from .updated_space_role import UpdatedSpaceRole
 from .updated_space_role_role import UpdatedSpaceRoleRole
 from .updated_transaction import UpdatedTransaction
@@ -79,6 +81,8 @@ __all__ = (
     "Token",
     "Transaction",
     "TransactionList",
+    "UpdatedAccount",
+    "UpdatedAccountBook",
     "UpdatedSpaceRole",
     "UpdatedSpaceRoleRole",
     "UpdatedTransaction",

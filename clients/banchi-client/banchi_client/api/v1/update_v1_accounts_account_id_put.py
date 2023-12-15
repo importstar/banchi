@@ -6,15 +6,15 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.account import Account
-from ...models.created_account import CreatedAccount
 from ...models.http_validation_error import HTTPValidationError
+from ...models.updated_account import UpdatedAccount
 from ...types import Response
 
 
 def _get_kwargs(
     account_id: str,
     *,
-    json_body: CreatedAccount,
+    json_body: UpdatedAccount,
 ) -> Dict[str, Any]:
     json_json_body = json_body.to_dict()
 
@@ -59,13 +59,13 @@ def sync_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccount,
+    json_body: UpdatedAccount,
 ) -> Response[Union[Account, HTTPValidationError]]:
     """Update
 
     Args:
-        account_id (str):
-        json_body (CreatedAccount):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        json_body (UpdatedAccount):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -91,13 +91,13 @@ def sync(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccount,
+    json_body: UpdatedAccount,
 ) -> Optional[Union[Account, HTTPValidationError]]:
     """Update
 
     Args:
-        account_id (str):
-        json_body (CreatedAccount):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        json_body (UpdatedAccount):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -118,13 +118,13 @@ async def asyncio_detailed(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccount,
+    json_body: UpdatedAccount,
 ) -> Response[Union[Account, HTTPValidationError]]:
     """Update
 
     Args:
-        account_id (str):
-        json_body (CreatedAccount):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        json_body (UpdatedAccount):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -148,13 +148,13 @@ async def asyncio(
     account_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedAccount,
+    json_body: UpdatedAccount,
 ) -> Optional[Union[Account, HTTPValidationError]]:
     """Update
 
     Args:
-        account_id (str):
-        json_body (CreatedAccount):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        json_body (UpdatedAccount):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
