@@ -11,6 +11,11 @@ from . import bases
 from . import users
 from . import accounts
 
+from typing import ForwardRef
+
+ReferenceAccountBook = ForwardRef("ReferenceAccountBook")
+AccountBookBalance = ForwardRef("AccountBookBalance")
+
 
 class AccountTypeEnum(str, enum.Enum):
     asset = "asset"
@@ -37,9 +42,16 @@ class SmallestFractionEnum(int, enum.Enum):
 
 
 class AccountBookBalance(BaseModel):
-    balance: decimal.Decimal
-    increse: decimal.Decimal
-    decrese: decimal.Decimal
+    id: PydanticObjectId
+    balance: decimal.Decimal = 0
+    increse: decimal.Decimal = 0
+    decrese: decimal.Decimal = 0
+
+    net_balance: decimal.Decimal = 0
+    net_increse: decimal.Decimal = 0
+    net_decrese: decimal.Decimal = 0
+
+    children: list[AccountBookBalance] = []
 
 
 class BaseAccountBook(BaseModel):
@@ -55,11 +67,6 @@ class BaseAccountBook(BaseModel):
     currency: accounts.CurrencyEnum = Field(
         default=accounts.CurrencyEnum.THB, example=accounts.CurrencyEnum.THB
     )
-
-
-from typing import ForwardRef
-
-ReferenceAccountBook = ForwardRef("ReferenceAccountBook")
 
 
 class ReferenceAccountBook(bases.BaseSchema):

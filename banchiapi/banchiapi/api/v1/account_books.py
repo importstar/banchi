@@ -67,30 +67,29 @@ async def get(
     return db_account_book
 
 
-@router.get(
-    "/{account_book_id}/balance",
-    response_model_by_alias=False,
-)
-async def get_balance(
-    account_book_id: PydanticObjectId,
-    db_account_book: typing.Annotated[
-        models.account_books.AccountBook, Depends(deps.get_account_book)
-    ],
-    current_user: models.users.User = Depends(deps.get_current_user),
+async def get_account_book_balance(
+    db_account_book, receive=False
 ) -> schemas.account_books.AccountBookBalance:
-    from_account_book_values = models.transactions.Transaction.find(
-        models.transactions.Transaction.from_account_book.id == account_book_id
-    )
+    # from_account_book_values = models.transactions.Transaction.find(
+    #     models.transactions.Transaction.from_account_book.id == db_account_book.id,
+    #     models.transactions.Transaction.status == "active",
+    # )
 
-    to_account_book_values = models.transactions.Transaction.find(
-        models.transactions.Transaction.to_account_book.id == db_account_book.id
-    )
+    # to_account_book_values = models.transactions.Transaction.find(
+    #     models.transactions.Transaction.to_account_book.id == db_account_book.id,
+    #     models.transactions.Transaction.status == "active",
+    # )
 
     from_account_book_agg = (
         await models.transactions.Transaction.find()
         .aggregate(
             [
-                {"$match": {"from_account_book.$id": account_book_id}},
+                {
+                    "$match": {
+                        "from_account_book.$id": db_account_book.id,
+                        "status": "active",
+                    }
+                },
                 {
                     "$group": {
                         "_id": "$from_account_book._id",
@@ -106,7 +105,12 @@ async def get_balance(
         await models.transactions.Transaction.find()
         .aggregate(
             [
-                {"$match": {"to_account_book.$id": account_book_id}},
+                {
+                    "$match": {
+                        "to_account_book.$id": db_account_book.id,
+                        "status": "active",
+                    }
+                },
                 {
                     "$group": {
                         "_id": "$to_account_book._id",
@@ -125,7 +129,53 @@ async def get_balance(
         from_account_book_agg[0]["total"].to_decimal() if from_account_book_agg else 0
     )
 
-    return dict(balance=to_values - from_values, decrese=from_values, increse=to_values)
+    balance = to_values - from_values
+    decrese = from_values
+    increse = to_values
+
+    account_book_balance = schemas.account_books.AccountBookBalance(
+        id=db_account_book.id,
+        balance=balance,
+        decrese=decrese,
+        increse=increse,
+        net_balance=balance,
+        net_decrese=decrese,
+        net_increse=increse,
+    )
+
+    if not receive:
+        return account_book_balance
+
+    account_book_children = await models.account_books.AccountBook.find(
+        models.account_books.AccountBook.parent.id == db_account_book.id,
+        models.account_books.AccountBook.status == "active",
+    ).to_list()
+
+    for account_book_child in account_book_children:
+        child_account_book_balance = await get_account_book_balance(
+            account_book_child,
+            True,
+        )
+        account_book_balance.net_balance += child_account_book_balance.net_balance
+        account_book_balance.net_increse += child_account_book_balance.net_increse
+        account_book_balance.net_decrese += child_account_book_balance.net_decrese
+        account_book_balance.children.append(child_account_book_balance)
+
+    return account_book_balance
+
+
+@router.get(
+    "/{account_book_id}/balance",
+    response_model_by_alias=False,
+)
+async def get_balance(
+    account_book_id: PydanticObjectId,
+    db_account_book: typing.Annotated[
+        models.account_books.AccountBook, Depends(deps.get_account_book)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> schemas.account_books.AccountBookBalance:
+    return await get_account_book_balance(db_account_book, True)
 
 
 @router.put("/{account_book_id}")

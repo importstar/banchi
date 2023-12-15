@@ -62,7 +62,12 @@ def view(account_id):
     account = get_v1_accounts_account_id_get.sync(client=client, account_id=account_id)
     response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
 
-    account_books = response.account_books
+    account_books = [
+        account_book
+        for account_book in response.account_books
+        if account_book.parent is None
+    ]
+
     balances = dict()
     display_account_books = dict()
 
