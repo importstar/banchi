@@ -76,8 +76,13 @@ def create_or_edit(account_book_id):
         account_book = get_v1_account_books_account_book_id_get.sync(
             client=client, account_book_id=account_book_id
         )
-        form = forms.account_books.AccountBookForm(obj=account_book)
         account_id = account_book.account.id
+
+    if request.method == "GET" and account_book:
+        form = forms.account_books.AccountBookForm(obj=account_book)
+        form.parent_id.data = account_book.parent.id
+    elif request.method == "GET" and not account_book and request.args.get("parent_id"):
+        form.parent_id.data = request.args.get("parent_id")
 
     if account_id:
         response = get_all_v1_account_books_get.sync(
@@ -97,9 +102,6 @@ def create_or_edit(account_book_id):
                 key=lambda abn: abn[1],
             )
         )
-
-    if not account_book_id and request.args.get("parent_id"):
-        form.parent_id.data = request.args.get("parent_id")
 
     if not form.validate_on_submit():
         return render_template("/account_books/create-or-edit.html", form=form)
