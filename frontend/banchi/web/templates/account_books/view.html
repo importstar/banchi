@@ -26,7 +26,7 @@ Account Book {{ account_book.name }}
     <a class="ui primary icon button" href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id) }}">
       <i class="money icon"></i> Add Transaction
     </a>
-    <a class="ui primary icon button" href="{{ url_for('account_books.create_or_edit', account_id=account_book.account.id) }}">
+    <a class="ui primary icon button" href="{{ url_for('account_books.create_or_edit', account_id=account_book.account.id, parent_id=account_book.id ) }}">
       <i class="add icon"></i> Add Sub Account Book
     </a>
     <a class="ui yellow icon button" href="{{ url_for('account_books.create_or_edit', account_book_id=account_book.id) }}">
@@ -77,7 +77,7 @@ Account Book {{ account_book.name }}
   </div>
 
   <div style="padding-top:1vh;">
-    <table class="ui table">
+    <table class="ui Large table">
       <thead>
         <tr>
           <th>Date</th>

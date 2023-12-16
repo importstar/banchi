@@ -98,6 +98,9 @@ def create_or_edit(account_book_id):
             )
         )
 
+    if not account_book_id and request.args.get("parent_id"):
+        form.parent_id.data = request.args.get("parent_id")
+
     if not form.validate_on_submit():
         return render_template("/account_books/create-or-edit.html", form=form)
 
@@ -123,7 +126,11 @@ def create_or_edit(account_book_id):
     if not response:
         print("error cannot save")
 
-    return redirect(url_for("accounts.view", account_id=account_id))
+    account_book_id = response.id
+    if response.parent:
+        account_book_id = response.parent.id
+
+    return redirect(url_for("account_books.view", account_book_id=account_book_id))
 
 
 @module.route("/<account_book_id>")

@@ -21,7 +21,7 @@ class AccountBookForm(FlaskForm):
     )
     parent_id = fields.SelectField(
         "Parent",
-        validators=[validators.InputRequired()],
+        # validators=[validators.InputRequired()],
         choices=[("-", "เป็นระดับแรก")],
     )
     description = fields.TextAreaField("Description", validators=[])
