@@ -136,7 +136,7 @@ async def get_account_by_space(
 
 
 async def get_account(
-    account_id: typing.Annotated[PydanticObjectId, Query() or Path()],
+    account_id: typing.Annotated[PydanticObjectId, Query()],
     user: typing.Annotated[models.users.User, Depends(get_current_user)],
 ) -> models.accounts.Account:
     db_account = await models.accounts.Account.find_one(
