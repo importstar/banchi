@@ -191,9 +191,13 @@ async def update(
     data = account_book.dict()
     await db_account_book.update(Set(data))
 
+    db_account_book.parent = await models.account_books.AccountBook.get(
+        account_book.parent_id
+    )
+    db_account_book.updated_by = current_user
     db_account_book.updated_date = datetime.datetime.now()
-    # db_account_book.save()
-    # db_account_book.reload()
+    await db_account_book.save()
+
     return db_account_book
 
 
