@@ -44,12 +44,12 @@ class SmallestFractionEnum(int, enum.Enum):
 class AccountBookBalance(BaseModel):
     id: PydanticObjectId
     balance: decimal.Decimal = 0
-    increse: decimal.Decimal = 0
-    decrese: decimal.Decimal = 0
+    increase: decimal.Decimal = 0
+    decrease: decimal.Decimal = 0
 
     net_balance: decimal.Decimal = 0
-    net_increse: decimal.Decimal = 0
-    net_decrese: decimal.Decimal = 0
+    net_increase: decimal.Decimal = 0
+    net_decrease: decimal.Decimal = 0
 
     children: list[AccountBookBalance] = []
 
@@ -71,7 +71,8 @@ class BaseAccountBook(BaseModel):
 
 class ReferenceAccountBook(bases.BaseSchema):
     name: str = Field(..., example="Account Book Name")
-    parent: ReferenceAccountBook | None
+    type: AccountTypeEnum
+    # parent: ReferenceAccountBook | None
 
     # @computed_field
     # @property

@@ -1,7 +1,9 @@
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from typing import Any, Dict, List, Type, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+
+from ..models.account_type_enum import AccountTypeEnum
 
 T = TypeVar("T", bound="ReferenceAccountBook")
 
@@ -12,24 +14,18 @@ class ReferenceAccountBook:
     Attributes:
         id (str):  Example: 0.
         name (str):  Example: Account Book Name.
-        parent (Union['ReferenceAccountBook', None]):
+        type (AccountTypeEnum):
     """
 
     id: str
     name: str
-    parent: Union["ReferenceAccountBook", None]
+    type: AccountTypeEnum
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         id = self.id
         name = self.name
-        parent: Union[Dict[str, Any], None]
-
-        if isinstance(self.parent, ReferenceAccountBook):
-            parent = self.parent.to_dict()
-
-        else:
-            parent = self.parent
+        type = self.type.value
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -37,7 +33,7 @@ class ReferenceAccountBook:
             {
                 "id": id,
                 "name": name,
-                "parent": parent,
+                "type": type,
             }
         )
 
@@ -50,25 +46,12 @@ class ReferenceAccountBook:
 
         name = d.pop("name")
 
-        def _parse_parent(data: object) -> Union["ReferenceAccountBook", None]:
-            if data is None:
-                return data
-            try:
-                if not isinstance(data, dict):
-                    raise TypeError()
-                parent_type_0 = ReferenceAccountBook.from_dict(data)
-
-                return parent_type_0
-            except:  # noqa: E722
-                pass
-            return cast(Union["ReferenceAccountBook", None], data)
-
-        parent = _parse_parent(d.pop("parent"))
+        type = AccountTypeEnum(d.pop("type"))
 
         reference_account_book = cls(
             id=id,
             name=name,
-            parent=parent,
+            type=type,
         )
 
         reference_account_book.additional_properties = d

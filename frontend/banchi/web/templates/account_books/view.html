@@ -52,10 +52,10 @@ Account Book {{ account_book.name }}
               <span>net balance:</span> <span class="right floated bold" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_balance|float) }}</span>
             </div>
             <div>
-              <span>net increse:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_increse|float) }}</span>
+              <span>net increase:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_increase|float) }}</span>
             </div>
             <div>
-              <span>net decrese:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_decrese|float) }}</span>
+              <span>net decrease:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_decrease|float) }}</span>
             </div>
 
           </div>
@@ -100,6 +100,8 @@ Account Book {{ account_book.name }}
             <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
             <td>{{ transaction.description }}</td>
             <td>
+
+                {{transaction.to_account_book.type }}
               {% if transaction.from_account_book.id != account_book.id %}
                 <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
                   {{ account_book_display_names[transaction.from_account_book.id] }}
@@ -110,17 +112,27 @@ Account Book {{ account_book.name }}
                 </a>
               {% endif %}
             </td>
-            {% if transaction.from_account_book.id != account_book.id %}
-              <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-              <td></td>
+            {% if account_book.type == 'equity' %}
+              {% if transaction.to_account_book.type not in ['income', 'assets'] %}
+                <td></td>
+                <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+              {% else %}
+                <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+                <td></td>
+              {% endif %}
             {% else %}
-              <td></td>
-              <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+              {% if transaction.from_account_book.id != account_book.id %}
+                <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+                <td class="right aligned"></td>
+              {% else %}
+                <td></td>
+                <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+              {% endif %}
             {% endif %}
             <td>
               {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
             </td>
-            <td>
+            <td class="single line">
               <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon yellow circular button"><i class="edit icon"></i></a>
               <a href="{{ url_for('account_books.delete_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon red circular button"><i class="trash icon"></i></a>
             </td>
@@ -133,10 +145,10 @@ Account Book {{ account_book.name }}
           <th></th>
           <th></th>
           <th class="right aligned">
-            {{ "{:,.2f}".format(balance['increse']|float) }}
+            {{ "{:,.2f}".format(balance['increase']|float) }}
           </th>
           <th class="right aligned">
-            {{ "{:,.2f}".format(balance['decrese']|float) }}
+            {{ "{:,.2f}".format(balance['decrease']|float) }}
           </th>
           <th></th>
           <th></th>
@@ -147,13 +159,13 @@ Account Book {{ account_book.name }}
       <div class="two column row">
         <div class="column">
           Balance: {{ "{:,.2f}".format(balance['balance']|float) }} <br/>
-          Increse: {{ "{:,.2f}".format(balance['increse']|float) }} <br/>
-          Decrese: {{ "{:,.2f}".format(balance['decrese']|float) }} <br/>
+          Increase: {{ "{:,.2f}".format(balance['increase']|float) }} <br/>
+          Decrease: {{ "{:,.2f}".format(balance['decrease']|float) }} <br/>
         </div>
         <div class="column">
           Net balance: {{ "{:,.2f}".format(balance['net_balance']|float) }} <br/>
-          Net increse: {{ "{:,.2f}".format(balance['net_increse']|float) }} <br/>
-          Net decrese: {{ "{:,.2f}".format(balance['net_decrese']|float) }} <br/>
+          Net increase: {{ "{:,.2f}".format(balance['net_increase']|float) }} <br/>
+          Net decrease: {{ "{:,.2f}".format(balance['net_decrease']|float) }} <br/>
         </div>
       </div>
     </div>

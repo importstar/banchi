@@ -68,80 +68,132 @@ async def get(
     return db_account_book
 
 
+async def get_account_book_balance_by_trasaction(
+    db_account_book, attribute="from_account_book"
+):
+    account_book_agg = (
+        await models.transactions.Transaction.find()
+        .aggregate(
+            [
+                {
+                    "$match": {
+                        f"{attribute}.$id": db_account_book.id,
+                        "status": "active",
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": f"${attribute}._id",
+                        "total": {"$sum": "$value"},
+                    }
+                },
+            ],
+        )
+        .to_list()
+    )
+
+    value = account_book_agg[0]["total"].to_decimal() if account_book_agg else 0
+
+    return value
+
+
+async def get_equity_account_book_balance_by_trasaction(db_account_book):
+    account_book_agg = (
+        await models.transactions.Transaction.find()
+        .aggregate(
+            [
+                {
+                    "$match": {
+                        "$or": [
+                            {f"from_account_book.$id": db_account_book.id},
+                            {f"to_account_book.$id": db_account_book.id},
+                        ],
+                        "status": "active",
+                    }
+                },
+                {
+                    "$lookup": {
+                        "from": "account_books",
+                        "localField": f"from_account_book.$id",
+                        "foreignField": "_id",
+                        "as": f"lookup_from_account_book",
+                    }
+                },
+                {
+                    "$lookup": {
+                        "from": "account_books",
+                        "localField": f"to_account_book.$id",
+                        "foreignField": "_id",
+                        "as": f"lookup_to_account_book",
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": f"$lookup_from_account_book",
+                        "preserveNullAndEmptyArrays": True,
+                    }
+                },
+                {
+                    "$unwind": {
+                        "path": f"$lookup_to_account_book",
+                        "preserveNullAndEmptyArrays": True,
+                    }
+                },
+                {
+                    "$group": {
+                        "_id": {"type": f"$lookup_to_account_book.type"},
+                        "total": {"$sum": "$value"},
+                    }
+                },
+            ],
+        )
+        .to_list()
+    )
+
+    # value = account_book_agg[0]["total"].to_decimal() if account_book_agg else 0
+    print("equity", db_account_book.name, account_book_agg)
+
+    increase = decimal.Decimal(0)
+    decrease = decimal.Decimal(0)
+    for balance in account_book_agg:
+        if balance["_id"]["type"] in ["income"]:
+            increase += balance["total"].to_decimal()
+        else:
+            decrease += balance["total"].to_decimal()
+
+    balance = increase - decrease
+    return balance, increase, decrease
+
+
 async def get_account_book_balance(
     db_account_book, receive=False
 ) -> schemas.account_books.AccountBookBalance:
-    # from_account_book_values = models.transactions.Transaction.find(
-    #     models.transactions.Transaction.from_account_book.id == db_account_book.id,
-    #     models.transactions.Transaction.status == "active",
-    # )
+    balance = increase = decrease = 0
 
-    # to_account_book_values = models.transactions.Transaction.find(
-    #     models.transactions.Transaction.to_account_book.id == db_account_book.id,
-    #     models.transactions.Transaction.status == "active",
-    # )
+    if db_account_book.type == "equity":
+        (
+            balance,
+            increase,
+            decrease,
+        ) = await get_equity_account_book_balance_by_trasaction(db_account_book)
 
-    from_account_book_agg = (
-        await models.transactions.Transaction.find()
-        .aggregate(
-            [
-                {
-                    "$match": {
-                        "from_account_book.$id": db_account_book.id,
-                        "status": "active",
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": "$from_account_book._id",
-                        "total": {"$sum": "$value"},
-                    }
-                },
-            ],
+    else:
+        decrease = await get_account_book_balance_by_trasaction(
+            db_account_book, "from_account_book"
         )
-        .to_list()
-    )
-
-    to_account_book_agg = (
-        await models.transactions.Transaction.find()
-        .aggregate(
-            [
-                {
-                    "$match": {
-                        "to_account_book.$id": db_account_book.id,
-                        "status": "active",
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": "$to_account_book._id",
-                        "total": {"$sum": "$value"},
-                    }
-                },
-            ],
+        increase = await get_account_book_balance_by_trasaction(
+            db_account_book, "to_account_book"
         )
-        .to_list()
-    )
-
-    to_values = (
-        to_account_book_agg[0]["total"].to_decimal() if to_account_book_agg else 0
-    )
-    from_values = (
-        from_account_book_agg[0]["total"].to_decimal() if from_account_book_agg else 0
-    )
-
-    balance = to_values - from_values
-    decrese = from_values
-    increse = to_values
+        balance = increase - decrease
 
     account_book_balance = schemas.account_books.AccountBookBalance(
         id=db_account_book.id,
         balance=balance,
-        decrese=decrese,
-        increse=increse,
+        decrease=decrease,
+        increase=increase,
         net_balance=balance,
-        net_decrese=decrese,
-        net_increse=increse,
+        net_decrease=decrease,
+        net_increase=increase,
     )
 
     if not receive:
@@ -158,8 +210,8 @@ async def get_account_book_balance(
             True,
         )
         account_book_balance.net_balance += child_account_book_balance.net_balance
-        account_book_balance.net_increse += child_account_book_balance.net_increse
-        account_book_balance.net_decrese += child_account_book_balance.net_decrese
+        account_book_balance.net_increase += child_account_book_balance.net_increase
+        account_book_balance.net_decrease += child_account_book_balance.net_decrease
         account_book_balance.children.append(child_account_book_balance)
 
     return account_book_balance
