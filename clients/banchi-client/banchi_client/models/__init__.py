@@ -37,6 +37,7 @@ from .transaction import Transaction
 from .transaction_list import TransactionList
 from .updated_account import UpdatedAccount
 from .updated_account_book import UpdatedAccountBook
+from .updated_space import UpdatedSpace
 from .updated_space_role import UpdatedSpaceRole
 from .updated_space_role_role import UpdatedSpaceRoleRole
 from .updated_transaction import UpdatedTransaction
@@ -83,6 +84,7 @@ __all__ = (
     "TransactionList",
     "UpdatedAccount",
     "UpdatedAccountBook",
+    "UpdatedSpace",
     "UpdatedSpaceRole",
     "UpdatedSpaceRoleRole",
     "UpdatedTransaction",
