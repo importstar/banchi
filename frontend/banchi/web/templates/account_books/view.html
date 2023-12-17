@@ -100,8 +100,6 @@ Account Book {{ account_book.name }}
             <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
             <td>{{ transaction.description }}</td>
             <td>
-
-                {{transaction.to_account_book.type }}
               {% if transaction.from_account_book.id != account_book.id %}
                 <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
                   {{ account_book_display_names[transaction.from_account_book.id] }}
@@ -113,7 +111,7 @@ Account Book {{ account_book.name }}
               {% endif %}
             </td>
             {% if account_book.type == 'equity' %}
-              {% if transaction.to_account_book.type not in ['income', 'assets'] %}
+              {% if transaction.to_account_book.type not in ['income', 'equity'] %}
                 <td></td>
                 <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
               {% else %}

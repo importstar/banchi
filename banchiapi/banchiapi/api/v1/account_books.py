@@ -156,7 +156,7 @@ async def get_equity_account_book_balance_by_trasaction(db_account_book):
     increase = decimal.Decimal(0)
     decrease = decimal.Decimal(0)
     for balance in account_book_agg:
-        if balance["_id"]["type"] in ["income"]:
+        if balance["_id"]["type"] in ["income", "equity"]:
             increase += balance["total"].to_decimal()
         else:
             decrease += balance["total"].to_decimal()
