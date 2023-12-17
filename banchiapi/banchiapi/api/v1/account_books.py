@@ -150,9 +150,6 @@ async def get_equity_account_book_balance_by_trasaction(db_account_book):
         .to_list()
     )
 
-    # value = account_book_agg[0]["total"].to_decimal() if account_book_agg else 0
-    print("equity", db_account_book.name, account_book_agg)
-
     increase = decimal.Decimal(0)
     decrease = decimal.Decimal(0)
     for balance in account_book_agg:

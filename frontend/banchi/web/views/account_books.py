@@ -81,8 +81,15 @@ def create_or_edit(account_book_id):
     if request.method == "GET" and account_book:
         form = forms.account_books.AccountBookForm(obj=account_book)
         form.parent_id.data = account_book.parent.id
+
     elif request.method == "GET" and not account_book and request.args.get("parent_id"):
-        form.parent_id.data = request.args.get("parent_id")
+        parent_id = request.args.get("parent_id")
+        parent = get_v1_account_books_account_book_id_get.sync(
+            client=client, account_book_id=parent_id
+        )
+
+        form.parent_id.data = parent_id
+        form.type.data = parent.type
 
     if account_id:
         response = get_all_v1_account_books_get.sync(
