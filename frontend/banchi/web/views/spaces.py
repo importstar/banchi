@@ -93,6 +93,7 @@ def add_or_edit_role(space_id, space_role_id):
     client = banchi_api_clients.client.get_current_client()
 
     user_response = get_all_v1_users_get.sync(client=client)
+    space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
 
     form = forms.spaces.SpaceRoleForm()
 
@@ -112,7 +113,7 @@ def add_or_edit_role(space_id, space_role_id):
     ]
 
     if not form.validate_on_submit():
-        return render_template("/spaces/add-or-edit-role.html", form=form)
+        return render_template("/spaces/add-or-edit-role.html", form=form, space=space)
 
     if not space_role:
         space_role = models.CreatedSpaceRole.from_dict(form.data)

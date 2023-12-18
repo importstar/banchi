@@ -1,12 +1,14 @@
-{% extends '/spaces/index.html' %}
+{% extends '/spaces/view.html' %}
 {% import '/base/html-renderer.html' as renderer %}
 
 {% block dashboard_title %}
-Space Role
+Space Role: {{ space.name }}
 {% endblock %}
 
 {% block breadcrumbs %}
   {{ super() }}
+  <i class="right angle icon divider"></i>
+  <div class="active section">Space Role</div>
 {% endblock %}
 
 {% block title %}
