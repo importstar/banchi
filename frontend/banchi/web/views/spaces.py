@@ -79,7 +79,7 @@ def list_roles(space_id):
     space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
 
     return render_template(
-        "/spaces/list-roles.html",
+        "/spaces/roles.html",
         space_roles=space_role_response.space_roles,
         space=space,
     )

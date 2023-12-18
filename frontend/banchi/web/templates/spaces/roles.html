@@ -6,6 +6,14 @@ Space
 
 {% block breadcrumbs %}
   {{ super() }}
+  <i class="right angle icon divider"></i>
+  {% if request.endpoint == 'spaces.list_roles' %}
+      <div class="active section">Space Role </div>
+  {% elif space %}
+    <a class="section" href="{{ url_for('spaces.list_roles', space_id=space.id ) }}">Space Role </a>
+  {% endif %}
+
+
 {% endblock %}
 
 {% block title %}
