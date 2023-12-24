@@ -97,90 +97,21 @@ async def get_account_book_balance_by_trasaction(
     return value
 
 
-async def get_equity_account_book_balance_by_trasaction(db_account_book):
-    account_book_agg = (
-        await models.transactions.Transaction.find()
-        .aggregate(
-            [
-                {
-                    "$match": {
-                        "$or": [
-                            {f"from_account_book.$id": db_account_book.id},
-                            {f"to_account_book.$id": db_account_book.id},
-                        ],
-                        "status": "active",
-                    }
-                },
-                {
-                    "$lookup": {
-                        "from": "account_books",
-                        "localField": f"from_account_book.$id",
-                        "foreignField": "_id",
-                        "as": f"lookup_from_account_book",
-                    }
-                },
-                {
-                    "$lookup": {
-                        "from": "account_books",
-                        "localField": f"to_account_book.$id",
-                        "foreignField": "_id",
-                        "as": f"lookup_to_account_book",
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": f"$lookup_from_account_book",
-                        "preserveNullAndEmptyArrays": True,
-                    }
-                },
-                {
-                    "$unwind": {
-                        "path": f"$lookup_to_account_book",
-                        "preserveNullAndEmptyArrays": True,
-                    }
-                },
-                {
-                    "$group": {
-                        "_id": {"type": f"$lookup_to_account_book.type"},
-                        "total": {"$sum": "$value"},
-                    }
-                },
-            ],
-        )
-        .to_list()
-    )
-
-    increase = decimal.Decimal(0)
-    decrease = decimal.Decimal(0)
-    for balance in account_book_agg:
-        if balance["_id"]["type"] in ["income", "equity"]:
-            increase += balance["total"].to_decimal()
-        else:
-            decrease += balance["total"].to_decimal()
-
-    balance = increase - decrease
-    return balance, increase, decrease
-
-
 async def get_account_book_balance(
     db_account_book, receive=False
 ) -> schemas.account_books.AccountBookBalance:
     balance = increase = decrease = 0
 
-    if db_account_book.type == "equity":
-        (
-            balance,
-            increase,
-            decrease,
-        ) = await get_equity_account_book_balance_by_trasaction(db_account_book)
+    decrease = await get_account_book_balance_by_trasaction(
+        db_account_book, "from_account_book"
+    )
+    increase = await get_account_book_balance_by_trasaction(
+        db_account_book, "to_account_book"
+    )
 
+    if db_account_book.type in ["income", "equity", "liability"]:
+        balance = decrease - increase
     else:
-        decrease = await get_account_book_balance_by_trasaction(
-            db_account_book, "from_account_book"
-        )
-        increase = await get_account_book_balance_by_trasaction(
-            db_account_book, "to_account_book"
-        )
         balance = increase - decrease
 
     account_book_balance = schemas.account_books.AccountBookBalance(

@@ -110,23 +110,14 @@ Account Book {{ account_book.name }}
                 </a>
               {% endif %}
             </td>
-            {% if account_book.type == 'equity' %}
-              {% if transaction.to_account_book.type not in ['income', 'equity'] %}
-                <td></td>
-                <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-              {% else %}
-                <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-                <td></td>
-              {% endif %}
-            {% else %}
               {% if transaction.from_account_book.id != account_book.id %}
+              
                 <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
                 <td class="right aligned"></td>
               {% else %}
                 <td></td>
                 <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
               {% endif %}
-            {% endif %}
             <td>
               {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
             </td>
