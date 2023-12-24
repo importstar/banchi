@@ -232,8 +232,14 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
         form = forms.transactions.TransactionForm(obj=transaction)
 
-    display_names = utils.account_books.get_display_names(account_books)
-    account_book_choices = [(str(ab.id), display_names[ab.id]) for ab in account_books]
+    display_names = utils.account_books.get_display_names(
+        account_books, excluse_none_parent=True
+    )
+    account_book_choices = [
+        (str(ab.id), display_names[ab.id])
+        for ab in account_books
+        if ab.id in display_names
+    ]
     to_account_book_choices = account_book_choices
 
     account_book_choices = sorted(

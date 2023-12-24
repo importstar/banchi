@@ -1,4 +1,4 @@
-def get_display_names(account_books):
+def get_display_names(account_books, excluse_none_parent=False):
     account_book_dict = {
         account_book.id: account_book for account_book in account_books
     }
@@ -12,6 +12,9 @@ def get_display_names(account_books):
 
     # print(account_book_dict)
     for account_book in account_books:
+        if excluse_none_parent and account_book.parent is None:
+            continue
+
         account_book_id = account_book.id
 
         account_book_display_names[account_book.id] = account_book.name
