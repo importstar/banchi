@@ -13,6 +13,7 @@ from banchi_client.api.v1 import (
     get_v1_spaces_space_id_roles_space_role_id_get,
     get_all_v1_users_get,
     get_accounts_v1_spaces_space_id_accounts_get,
+    update_v1_spaces_space_id_put,
     update_v1_spaces_space_id_roles_space_role_id_put,
 )
 
@@ -37,8 +38,8 @@ def create_or_edit(space_id):
     client = banchi_api_clients.client.get_current_client()
     space = None
     if space_id:
-        space = get_v1_space_id_get.sync(client=client, id=space_id)
-        form = forms.spaces.SpaceForm(obj=space.to_dict())
+        space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
+        form = forms.spaces.SpaceForm(obj=space)
 
     if not form.validate_on_submit():
         return render_template("/spaces/create-or-edit.html", form=form)
@@ -48,7 +49,9 @@ def create_or_edit(space_id):
         response = create_v1_spaces_post.sync(client=client, json_body=space)
     else:
         space = models.UpdatedSpace.from_dict(form.data)
-        response = update_v1_spaces_update_post.sync(client=client, json_body=space)
+        response = update_v1_spaces_space_id_put.sync(
+            client=client, json_body=space, space_id=space_id
+        )
 
     if not response:
         print("error cannot save")
@@ -76,7 +79,7 @@ def list_roles(space_id):
     space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
 
     return render_template(
-        "/spaces/list-roles.html",
+        "/spaces/roles.html",
         space_roles=space_role_response.space_roles,
         space=space,
     )
@@ -90,6 +93,7 @@ def add_or_edit_role(space_id, space_role_id):
     client = banchi_api_clients.client.get_current_client()
 
     user_response = get_all_v1_users_get.sync(client=client)
+    space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
 
     form = forms.spaces.SpaceRoleForm()
 
@@ -109,7 +113,7 @@ def add_or_edit_role(space_id, space_role_id):
     ]
 
     if not form.validate_on_submit():
-        return render_template("/spaces/add-or-edit-role.html", form=form)
+        return render_template("/spaces/add-or-edit-role.html", form=form, space=space)
 
     if not space_role:
         space_role = models.CreatedSpaceRole.from_dict(form.data)

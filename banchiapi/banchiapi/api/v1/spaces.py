@@ -12,6 +12,7 @@ from banchiapi.core import deps
 
 from beanie import PydanticObjectId
 from beanie.odm.operators.find import comparison
+from beanie.operators import Inc, Set
 
 
 router = APIRouter(prefix="/spaces", tags=["spaces"])
@@ -92,62 +93,36 @@ async def get_accounts(
     return db_account
 
 
-@router.put(
-    "/{space_id}",
-)
+@router.put("/{space_id}")
 async def update(
     space_id: PydanticObjectId,
-    space: schemas.spaces.CreatedSpace,
+    space: schemas.spaces.UpdatedSpace,
+    db_space: typing.Annotated[
+        models.spaces.Space, Depends(deps.get_current_user_space)
+    ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
-    db_space = models.Space.objects(id=space_id).first()
-    if not db_space:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
-            detail="Not found this system setting",
-        )
-    db_spaces = models.Space.objects(name=space.name, status="active", id__ne=space_id)
-    if db_spaces:
-        raise HTTPException(
-            status_code=HTTP_409_CONFLICT,
-            detail="There are already space name",
-        )
-    db_spaces = models.Space.objects(code=space.code, status="active", id__ne=space_id)
-    if db_spaces:
-        raise HTTPException(
-            status_code=HTTP_409_CONFLICT,
-            detail="There are already space code",
-        )
-
     data = space.dict()
-    db_space.update(**data)
+    await db_space.update(Set(data))
 
     db_space.updated_date = datetime.datetime.now()
-    db_space.save()
-    db_space.reload()
+    db_space.updated_by = current_user
+    await db_space.save()
+
     return db_space
 
 
-@router.delete(
-    "/{space_id}",
-)
+@router.delete("/{space_id}")
 async def delete(
     space_id: PydanticObjectId,
+    db_space: typing.Annotated[
+        models.spaces.Space, Depends(deps.get_current_user_space)
+    ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
-    try:
-        db_space = models.Space.objects.get(id=space_id)
-    except Exception:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Not found this space",
-        )
-    db_space.update(status="disactive", updated_date=datetime.datetime.now())
-    db_space.reload()
-    db_space.save()
+    db_space.status = "disactive"
+    db_space.updated_date = datetime.datetime.now()
+    db_space.updated_by = current_user
+    await db_space.save()
 
-    divisions = models.Division.objects(space=db_space, status="active")
-    for division in divisions:
-        division.status = "disactive"
-        division.save()
     return db_space

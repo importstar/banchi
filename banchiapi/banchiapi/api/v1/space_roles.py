@@ -41,6 +41,7 @@ async def add(
 ) -> schemas.spaces.SpaceRole:
     db_space_role = await models.spaces.SpaceRole.find_one(
         models.spaces.SpaceRole.member.id == space_role.member_id,
+        models.spaces.SpaceRole.space.id == space_id,
         models.spaces.SpaceRole.status == "active",
     )
     if db_space_role:

@@ -5,16 +5,16 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.created_space import CreatedSpace
 from ...models.http_validation_error import HTTPValidationError
 from ...models.space import Space
+from ...models.updated_space import UpdatedSpace
 from ...types import Response
 
 
 def _get_kwargs(
     space_id: str,
     *,
-    json_body: CreatedSpace,
+    json_body: UpdatedSpace,
 ) -> Dict[str, Any]:
     json_json_body = json_body.to_dict()
 
@@ -59,13 +59,13 @@ def sync_detailed(
     space_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedSpace,
+    json_body: UpdatedSpace,
 ) -> Response[Union[HTTPValidationError, Space]]:
     """Update
 
     Args:
         space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        json_body (CreatedSpace):
+        json_body (UpdatedSpace):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -91,13 +91,13 @@ def sync(
     space_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedSpace,
+    json_body: UpdatedSpace,
 ) -> Optional[Union[HTTPValidationError, Space]]:
     """Update
 
     Args:
         space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        json_body (CreatedSpace):
+        json_body (UpdatedSpace):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -118,13 +118,13 @@ async def asyncio_detailed(
     space_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedSpace,
+    json_body: UpdatedSpace,
 ) -> Response[Union[HTTPValidationError, Space]]:
     """Update
 
     Args:
         space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        json_body (CreatedSpace):
+        json_body (UpdatedSpace):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -148,13 +148,13 @@ async def asyncio(
     space_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: CreatedSpace,
+    json_body: UpdatedSpace,
 ) -> Optional[Union[HTTPValidationError, Space]]:
     """Update
 
     Args:
         space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        json_body (CreatedSpace):
+        json_body (UpdatedSpace):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
