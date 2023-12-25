@@ -296,6 +296,8 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         response = update_v1_transactions_transaction_id_put.sync(
             client=client, json_body=transaction, transaction_id=transaction_id
         )
+    if not account_book:
+        account_book = response.from_account_book
 
     return redirect(url_for("account_books.view", account_book_id=account_book.id))
 
