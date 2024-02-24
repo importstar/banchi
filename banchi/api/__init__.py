@@ -5,9 +5,9 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
-from banchi.api.errors.http_error import http_error_handler
-from banchi.api.errors.validation_error import http422_error_handler
-from banchi.api import init_router
+from banchi.api.routers.errors.http_error import http_error_handler
+from banchi.api.routers.errors.validation_error import http422_error_handler
+from banchi.api.routers import init_router
 
 from banchi.core.config import get_app_settings
 from banchi.worker.redis_rq import init_rq

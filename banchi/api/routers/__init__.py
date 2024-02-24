@@ -7,8 +7,8 @@ from starlette.exceptions import HTTPException
 from loguru import logger
 
 
-from banchiapi.api.errors.http_error import http_error_handler
-from banchiapi.api.errors.validation_error import http422_error_handler
+from banchi.api.routers.errors.http_error import http_error_handler
+from banchi.api.routers.errors.validation_error import http422_error_handler
 
 
 async def init_router(application, settings):
