@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 
 def create_app():
-    app.config.from_object("banchi.default_settings")
+    app.config.from_object("banchi.web.default_settings")
     app.config.from_envvar("BANCHI_SETTINGS", silent=True)
 
     views.register_blueprint(app)

@@ -5,13 +5,13 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException
 from starlette.middleware.cors import CORSMiddleware
 
-from banchiapi.api.errors.http_error import http_error_handler
-from banchiapi.api.errors.validation_error import http422_error_handler
-from banchiapi.api import init_router
+from banchi.api.errors.http_error import http_error_handler
+from banchi.api.errors.validation_error import http422_error_handler
+from banchi.api import init_router
 
-from banchiapi.core.config import get_app_settings
-from banchiapi.worker.redis_rq import init_rq
-from banchiapi import models
+from banchi.core.config import get_app_settings
+from banchi.worker.redis_rq import init_rq
+from banchi import models
 
 
 def get_application() -> FastAPI:
