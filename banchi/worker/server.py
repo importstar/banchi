@@ -9,7 +9,7 @@ import os
 import redis
 from rq import Worker, Queue, Connection, SimpleWorker
 
-from banchiapi import models
+from banchi.api import models
 
 import logging
 
@@ -32,7 +32,7 @@ class GeneralWorker(SimpleWorker):
         settings = kwargs.pop("settings")
         super().__init__(*args, **kwargs)
 
-         # models.init_mongoengine(settings)
+        # models.init_mongoengine(settings)
 
 
 class WorkerServer:

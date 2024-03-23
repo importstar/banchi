@@ -8,10 +8,10 @@ from fastapi.security import (
 
 import typing
 
-from banchiapi import models
-from banchiapi.core import security, deps
-from banchiapi.core.config import settings
-from banchiapi import schemas
+from banchi.api import models
+from banchi.api.core import security, deps
+from banchi.api.core.config import settings
+from banchi.api import schemas
 import datetime
 
 router = APIRouter(prefix="/auth", tags=["authentication"])

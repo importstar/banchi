@@ -4,8 +4,8 @@ from typing import Any, Dict, List, Tuple
 
 from loguru import logger
 
-from banchiapi.core.logging import InterceptHandler
-from banchiapi.core.settings.base import BaseAppSettings
+from banchi.api.core.logging import InterceptHandler
+from banchi.api.core.settings.base import BaseAppSettings
 
 
 class AppSettings(BaseAppSettings):

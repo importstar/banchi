@@ -12,9 +12,9 @@ from beanie.operators import Inc, Set
 
 from beanie import PydanticObjectId
 
-from banchiapi import models
-from banchiapi.core import deps
-from banchiapi import schemas
+from banchi.api import models
+from banchi.api.core import deps
+from banchi.api import schemas
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
 

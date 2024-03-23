@@ -5,9 +5,9 @@ from fastapi import APIRouter, Depends, HTTPException, UploadFile, Response, Req
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, HTTP_400_BAD_REQUEST
 from starlette.responses import StreamingResponse
 from loguru import logger
-from banchiapi import models
-from banchiapi.core import deps
-from banchiapi.schemas.system_settings import (
+from banchi.api import models
+from banchi.api.core import deps
+from banchi.api.schemas.system_settings import (
     SystemSettingInCreate,
     SystemSettingInResponse,
 )

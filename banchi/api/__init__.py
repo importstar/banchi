@@ -9,9 +9,9 @@ from banchi.api.routers.errors.http_error import http_error_handler
 from banchi.api.routers.errors.validation_error import http422_error_handler
 from banchi.api.routers import init_router
 
-from banchi.core.config import get_app_settings
+from .core.config import get_app_settings
 from banchi.worker.redis_rq import init_rq
-from banchi import models
+from banchi.api import models
 
 
 def get_application() -> FastAPI:

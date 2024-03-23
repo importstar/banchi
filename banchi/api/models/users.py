@@ -1,6 +1,6 @@
 import datetime
 
-from banchiapi import schemas
+from banchi.api import schemas
 
 from beanie import Document, Indexed, PydanticObjectId
 from pydantic import Field

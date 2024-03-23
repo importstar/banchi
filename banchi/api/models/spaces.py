@@ -1,4 +1,4 @@
-from banchiapi import schemas
+from banchi.api import schemas
 from typing import Optional
 
 from beanie import Document, Indexed, Link, PydanticObjectId

@@ -10,9 +10,9 @@ import bson
 from beanie import PydanticObjectId
 from beanie.operators import Inc, Set
 
-from banchiapi import models
-from banchiapi.core import deps
-from banchiapi import schemas
+from banchi.api import models
+from banchi.api.core import deps
+from banchi.api import schemas
 
 router = APIRouter(prefix="/accounts", tags=["accounts"])
 

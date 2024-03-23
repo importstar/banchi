@@ -7,9 +7,9 @@ import bson
 from beanie import PydanticObjectId
 import typing
 
-from banchiapi import models
-from banchiapi import schemas
-from banchiapi.core import deps
+from banchi.api import models
+from banchi.api import schemas
+from banchi.api.core import deps
 
 router = APIRouter(prefix="/spaces/{space_id}/roles", tags=["space roles"])
 

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, status
-from banchiapi import schemas
-from banchiapi.core import deps
-from banchiapi import models
+from banchi.api import schemas
+from banchi.api.core import deps
+from banchi.api import models
 from loguru import logger
 
 

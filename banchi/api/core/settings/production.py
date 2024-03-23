@@ -1,4 +1,4 @@
-from banchiapi.core.settings.app import AppSettings
+from banchi.api.core.settings.app import AppSettings
 
 
 class ProdAppSettings(AppSettings):

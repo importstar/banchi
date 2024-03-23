@@ -6,9 +6,9 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status, Query
 from loguru import logger
 import bson
 
-from banchiapi import models
-from banchiapi import schemas
-from banchiapi.core import deps
+from banchi.api import models
+from banchi.api import schemas
+from banchi.api.core import deps
 
 from beanie import PydanticObjectId
 from beanie.odm.operators.find import comparison

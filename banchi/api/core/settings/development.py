@@ -1,6 +1,6 @@
 import logging
 
-from banchiapi.core.settings.app import AppSettings
+from banchi.api.core.settings.app import AppSettings
 
 
 class DevAppSettings(AppSettings):
