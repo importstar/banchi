@@ -19,7 +19,6 @@ environments: Dict[str, Type[AppSettings]] = {
 def get_app_settings() -> AppSettings:
     # app_env = BaseAppSettings().APP_ENV
     app_env = os.getenv("APP_ENV", "dev")
-    print(environments)
     config = environments[app_env]
     return config()
 

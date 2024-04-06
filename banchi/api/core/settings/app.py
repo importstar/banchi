@@ -24,11 +24,10 @@ class AppSettings(BaseAppSettings):
     # MONGODB_USERNAME: str = ""
     # MONGODB_PASSWORD: str = ""
 
-    REZOURCE_BASE_API_URL: str = ""
-    REZOURCE_USERNAME: str = ""
-    REZOURCE_PASSWORD: str = ""
-    REZOURCE_RECEIPT_URL_PATTERN: str = ""
-    REZOURCE_API_VERIFY_SSL: bool = False
+    BANCHI_API_BASE_URL: str = ""
+    BANCHI_USERNAME: str = ""
+    BANCHI_PASSWORD: str = ""
+    BANCHI_API_VERIFY_SSL: bool = False
 
     REDIS_URL: str = "redis://localhost:6379"
 
@@ -48,6 +47,7 @@ class AppSettings(BaseAppSettings):
 
     class Config:
         validate_assignment = True
+        extra = "allow"
 
     @property
     def fastapi_kwargs(self) -> Dict[str, Any]:
