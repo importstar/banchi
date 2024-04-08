@@ -17,6 +17,7 @@ class BaseTransaction(BaseModel):
     description: str = Field(..., example="Desctription")
     value: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
     currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
+    tags: list[str]
 
 
 class Transaction(bases.BaseSchema, BaseTransaction):
