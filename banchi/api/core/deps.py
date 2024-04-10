@@ -225,6 +225,25 @@ async def get_transaction(
     return db_transaction
 
 
+async def get_transactions_by_tag(
+    tag: typing.Annotated[str, Path()],
+    user: typing.Annotated[models.users.User, Depends(get_current_user)],
+) -> list[models.transactions.Transaction]:
+    db_transactions = await models.transactions.Transaction.find(
+        models.transactions.Transaction.tags == tag,
+        models.transactions.Transaction.status == "active",
+        fetch_links=True,
+    )
+
+    if not db_transactions:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found transaction",
+        )
+
+    return db_transactions
+
+
 async def create_logs(action, request, current_user):
     request_log = models.RequestLog(
         user=current_user,

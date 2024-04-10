@@ -13,20 +13,30 @@ from ...types import UNSET, Response, Unset
 
 def _get_kwargs(
     *,
-    form_data: BodyAuthenticationV1AuthLoginPost,
+    body: BodyAuthenticationV1AuthLoginPost,
     name: Union[Unset, Any] = UNSET,
 ) -> Dict[str, Any]:
+    headers: Dict[str, Any] = {}
+
     params: Dict[str, Any] = {}
+
     params["name"] = name
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    return {
+    _kwargs: Dict[str, Any] = {
         "method": "post",
         "url": "/v1/auth/login",
-        "data": form_data.to_dict(),
         "params": params,
     }
+
+    _body = body.to_dict()
+
+    _kwargs["data"] = _body
+    headers["Content-Type"] = "application/x-www-form-urlencoded"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
@@ -60,13 +70,14 @@ def _build_response(
 def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    form_data: BodyAuthenticationV1AuthLoginPost,
+    body: BodyAuthenticationV1AuthLoginPost,
     name: Union[Unset, Any] = UNSET,
 ) -> Response[Union[HTTPValidationError, Token]]:
     """Authentication
 
     Args:
         name (Union[Unset, Any]):
+        body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -77,7 +88,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        form_data=form_data,
+        body=body,
         name=name,
     )
 
@@ -91,13 +102,14 @@ def sync_detailed(
 def sync(
     *,
     client: Union[AuthenticatedClient, Client],
-    form_data: BodyAuthenticationV1AuthLoginPost,
+    body: BodyAuthenticationV1AuthLoginPost,
     name: Union[Unset, Any] = UNSET,
 ) -> Optional[Union[HTTPValidationError, Token]]:
     """Authentication
 
     Args:
         name (Union[Unset, Any]):
+        body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -109,7 +121,7 @@ def sync(
 
     return sync_detailed(
         client=client,
-        form_data=form_data,
+        body=body,
         name=name,
     ).parsed
 
@@ -117,13 +129,14 @@ def sync(
 async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
-    form_data: BodyAuthenticationV1AuthLoginPost,
+    body: BodyAuthenticationV1AuthLoginPost,
     name: Union[Unset, Any] = UNSET,
 ) -> Response[Union[HTTPValidationError, Token]]:
     """Authentication
 
     Args:
         name (Union[Unset, Any]):
+        body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -134,7 +147,7 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        form_data=form_data,
+        body=body,
         name=name,
     )
 
@@ -146,13 +159,14 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: Union[AuthenticatedClient, Client],
-    form_data: BodyAuthenticationV1AuthLoginPost,
+    body: BodyAuthenticationV1AuthLoginPost,
     name: Union[Unset, Any] = UNSET,
 ) -> Optional[Union[HTTPValidationError, Token]]:
     """Authentication
 
     Args:
         name (Union[Unset, Any]):
+        body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -165,7 +179,7 @@ async def asyncio(
     return (
         await asyncio_detailed(
             client=client,
-            form_data=form_data,
+            body=body,
             name=name,
         )
     ).parsed

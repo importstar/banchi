@@ -14,17 +14,24 @@ from ...types import Response
 def _get_kwargs(
     account_book_id: str,
     *,
-    json_body: UpdatedAccountBook,
+    body: UpdatedAccountBook,
 ) -> Dict[str, Any]:
-    json_json_body = json_body.to_dict()
+    headers: Dict[str, Any] = {}
 
-    return {
+    _kwargs: Dict[str, Any] = {
         "method": "put",
         "url": "/v1/account-books/{account_book_id}".format(
             account_book_id=account_book_id,
         ),
-        "json": json_json_body,
     }
+
+    _body = body.to_dict()
+
+    _kwargs["json"] = _body
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
 
 
 def _parse_response(
@@ -59,13 +66,13 @@ def sync_detailed(
     account_book_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: UpdatedAccountBook,
+    body: UpdatedAccountBook,
 ) -> Response[Union[AccountBook, HTTPValidationError]]:
     """Update
 
     Args:
         account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        json_body (UpdatedAccountBook):
+        body (UpdatedAccountBook):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -77,7 +84,7 @@ def sync_detailed(
 
     kwargs = _get_kwargs(
         account_book_id=account_book_id,
-        json_body=json_body,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -91,13 +98,13 @@ def sync(
     account_book_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: UpdatedAccountBook,
+    body: UpdatedAccountBook,
 ) -> Optional[Union[AccountBook, HTTPValidationError]]:
     """Update
 
     Args:
         account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        json_body (UpdatedAccountBook):
+        body (UpdatedAccountBook):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -110,7 +117,7 @@ def sync(
     return sync_detailed(
         account_book_id=account_book_id,
         client=client,
-        json_body=json_body,
+        body=body,
     ).parsed
 
 
@@ -118,13 +125,13 @@ async def asyncio_detailed(
     account_book_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: UpdatedAccountBook,
+    body: UpdatedAccountBook,
 ) -> Response[Union[AccountBook, HTTPValidationError]]:
     """Update
 
     Args:
         account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        json_body (UpdatedAccountBook):
+        body (UpdatedAccountBook):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -136,7 +143,7 @@ async def asyncio_detailed(
 
     kwargs = _get_kwargs(
         account_book_id=account_book_id,
-        json_body=json_body,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -148,13 +155,13 @@ async def asyncio(
     account_book_id: str,
     *,
     client: AuthenticatedClient,
-    json_body: UpdatedAccountBook,
+    body: UpdatedAccountBook,
 ) -> Optional[Union[AccountBook, HTTPValidationError]]:
     """Update
 
     Args:
         account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        json_body (UpdatedAccountBook):
+        body (UpdatedAccountBook):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -168,6 +175,6 @@ async def asyncio(
         await asyncio_detailed(
             account_book_id=account_book_id,
             client=client,
-            json_body=json_body,
+            body=body,
         )
     ).parsed

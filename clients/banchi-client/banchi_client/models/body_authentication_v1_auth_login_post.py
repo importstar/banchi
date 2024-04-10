@@ -30,26 +30,26 @@ class BodyAuthenticationV1AuthLoginPost:
 
     def to_dict(self) -> Dict[str, Any]:
         username = self.username
+
         password = self.password
+
         grant_type: Union[None, Unset, str]
         if isinstance(self.grant_type, Unset):
             grant_type = UNSET
-
         else:
             grant_type = self.grant_type
 
         scope = self.scope
+
         client_id: Union[None, Unset, str]
         if isinstance(self.client_id, Unset):
             client_id = UNSET
-
         else:
             client_id = self.client_id
 
         client_secret: Union[None, Unset, str]
         if isinstance(self.client_secret, Unset):
             client_secret = UNSET
-
         else:
             client_secret = self.client_secret
 

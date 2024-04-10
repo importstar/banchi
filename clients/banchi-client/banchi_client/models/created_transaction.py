@@ -18,29 +18,35 @@ class CreatedTransaction:
         description (str):  Example: Desctription.
         value (Union[float, str]):
         currency (CurrencyEnum):
+        tags (List[str]):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-12-18T00:12:46.773481').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-04-10T15:57:13.524804').
     """
 
     description: str
     value: Union[float, str]
     currency: CurrencyEnum
+    tags: List[str]
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2023-12-18T00:12:46.773481")
+    date: Union[Unset, datetime.datetime] = isoparse("2024-04-10T15:57:13.524804")
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         description = self.description
-        value: Union[float, str]
 
+        value: Union[float, str]
         value = self.value
 
         currency = self.currency.value
 
+        tags = self.tags
+
         from_account_book_id = self.from_account_book_id
+
         to_account_book_id = self.to_account_book_id
+
         date: Union[Unset, str] = UNSET
         if not isinstance(self.date, Unset):
             date = self.date.isoformat()
@@ -52,6 +58,7 @@ class CreatedTransaction:
                 "description": description,
                 "value": value,
                 "currency": currency,
+                "tags": tags,
                 "from_account_book_id": from_account_book_id,
                 "to_account_book_id": to_account_book_id,
             }
@@ -73,6 +80,8 @@ class CreatedTransaction:
 
         currency = CurrencyEnum(d.pop("currency"))
 
+        tags = cast(List[str], d.pop("tags"))
+
         from_account_book_id = d.pop("from_account_book_id")
 
         to_account_book_id = d.pop("to_account_book_id")
@@ -88,6 +97,7 @@ class CreatedTransaction:
             description=description,
             value=value,
             currency=currency,
+            tags=tags,
             from_account_book_id=from_account_book_id,
             to_account_book_id=to_account_book_id,
             date=date,

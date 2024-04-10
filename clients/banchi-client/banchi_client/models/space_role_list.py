@@ -24,7 +24,6 @@ class SpaceRoleList:
         space_roles = []
         for space_roles_item_data in self.space_roles:
             space_roles_item = space_roles_item_data.to_dict()
-
             space_roles.append(space_roles_item)
 
         field_dict: Dict[str, Any] = {}

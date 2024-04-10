@@ -6,17 +6,17 @@ import httpx
 from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.http_validation_error import HTTPValidationError
-from ...models.space import Space
+from ...models.transaction_list import TransactionList
 from ...types import Response
 
 
 def _get_kwargs(
-    space_id: str,
+    tag: str,
 ) -> Dict[str, Any]:
     _kwargs: Dict[str, Any] = {
-        "method": "delete",
-        "url": "/v1/spaces/{space_id}".format(
-            space_id=space_id,
+        "method": "get",
+        "url": "/v1/transactions/tags/{tag}".format(
+            tag=tag,
         ),
     }
 
@@ -25,9 +25,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[HTTPValidationError, Space]]:
+) -> Optional[Union[HTTPValidationError, TransactionList]]:
     if response.status_code == HTTPStatus.OK:
-        response_200 = Space.from_dict(response.json())
+        response_200 = TransactionList.from_dict(response.json())
 
         return response_200
     if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
@@ -42,7 +42,7 @@ def _parse_response(
 
 def _build_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[HTTPValidationError, Space]]:
+) -> Response[Union[HTTPValidationError, TransactionList]]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -52,25 +52,25 @@ def _build_response(
 
 
 def sync_detailed(
-    space_id: str,
+    tag: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Union[HTTPValidationError, Space]]:
-    """Delete
+) -> Response[Union[HTTPValidationError, TransactionList]]:
+    """Get By Tags
 
     Args:
-        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        tag (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, Space]]
+        Response[Union[HTTPValidationError, TransactionList]]
     """
 
     kwargs = _get_kwargs(
-        space_id=space_id,
+        tag=tag,
     )
 
     response = client.get_httpx_client().request(
@@ -81,49 +81,49 @@ def sync_detailed(
 
 
 def sync(
-    space_id: str,
+    tag: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[Union[HTTPValidationError, Space]]:
-    """Delete
+) -> Optional[Union[HTTPValidationError, TransactionList]]:
+    """Get By Tags
 
     Args:
-        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        tag (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, Space]
+        Union[HTTPValidationError, TransactionList]
     """
 
     return sync_detailed(
-        space_id=space_id,
+        tag=tag,
         client=client,
     ).parsed
 
 
 async def asyncio_detailed(
-    space_id: str,
+    tag: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Union[HTTPValidationError, Space]]:
-    """Delete
+) -> Response[Union[HTTPValidationError, TransactionList]]:
+    """Get By Tags
 
     Args:
-        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        tag (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, Space]]
+        Response[Union[HTTPValidationError, TransactionList]]
     """
 
     kwargs = _get_kwargs(
-        space_id=space_id,
+        tag=tag,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -132,26 +132,26 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    space_id: str,
+    tag: str,
     *,
     client: AuthenticatedClient,
-) -> Optional[Union[HTTPValidationError, Space]]:
-    """Delete
+) -> Optional[Union[HTTPValidationError, TransactionList]]:
+    """Get By Tags
 
     Args:
-        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        tag (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, Space]
+        Union[HTTPValidationError, TransactionList]
     """
 
     return (
         await asyncio_detailed(
-            space_id=space_id,
+            tag=tag,
             client=client,
         )
     ).parsed

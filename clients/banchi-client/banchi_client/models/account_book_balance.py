@@ -13,39 +13,45 @@ class AccountBookBalance:
     """
     Attributes:
         id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        balance (Union[Unset, str]):
-        increase (Union[Unset, str]):
-        decrease (Union[Unset, str]):
-        net_balance (Union[Unset, str]):
-        net_increase (Union[Unset, str]):
-        net_decrease (Union[Unset, str]):
+        balance (Union[Unset, str]):  Default: '0'.
+        increase (Union[Unset, str]):  Default: '0'.
+        decrease (Union[Unset, str]):  Default: '0'.
+        net_balance (Union[Unset, str]):  Default: '0'.
+        net_increase (Union[Unset, str]):  Default: '0'.
+        net_decrease (Union[Unset, str]):  Default: '0'.
         children (Union[Unset, List['AccountBookBalance']]):
     """
 
     id: str
-    balance: Union[Unset, str] = 0
-    increase: Union[Unset, str] = 0
-    decrease: Union[Unset, str] = 0
-    net_balance: Union[Unset, str] = 0
-    net_increase: Union[Unset, str] = 0
-    net_decrease: Union[Unset, str] = 0
+    balance: Union[Unset, str] = "0"
+    increase: Union[Unset, str] = "0"
+    decrease: Union[Unset, str] = "0"
+    net_balance: Union[Unset, str] = "0"
+    net_increase: Union[Unset, str] = "0"
+    net_decrease: Union[Unset, str] = "0"
     children: Union[Unset, List["AccountBookBalance"]] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         id = self.id
+
         balance = self.balance
+
         increase = self.increase
+
         decrease = self.decrease
+
         net_balance = self.net_balance
+
         net_increase = self.net_increase
+
         net_decrease = self.net_decrease
+
         children: Union[Unset, List[Dict[str, Any]]] = UNSET
         if not isinstance(self.children, Unset):
             children = []
             for children_item_data in self.children:
                 children_item = children_item_data.to_dict()
-
                 children.append(children_item)
 
         field_dict: Dict[str, Any] = {}

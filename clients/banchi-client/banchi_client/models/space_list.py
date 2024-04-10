@@ -24,7 +24,6 @@ class SpaceList:
         spaces = []
         for spaces_item_data in self.spaces:
             spaces_item = spaces_item_data.to_dict()
-
             spaces.append(spaces_item)
 
         field_dict: Dict[str, Any] = {}

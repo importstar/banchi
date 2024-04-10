@@ -16,25 +16,24 @@ def _get_kwargs(
     to_account_book_id: Union[None, str],
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
+
     json_from_account_book_id: Union[None, str]
-
     json_from_account_book_id = from_account_book_id
-
     params["from_account_book_id"] = json_from_account_book_id
 
     json_to_account_book_id: Union[None, str]
-
     json_to_account_book_id = to_account_book_id
-
     params["to_account_book_id"] = json_to_account_book_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    return {
+    _kwargs: Dict[str, Any] = {
         "method": "get",
         "url": "/v1/transactions",
         "params": params,
     }
+
+    return _kwargs
 
 
 def _parse_response(

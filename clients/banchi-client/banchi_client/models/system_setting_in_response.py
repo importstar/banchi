@@ -30,15 +30,12 @@ class SystemSettingInResponse:
         banks = self.banks
 
         bill_expired: Union[None, int]
-
         bill_expired = self.bill_expired
 
         year: Union[None, str]
-
         year = self.year
 
         vat: Union[None, float]
-
         vat = self.vat
 
         field_dict: Dict[str, Any] = {}

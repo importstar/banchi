@@ -34,15 +34,15 @@ class Space:
 
     def to_dict(self) -> Dict[str, Any]:
         name = self.name
-        code: Union[None, str]
 
+        code: Union[None, str]
         code = self.code
 
         tax_id: Union[None, str]
-
         tax_id = self.tax_id
 
         id = self.id
+
         owner = self.owner.to_dict()
 
         status = self.status

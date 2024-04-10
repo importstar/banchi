@@ -15,15 +15,18 @@ def _get_kwargs(
     account_id: str,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
+
     params["account_id"] = account_id
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    return {
+    _kwargs: Dict[str, Any] = {
         "method": "get",
         "url": "/v1/account-books",
         "params": params,
     }
+
+    return _kwargs
 
 
 def _parse_response(

@@ -26,9 +26,13 @@ class RegisteredUser:
 
     def to_dict(self) -> Dict[str, Any]:
         email = self.email
+
         username = self.username
+
         first_name = self.first_name
+
         last_name = self.last_name
+
         password = self.password
 
         field_dict: Dict[str, Any] = {}

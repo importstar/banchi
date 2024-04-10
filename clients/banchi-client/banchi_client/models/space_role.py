@@ -47,6 +47,7 @@ class SpaceRole:
         role = self.role.value
 
         id = self.id
+
         added_by = self.added_by.to_dict()
 
         updated_by = self.updated_by.to_dict()

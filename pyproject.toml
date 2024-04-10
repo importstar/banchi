@@ -24,6 +24,7 @@ pydantic = {extras = ["email"], version = "^2.6.4"}
 passlib = "^1.7.4"
 python-jose = "^3.3.0"
 python-multipart = "^0.0.9"
+openapi-python-client = "^0.19.1"
 
 
 [tool.poetry.dev-dependencies]

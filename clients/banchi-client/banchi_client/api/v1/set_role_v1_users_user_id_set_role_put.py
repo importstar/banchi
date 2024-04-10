@@ -17,19 +17,22 @@ def _get_kwargs(
     action: str,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
+
     params["role"] = role
 
     params["action"] = action
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    return {
+    _kwargs: Dict[str, Any] = {
         "method": "put",
         "url": "/v1/users/{user_id}/set_role".format(
             user_id=user_id,
         ),
         "params": params,
     }
+
+    return _kwargs
 
 
 def _parse_response(

@@ -1,5 +1,5 @@
 import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -23,33 +23,40 @@ class Transaction:
         description (str):  Example: Desctription.
         value (str):
         currency (CurrencyEnum):
+        tags (List[str]):
         id (str):  Example: 0.
         from_account_book (ReferenceAccountBook):
         to_account_book (ReferenceAccountBook):
         creator (ReferenceUser):
         updated_by (ReferenceUser):
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2023-12-18T00:12:46.773481').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-04-10T15:57:13.524804').
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
     description: str
     value: str
     currency: CurrencyEnum
+    tags: List[str]
     id: str
     from_account_book: "ReferenceAccountBook"
     to_account_book: "ReferenceAccountBook"
     creator: "ReferenceUser"
     updated_by: "ReferenceUser"
-    date: Union[Unset, datetime.datetime] = isoparse("2023-12-18T00:12:46.773481")
+    date: Union[Unset, datetime.datetime] = isoparse("2024-04-10T15:57:13.524804")
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         description = self.description
+
         value = self.value
+
         currency = self.currency.value
 
+        tags = self.tags
+
         id = self.id
+
         from_account_book = self.from_account_book.to_dict()
 
         to_account_book = self.to_account_book.to_dict()
@@ -71,6 +78,7 @@ class Transaction:
                 "description": description,
                 "value": value,
                 "currency": currency,
+                "tags": tags,
                 "id": id,
                 "from_account_book": from_account_book,
                 "to_account_book": to_account_book,
@@ -97,6 +105,8 @@ class Transaction:
 
         currency = CurrencyEnum(d.pop("currency"))
 
+        tags = cast(List[str], d.pop("tags"))
+
         id = d.pop("id")
 
         from_account_book = ReferenceAccountBook.from_dict(d.pop("from_account_book"))
@@ -120,6 +130,7 @@ class Transaction:
             description=description,
             value=value,
             currency=currency,
+            tags=tags,
             id=id,
             from_account_book=from_account_book,
             to_account_book=to_account_book,

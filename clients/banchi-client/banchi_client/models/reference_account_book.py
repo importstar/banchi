@@ -24,7 +24,9 @@ class ReferenceAccountBook:
 
     def to_dict(self) -> Dict[str, Any]:
         id = self.id
+
         name = self.name
+
         type = self.type.value
 
         field_dict: Dict[str, Any] = {}

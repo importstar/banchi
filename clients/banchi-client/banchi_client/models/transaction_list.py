@@ -24,7 +24,6 @@ class TransactionList:
         transactions = []
         for transactions_item_data in self.transactions:
             transactions_item = transactions_item_data.to_dict()
-
             transactions.append(transactions_item)
 
         field_dict: Dict[str, Any] = {}

@@ -22,6 +22,7 @@ class AccountBookLabel:
 
     def to_dict(self) -> Dict[str, Any]:
         positive = self.positive
+
         negative = self.negative
 
         field_dict: Dict[str, Any] = {}

@@ -27,6 +27,8 @@
         {{ renderer.render_select(form.from_account_book_id) }}
         {{ renderer.render_select(form.to_account_book_id) }}
       </div>
+
+      {{ renderer.render_multiple_select(form.tags) }}
       <button name="subnit" type="submit" class="ui primary button">
         {% if 'edit' not in request.path %}
           Add
@@ -51,6 +53,13 @@
       monthFirst: false,
       formatter: datetime_formatter,
     });
-  	</script>
+
+    $('.ui.search.dropdown').dropdown({
+      allowAdditions: true,
+    });
+
+
+
+  </script>
 
 {% endblock additional_js %}

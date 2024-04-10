@@ -20,7 +20,7 @@ class CreatedAccountBook:
         account_id (str):  Example: 0.
         description (Union[Unset, str]):  Default: ''. Example: Description.
         type (Union[Unset, AccountTypeEnum]):  Default: AccountTypeEnum.ASSET.
-        smallest_fraction (Union[Unset, SmallestFractionEnum]):  Default: 100.
+        smallest_fraction (Union[Unset, SmallestFractionEnum]):  Default: SmallestFractionEnum.VALUE_100.
         currency (Union[Unset, CurrencyEnum]):  Default: CurrencyEnum.THB.
     """
 
@@ -29,18 +29,20 @@ class CreatedAccountBook:
     account_id: str
     description: Union[Unset, str] = ""
     type: Union[Unset, AccountTypeEnum] = AccountTypeEnum.ASSET
-    smallest_fraction: Union[Unset, SmallestFractionEnum] = 100
+    smallest_fraction: Union[Unset, SmallestFractionEnum] = SmallestFractionEnum.VALUE_100
     currency: Union[Unset, CurrencyEnum] = CurrencyEnum.THB
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         name = self.name
-        parent_id: Union[None, str]
 
+        parent_id: Union[None, str]
         parent_id = self.parent_id
 
         account_id = self.account_id
+
         description = self.description
+
         type: Union[Unset, str] = UNSET
         if not isinstance(self.type, Unset):
             type = self.type.value

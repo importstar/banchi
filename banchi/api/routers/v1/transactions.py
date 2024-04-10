@@ -155,3 +155,14 @@ async def delete(
     await db_transaction.save()
 
     return db_transaction
+
+
+@router.get("/tags/{tag}")
+async def get_by_tags(
+    tag: str,
+    db_transactions: typing.Annotated[
+        models.transactions.Transaction, Depends(deps.get_transactions_by_tag)
+    ],
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
+) -> schemas.transactions.TransactionList:
+    return db_transactions

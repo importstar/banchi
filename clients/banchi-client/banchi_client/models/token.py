@@ -32,12 +32,17 @@ class Token:
 
     def to_dict(self) -> Dict[str, Any]:
         access_token = self.access_token
+
         refresh_token = self.refresh_token
+
         token_type = self.token_type
+
         expires_in = self.expires_in
+
         expires_at = self.expires_at.isoformat()
 
         scope = self.scope
+
         issued_at = self.issued_at.isoformat()
 
         field_dict: Dict[str, Any] = {}

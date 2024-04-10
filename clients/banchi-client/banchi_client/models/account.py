@@ -38,10 +38,13 @@ class Account:
 
     def to_dict(self) -> Dict[str, Any]:
         name = self.name
+
         description = self.description
+
         currency = self.currency.value
 
         id = self.id
+
         space = self.space.to_dict()
 
         creator = self.creator.to_dict()

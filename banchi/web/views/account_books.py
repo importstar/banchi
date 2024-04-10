@@ -262,6 +262,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     form.to_account_book_id.choices = account_book_choices
     form.from_account_book_id.choices = account_book_choices
 
+    print(">>>", form.errors, form.data)
     if not form.validate_on_submit():
         if request.method == "GET" and account_book:
             form.from_account_book_id.data = str(account_book.id)

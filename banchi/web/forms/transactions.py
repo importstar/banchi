@@ -31,3 +31,5 @@ class TransactionForm(FlaskForm):
         validators=[validators.InputRequired()],
         choices=[(e.value, e.value.upper()) for e in models.CurrencyEnum],
     )
+
+    tags = fields.SelectMultipleField("Tags", choices=[], validate_choice=False)

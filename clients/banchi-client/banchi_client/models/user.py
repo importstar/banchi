@@ -36,12 +36,16 @@ class User:
 
     def to_dict(self) -> Dict[str, Any]:
         email = self.email
-        username = self.username
-        first_name = self.first_name
-        last_name = self.last_name
-        id = self.id
-        roles: Union[List[str], None]
 
+        username = self.username
+
+        first_name = self.first_name
+
+        last_name = self.last_name
+
+        id = self.id
+
+        roles: Union[List[str], None]
         if isinstance(self.roles, list):
             roles = self.roles
 
@@ -51,24 +55,16 @@ class User:
         last_login_date: Union[None, Unset, str]
         if isinstance(self.last_login_date, Unset):
             last_login_date = UNSET
-
         elif isinstance(self.last_login_date, datetime.datetime):
-            last_login_date = UNSET
-            if not isinstance(self.last_login_date, Unset):
-                last_login_date = self.last_login_date.isoformat()
-
+            last_login_date = self.last_login_date.isoformat()
         else:
             last_login_date = self.last_login_date
 
         register_date: Union[None, Unset, str]
         if isinstance(self.register_date, Unset):
             register_date = UNSET
-
         elif isinstance(self.register_date, datetime.datetime):
-            register_date = UNSET
-            if not isinstance(self.register_date, Unset):
-                register_date = self.register_date.isoformat()
-
+            register_date = self.register_date.isoformat()
         else:
             register_date = self.register_date
 
@@ -127,12 +123,7 @@ class User:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                _last_login_date_type_0 = data
-                last_login_date_type_0: Union[Unset, datetime.datetime]
-                if isinstance(_last_login_date_type_0, Unset):
-                    last_login_date_type_0 = UNSET
-                else:
-                    last_login_date_type_0 = isoparse(_last_login_date_type_0)
+                last_login_date_type_0 = isoparse(data)
 
                 return last_login_date_type_0
             except:  # noqa: E722
@@ -149,12 +140,7 @@ class User:
             try:
                 if not isinstance(data, str):
                     raise TypeError()
-                _register_date_type_0 = data
-                register_date_type_0: Union[Unset, datetime.datetime]
-                if isinstance(_register_date_type_0, Unset):
-                    register_date_type_0 = UNSET
-                else:
-                    register_date_type_0 = isoparse(_register_date_type_0)
+                register_date_type_0 = isoparse(data)
 
                 return register_date_type_0
             except:  # noqa: E722

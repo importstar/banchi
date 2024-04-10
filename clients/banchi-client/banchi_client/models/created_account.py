@@ -26,7 +26,9 @@ class CreatedAccount:
 
     def to_dict(self) -> Dict[str, Any]:
         name = self.name
+
         description = self.description
+
         currency = self.currency.value
 
         space_id = self.space_id

@@ -20,6 +20,7 @@ class ChangedPassword:
 
     def to_dict(self) -> Dict[str, Any]:
         current_password = self.current_password
+
         new_password = self.new_password
 
         field_dict: Dict[str, Any] = {}

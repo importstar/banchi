@@ -1,4 +1,5 @@
-""" A client library for accessing Banchi """
+"""A client library for accessing Banchi"""
+
 from .client import AuthenticatedClient, Client
 
 __all__ = (

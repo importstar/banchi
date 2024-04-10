@@ -19,6 +19,7 @@ def _get_kwargs(
     limit: Union[Unset, int] = 50,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
+
     params["first_name"] = first_name
 
     params["last_name"] = last_name
@@ -31,11 +32,13 @@ def _get_kwargs(
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    return {
+    _kwargs: Dict[str, Any] = {
         "method": "get",
         "url": "/v1/users",
         "params": params,
     }
+
+    return _kwargs
 
 
 def _parse_response(

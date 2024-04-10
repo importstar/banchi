@@ -16,17 +16,20 @@ def _get_kwargs(
     status: Union[Unset, str] = "active",
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
+
     params["status"] = status
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    return {
+    _kwargs: Dict[str, Any] = {
         "method": "put",
         "url": "/v1/users/{user_id}/set_status".format(
             user_id=user_id,
         ),
         "params": params,
     }
+
+    return _kwargs
 
 
 def _parse_response(

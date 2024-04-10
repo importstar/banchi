@@ -24,7 +24,6 @@ class AccountList:
         accounts = []
         for accounts_item_data in self.accounts:
             accounts_item = accounts_item_data.to_dict()
-
             accounts.append(accounts_item)
 
         field_dict: Dict[str, Any] = {}
