@@ -92,6 +92,50 @@ async def get_all(
     return dict(transactions=db_transactions)
 
 
+@router.get("/get_recursive")
+async def get_recursive(
+    from_account_book_id: PydanticObjectId | None,
+    to_account_book_id: PydanticObjectId | None,
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
+) -> schemas.transactions.TransactionList:
+    query_args = [
+        models.transactions.Transaction.status == "active",
+    ]
+
+    from_account_books = []
+    to_account_books = []
+    all_transactions = []
+    if from_account_book_id:
+        from_account_book = await deps.get_account_book(
+            from_account_book_id, current_user
+        )
+        if from_account_book:
+            from_account_books = await models.transactions.Transaction.find(
+                *query_args,
+                models.transactions.Transaction.from_account_book.id
+                == from_account_book_id,
+                fetch_links=True,
+            ).to_list()
+
+    if to_account_book_id:
+        to_account_book = await deps.get_account_book(to_account_book_id, current_user)
+        if to_account_book:
+            to_account_books = await models.transactions.Transaction.find(
+                *query_args,
+                models.transactions.Transaction.to_account_book.id
+                == to_account_book_id,
+                fetch_links=True,
+            ).to_list()
+
+    if not from_account_book_id and not to_account_book_id:
+        all_transactions = await query.to_list()
+
+    db_transactions = all_transactions + to_account_books + from_account_books
+    db_transactions.sort(key=lambda t: t.date, reverse=True)
+
+    return dict(transactions=db_transactions)
+
+
 @router.post("")
 async def create(
     transaction: schemas.transactions.CreatedTransaction,
