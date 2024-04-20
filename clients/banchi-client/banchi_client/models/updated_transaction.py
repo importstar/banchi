@@ -21,7 +21,7 @@ class UpdatedTransaction:
         tags (List[str]):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-04-10T15:57:13.524804').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-04-20T11:27:28.471451').
     """
 
     description: str
@@ -30,7 +30,7 @@ class UpdatedTransaction:
     tags: List[str]
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2024-04-10T15:57:13.524804")
+    date: Union[Unset, datetime.datetime] = isoparse("2024-04-20T11:27:28.471451")
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:

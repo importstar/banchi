@@ -29,7 +29,7 @@ class Transaction:
         to_account_book (ReferenceAccountBook):
         creator (ReferenceUser):
         updated_by (ReferenceUser):
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-04-10T15:57:13.524804').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-04-20T11:27:28.471451').
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
@@ -42,7 +42,7 @@ class Transaction:
     to_account_book: "ReferenceAccountBook"
     creator: "ReferenceUser"
     updated_by: "ReferenceUser"
-    date: Union[Unset, datetime.datetime] = isoparse("2024-04-10T15:57:13.524804")
+    date: Union[Unset, datetime.datetime] = isoparse("2024-04-20T11:27:28.471451")
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 

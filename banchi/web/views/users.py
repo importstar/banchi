@@ -82,7 +82,7 @@ def authorized_banchi():
     )
 
     client = banchi_api_clients.client.get_current_client(is_anonymous=True)
-    response = authentication_v1_auth_login_post.sync(client=client, form_data=model)
+    response = authentication_v1_auth_login_post.sync(client=client, body=model)
 
     if not response:
         return redirect(url_for("users.login"))
