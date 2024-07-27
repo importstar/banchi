@@ -10,21 +10,21 @@ flask-caching = "^2.0.2"
 authlib = "^1.2.0"
 flask-wtf = "^1.1.1"
 flask = "^3.0.0"
-flask-login = {git = "https://github.com/maxcountryman/flask-login.git"}
-fastapi = "^0.109.2"
 black = "^24.2.0"
 python-dotenv = "^1.0.1"
 uvicorn = "^0.27.1"
 loguru = "^0.7.2"
 pydantic-settings = "^2.2.1"
-redis = "^5.0.3"
-rq = "^1.16.1"
-beanie = "^1.25.0"
+redis = "^5.0.7"
+rq = "^1.16.2"
+beanie = "^1.26.0"
 pydantic = {extras = ["email"], version = "^2.6.4"}
 passlib = "^1.7.4"
 python-jose = "^3.3.0"
 python-multipart = "^0.0.9"
-openapi-python-client = "^0.19.1"
+flask-login = "^0.6.3"
+openapi-python-client = "^0.21.2"
+fastapi = "^0.111.1"
 
 
 [tool.poetry.dev-dependencies]

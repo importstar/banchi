@@ -20,9 +20,7 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "put",
-        "url": "/v1/account-books/{account_book_id}".format(
-            account_book_id=account_book_id,
-        ),
+        "url": f"/v1/account-books/{account_book_id}",
     }
 
     _body = body.to_dict()

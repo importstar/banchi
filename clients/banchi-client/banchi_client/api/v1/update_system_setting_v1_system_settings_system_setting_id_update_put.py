@@ -20,9 +20,7 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "put",
-        "url": "/v1/system_settings/{system_setting_id}/update".format(
-            system_setting_id=system_setting_id,
-        ),
+        "url": f"/v1/system_settings/{system_setting_id}/update",
     }
 
     _body = body.to_dict()

@@ -48,11 +48,11 @@ def create_or_edit(account_id):
 
     if not account:
         account = models.CreatedAccount.from_dict(data)
-        response = create_v1_accounts_post.sync(client=client, json_body=account)
+        response = create_v1_accounts_post.sync(client=client, body=account)
     else:
         account = models.UpdatedAccount.from_dict(data)
         response = update_v1_accounts_account_id_put.sync(
-            client=client, account_id=account_id, json_body=account
+            client=client, account_id=account_id, body=account
         )
 
     if not response:

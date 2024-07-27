@@ -16,10 +16,7 @@ def _get_kwargs(
 ) -> Dict[str, Any]:
     _kwargs: Dict[str, Any] = {
         "method": "delete",
-        "url": "/v1/spaces/{space_id}/roles/{space_role_id}".format(
-            space_id=space_id,
-            space_role_id=space_role_id,
-        ),
+        "url": f"/v1/spaces/{space_id}/roles/{space_role_id}",
     }
 
     return _kwargs

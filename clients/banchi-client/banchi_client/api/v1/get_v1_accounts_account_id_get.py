@@ -15,9 +15,7 @@ def _get_kwargs(
 ) -> Dict[str, Any]:
     _kwargs: Dict[str, Any] = {
         "method": "get",
-        "url": "/v1/accounts/{account_id}".format(
-            account_id=account_id,
-        ),
+        "url": f"/v1/accounts/{account_id}",
     }
 
     return _kwargs

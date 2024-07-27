@@ -51,10 +51,10 @@ def add_or_edit(user_id):
 
     if not user:
         user = models.RegisteredUser.from_dict(form.data)
-        response = create_v1_users_create_post.sync(client=client, json_body=user)
+        response = create_v1_users_create_post.sync(client=client, body=user)
     else:
         user = models.UpdatedUser.from_dict(form.data)
-        response = update_v1_users_update_post.sync(client=client, json_body=user)
+        response = update_v1_users_update_post.sync(client=client, body=user)
 
     if not response:
         print("error cannot save")

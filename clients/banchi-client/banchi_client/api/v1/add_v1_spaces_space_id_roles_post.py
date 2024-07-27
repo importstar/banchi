@@ -20,9 +20,7 @@ def _get_kwargs(
 
     _kwargs: Dict[str, Any] = {
         "method": "post",
-        "url": "/v1/spaces/{space_id}/roles".format(
-            space_id=space_id,
-        ),
+        "url": f"/v1/spaces/{space_id}/roles",
     }
 
     _body = body.to_dict()

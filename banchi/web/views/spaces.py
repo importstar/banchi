@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, request
+from flask_login import login_required
 import datetime
 
 
@@ -8,6 +9,8 @@ from banchi_client.api.v1 import (
     create_v1_spaces_post,
     get_all_v1_spaces_get,
     get_v1_spaces_space_id_get,
+    delete_v1_spaces_space_id_delete,
+    copy_v1_spaces_space_id_copy_post,
     get_all_v1_accounts_get,
     get_all_v1_spaces_space_id_roles_get,
     get_v1_spaces_space_id_roles_space_role_id_get,
@@ -20,10 +23,12 @@ from banchi_client.api.v1 import (
 from .. import banchi_api_clients
 from .. import forms
 
+
 module = Blueprint("spaces", __name__, url_prefix="/spaces")
 
 
 @module.route("")
+@login_required
 def index():
     client = banchi_api_clients.client.get_current_client()
     response = get_all_v1_spaces_get.sync(client=client)
@@ -33,6 +38,7 @@ def index():
 
 @module.route("/create", defaults=dict(space_id=None), methods=["GET", "POST"])
 @module.route("/<space_id>/edit", methods=["GET", "POST"])
+@login_required
 def create_or_edit(space_id):
     form = forms.spaces.SpaceForm()
     client = banchi_api_clients.client.get_current_client()
@@ -46,11 +52,11 @@ def create_or_edit(space_id):
 
     if not space:
         space = models.CreatedSpace.from_dict(form.data)
-        response = create_v1_spaces_post.sync(client=client, json_body=space)
+        response = create_v1_spaces_post.sync(client=client, body=space)
     else:
         space = models.UpdatedSpace.from_dict(form.data)
         response = update_v1_spaces_space_id_put.sync(
-            client=client, json_body=space, space_id=space_id
+            client=client, body=space, space_id=space_id
         )
 
     if not response:
@@ -60,6 +66,7 @@ def create_or_edit(space_id):
 
 
 @module.route("/<space_id>")
+@login_required
 def view(space_id):
     client = banchi_api_clients.client.get_current_client()
     space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
@@ -71,6 +78,7 @@ def view(space_id):
 
 
 @module.route("/<space_id>/copy", methods=["GET", "POST"])
+@login_required
 def copy(space_id):
     form = forms.spaces.SpaceForm()
     client = banchi_api_clients.client.get_current_client()
@@ -84,7 +92,9 @@ def copy(space_id):
         return render_template("/spaces/create-or-edit.html", form=form)
 
     space = models.CreatedSpace.from_dict(form.data)
-    response = copy_v1_spaces_post.sync(client=client, json_body=space)
+    response = copy_v1_spaces_space_id_copy_post.sync(
+        client=client, body=space, space_id=space_id
+    )
 
     if not response:
         print("error cannot save")
@@ -93,6 +103,7 @@ def copy(space_id):
 
 
 @module.route("/<space_id>/roles")
+@login_required
 def list_roles(space_id):
     client = banchi_api_clients.client.get_current_client()
     space_role_response = get_all_v1_spaces_space_id_roles_get.sync(
@@ -111,6 +122,7 @@ def list_roles(space_id):
     "/<space_id>/roles/add", methods=["GET", "POST"], defaults=dict(space_role_id=None)
 )
 @module.route("/<space_id>/roles/<space_role_id>/edit", methods=["GET", "POST"])
+@login_required
 def add_or_edit_role(space_id, space_role_id):
     client = banchi_api_clients.client.get_current_client()
 
@@ -140,13 +152,13 @@ def add_or_edit_role(space_id, space_role_id):
     if not space_role:
         space_role = models.CreatedSpaceRole.from_dict(form.data)
         response = add_v1_spaces_space_id_roles_post.sync(
-            client=client, json_body=space_role, space_id=space_id
+            client=client, body=space_role, space_id=space_id
         )
     else:
         space_role = models.UpdatedSpaceRole.from_dict(form.data)
         response = update_v1_spaces_space_id_roles_space_role_id_put.sync(
             client=client,
-            json_body=space_role,
+            body=space_role,
             space_id=space_id,
             space_role_id=space_role_id,
         )
@@ -155,3 +167,12 @@ def add_or_edit_role(space_id, space_role_id):
         print("error cannot save")
 
     return redirect(url_for("spaces.list_roles", space_id=space_id))
+
+
+@module.route("/<space_id>/delete")
+@login_required
+def delete(space_id):
+    client = banchi_api_clients.client.get_current_client()
+    delete_v1_spaces_space_id_delete.sync(client=client, space_id=space_id)
+
+    return redirect(url_for("spaces.index"))

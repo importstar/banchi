@@ -124,12 +124,12 @@ def create_or_edit(account_book_id):
     if not account_book:
         account_book = models.CreatedAccountBook.from_dict(data)
         response = create_v1_account_books_post.sync(
-            client=client, json_body=account_book
+            client=client, body=account_book
         )
     else:
         account_book = models.UpdatedAccountBook.from_dict(data)
         response = update_v1_account_books_account_book_id_put.sync(
-            client=client, account_book_id=account_book_id, json_body=account_book
+            client=client, account_book_id=account_book_id, body=account_book
         )
 
     if not response:
@@ -340,12 +340,12 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     if not transaction:
         transaction = models.CreatedTransaction.from_dict(data)
         response = create_v1_transactions_post.sync(
-            client=client, json_body=transaction
+            client=client, body=transaction
         )
     else:
         transaction = models.UpdatedTransaction.from_dict(data)
         response = update_v1_transactions_transaction_id_put.sync(
-            client=client, json_body=transaction, transaction_id=transaction_id
+            client=client, body=transaction, transaction_id=transaction_id
         )
     if not account_book:
         account_book = response.from_account_book

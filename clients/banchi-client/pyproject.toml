@@ -2,18 +2,17 @@
 name = "banchi-client"
 version = "0.0.2"
 description = "A client library for accessing Banchi"
-
 authors = []
-
 readme = "README.md"
 packages = [
     {include = "banchi_client"},
 ]
 include = ["CHANGELOG.md", "banchi_client/py.typed"]
 
+
 [tool.poetry.dependencies]
 python = "^3.8"
-httpx = ">=0.20.0,<0.26.0"
+httpx = ">=0.20.0,<0.28.0"
 attrs = ">=21.3.0"
 python-dateutil = "^2.8.0"
 
@@ -21,19 +20,8 @@ python-dateutil = "^2.8.0"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.black]
-line-length = 120
-target_version = ['py38', 'py39', 'py310', 'py311']
-exclude = '''
-(
-  /(
-    | \.git
-    | \.venv
-    | \.mypy_cache
-  )/
-)
-'''
-
 [tool.ruff]
-select = ["F", "I"]
 line-length = 120
+
+[tool.ruff.lint]
+select = ["F", "I", "UP"]

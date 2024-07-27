@@ -12,38 +12,7 @@ def generate(
 ):
     print("Banchi Client Generator")
 
-    # remove when openapi-python-client support
-    # openapi_json = f"{name}-api.json"
-    # res = httpx.get(url)
-    # data = res.json()
-    # print(data)
-    # # data['components']['securitySchemes']['OAuth2PasswordBearer']['flows']['password'].pop('tokenUrl')
-
-    # with open(openapi_json, "w") as f:
-    #     json.dump(data, f)
-
-    #
-
-    path = pathlib.Path(f"{name}-client")
-    print('check', path, path.exists())
-    if not path.exists():
-        print("Generate Clinet")
-        # os.system(
-        #     f"openapi-python-client generate --path {openapi_json} --config {config}"
-        # )
-        os.system(f'openapi-python-client generate --url {url} --config {config}')
-    else:
-        print("Update Clinet")
-        os.system(
-            f"openapi-python-client update --url {url} --config {config}"
-        )
-        # os.system(f'openapi-python-client update --url {url} --config {config}')
-
-    # remove when openapi-python-client support
-    # openapi_json_path = pathlib.Path(openapi_json)
-    # openapi_json_path.unlink(missing_ok=False)
-    #
-
+    os.system(f'openapi-python-client generate --url {url} --overwrite --config {config}')
 
 if __name__ == "__main__":
     generate(

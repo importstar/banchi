@@ -131,10 +131,10 @@ async def copy(
     data = space.dict()
     data["owner"] = current_user
     data["updated_by"] = current_user
-    data["code"] = f"{db_space.code}-copy"
-    data["name"] = f"{db_space.name}-copy"
+    # data["code"] = f"{db_space.code}-copy"
+    # data["name"] = f"{db_space.name}-copy"
 
-    new_db_space = models.spaces.Space.parse_obj(data)
+    new_db_space = models.Space.parse_obj(data)
     await new_db_space.save()
 
     db_space_role = models.spaces.SpaceRole(
@@ -146,46 +146,70 @@ async def copy(
     )
     await db_space_role.save()
 
-    db_account = await models.accounts.Account.find_one(space == db_space)
+    db_account = await models.Account.find_one(
+        models.Account.space.id == db_space.id, fetch_links=True
+    )
 
     if not db_account:
         return new_db_space
 
-    new_db_account = models.accounts.Account(db_account.dict())
-    new_db_account.created_date = datetime.datetime.now()
-    new_db_account.updated_date = datetime.datetime.now()
-    new_db_account.owner = current_user
-    await new_db_account.save()
+    data = db_account.dict()
+    data.pop("id")
 
-    db_account_books = await models.account_books.AccountBook.find(
-        account == db_account, parrent=None
-    )
+    db_new_account = models.Account.parse_obj(data)
+    db_new_account.created_date = datetime.datetime.now()
+    db_new_account.updated_date = datetime.datetime.now()
+    db_new_account.creator = current_user
+    db_new_account.space = new_db_space
+    await db_new_account.save()
 
-    async def copy_account_books(db_account, db_account_book, db_new_account_book):
+    db_account_books = await models.AccountBook.find(
+        models.AccountBook.account.id == db_account.id,
+        models.AccountBook.parent == None,
+        fetch_links=True,
+    ).to_list()
 
-        db_children_account_books = await models.account_books.AccountBook.find(
-            account == db_account, parrent == db_account_book
-        )
+    async def copy_account_books(
+        db_account, db_new_account, db_account_book, db_new_account_book
+    ):
+
+        db_children_account_books = await models.AccountBook.find(
+            models.AccountBook.account.id == db_account.id,
+            models.AccountBook.parent.id == db_account_book.id,
+            fetch_links=True,
+        ).to_list()
         for db_children_account_book in db_children_account_books:
-            new_children_account_book = models.account_books.AccountBook(
-                db_account_book.dict()
-            )
-            new_children_account_book.created_date = datetime.datetime.now()
-            new_children_account_book.updated_date = datetime.datetime.now()
-            new_children_account_book.owner = current_user
-            await new_children_account_book.save()
+
+            data = db_account_book.dict()
+            data.pop("id")
+            db_new_children_account_book = models.AccountBook.parse_obj(data)
+            db_new_children_account_book.created_date = datetime.datetime.now()
+            db_new_children_account_book.updated_date = datetime.datetime.now()
+            db_new_children_account_book.creator = current_user
+            db_new_children_account_book.parent = db_new_account_book
+            db_new_children_account_book.account = db_new_account
+
+            await db_new_children_account_book.save()
             await copy_account_books(
-                db_account, db_children_account_book, new_children_account_book
+                db_account,
+                db_new_account,
+                db_children_account_book,
+                db_new_children_account_book,
             )
 
     for db_account_book in db_account_books:
-        new_account_book = models.account_books.AccountBook(db_account_book.dict())
-        new_account_book.created_date = datetime.datetime.now()
-        new_account_book.updated_date = datetime.datetime.now()
-        new_account_book.owner = current_user
-        await new_account_book.save()
+        data = db_account_book.dict()
+        data.pop("id")
+        db_new_account_book = models.AccountBook.parse_obj(data)
+        db_new_account_book.created_date = datetime.datetime.now()
+        db_new_account_book.updated_date = datetime.datetime.now()
+        db_new_account_book.creator = current_user
+        db_new_account_book.account = db_new_account
+        await db_new_account_book.save()
 
-        await copy_account_books(db_account, db_account_book, db_new_account_book)
+        await copy_account_books(
+            db_account, db_new_account, db_account_book, db_new_account_book
+        )
 
     return new_db_space
 

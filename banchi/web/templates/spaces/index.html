@@ -42,10 +42,11 @@ Space
         </div>
       </div>
       <div class="extra content">
-        <div class="ui three buttons">
-          <a class="ui icon button primary" href="{{ url_for('spaces.view', space_id=space.id) }}"><i class="eye icon"></i>View</a>
-          <a class="ui icon button yellow" href="{{ url_for('spaces.create_or_edit', space_id=space.id) }}"><i class="edit icon"></i>Edit</a>
-          <a class="ui icon button gray" href="{{ url_for('spaces.copy', space_id=space.id) }}"><i class="copy icon"></i>Copy</a>
+        <div class="ui four buttons">
+          <a class="ui icon button primary" href="{{ url_for('spaces.view', space_id=space.id) }}"><i class="eye icon"></i></a>
+          <a class="ui icon button yellow" href="{{ url_for('spaces.create_or_edit', space_id=space.id) }}"><i class="edit icon"></i></a>
+          <a class="ui icon button gray" href="{{ url_for('spaces.copy', space_id=space.id) }}"><i class="copy icon"></i></a>
+          <a class="ui icon button red" href="{{ url_for('spaces.delete', space_id=space.id) }}"><i class="trash icon"></i></a>
         </div>
       </div>
     </div>
