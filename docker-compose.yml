@@ -28,8 +28,8 @@ services:
     #             max-file: "3"
 
     api:
-        build: ./banchiapi
-        image: banchi-api-image
+        build: ./
+        image: banchi-image
         container_name: banchi-api
         volumes:
             # - ../deployment:/deployment
@@ -73,10 +73,8 @@ services:
     #             max-file: "3"
 
     web:
-        build: 
-            context: ./
-            dockerfile: ./frontend/Dockerfile
-        image: banchi-web-image
+        build: .
+        image: banchi-image
         container_name: banchi-web
         volumes:
             - ../../deployment:/deployment
