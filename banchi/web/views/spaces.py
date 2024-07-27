@@ -74,8 +74,8 @@ def view(space_id):
 def copy(space_id):
     form = forms.spaces.SpaceForm()
     client = banchi_api_clients.client.get_current_client()
-    space = None
-    if space_id:
+
+    if request.method == "GET":
         space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
         form = forms.spaces.SpaceForm(obj=space)
         form.name.data = f"{form.name.data} - copy"
@@ -83,14 +83,8 @@ def copy(space_id):
     if not form.validate_on_submit():
         return render_template("/spaces/create-or-edit.html", form=form)
 
-    if not space:
-        space = models.CreatedSpace.from_dict(form.data)
-        response = create_v1_spaces_post.sync(client=client, json_body=space)
-    else:
-        space = models.UpdatedSpace.from_dict(form.data)
-        response = update_v1_spaces_space_id_put.sync(
-            client=client, json_body=space, space_id=space_id
-        )
+    space = models.CreatedSpace.from_dict(form.data)
+    response = copy_v1_spaces_post.sync(client=client, json_body=space)
 
     if not response:
         print("error cannot save")
