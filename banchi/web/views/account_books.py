@@ -192,6 +192,56 @@ def view(account_book_id):
     )
 
 
+@module.route("/<account_book_id>/all-transactions")
+def view_recursive_transactions(account_book_id):
+    client = banchi_api_clients.client.get_current_client()
+    account_book = get_v1_account_books_account_book_id_get.sync(
+        client=client, account_book_id=account_book_id
+    )
+
+    response = get_all_v1_transactions_get.sync(
+        client=client,
+        from_account_book_id=account_book.id,
+        to_account_book_id=account_book.id,
+    )
+    transactions = response.transactions
+
+    label = get_label_v1_account_books_account_book_id_label_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+    balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+
+    response = get_all_v1_account_books_get.sync(
+        client=client, account_id=account_book.account.id
+    )
+    account_books = response.account_books
+
+    display_names = utils.account_books.get_display_names(account_books)
+
+    account_book_children = [
+        ab for ab in account_books if ab.parent and ab.parent.id == account_book.id
+    ]
+
+    def get_balance_sub_balance(account_book, balance):
+        for b in balance:
+            if b.id == account_book.id:
+                return b
+        return None
+
+    return render_template(
+        "/account_books/view.html",
+        account_book=account_book,
+        account_book_display_names=display_names,
+        transactions=transactions,
+        label=label,
+        balance=balance,
+        account_book_children=account_book_children,
+        get_balance_sub_balance=get_balance_sub_balance,
+    )
+
+
 @module.route(
     "/transactions/add",
     methods=["GET", "POST"],

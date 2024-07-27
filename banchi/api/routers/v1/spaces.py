@@ -112,6 +112,83 @@ async def update(
     return db_space
 
 
+@router.get("/{space_id}/copy")
+async def copy(
+    space_id: PydanticObjectId,
+    db_space: typing.Annotated[
+        models.spaces.Space, Depends(deps.get_current_user_space)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> schemas.spaces.Space:
+    # data = space.dict()
+    # await db_space.update(Set(data))
+
+    # db_space.updated_date = datetime.datetime.now()
+    # db_space.updated_by = current_user
+    # await db_space.save()
+
+    data = db_space.dict()
+    data["owner"] = current_user
+    data["updated_by"] = current_user
+    data["code"] = f"{db_space.code}-copy"
+    data["name"] = f"{db_space.name}-copy"
+
+    new_db_space = models.spaces.Space.parse_obj(data)
+    await new_db_space.save()
+
+    db_space_role = models.spaces.SpaceRole(
+        added_by=current_user,
+        updated_by=current_user,
+        member=current_user,
+        role="owner",
+        space=new_db_space,
+    )
+    await db_space_role.save()
+
+    db_account = await models.accounts.Account.find_one(space == db_space)
+
+    if not db_account:
+        return new_db_space
+
+    new_db_account = models.accounts.Account(db_account.dict())
+    new_db_account.created_date = datetime.datetime.now()
+    new_db_account.updated_date = datetime.datetime.now()
+    new_db_account.owner = current_user
+    await new_db_account.save()
+
+    db_account_books = await models.account_books.AccountBook.find(
+        account == db_account, parrent=None
+    )
+
+    async def copy_account_books(db_account, db_account_book, db_new_account_book):
+
+        db_children_account_books = await models.account_books.AccountBook.find(
+            account == db_account, parrent == db_account_book
+        )
+        for db_children_account_book in db_children_account_books:
+            new_children_account_book = models.account_books.AccountBook(
+                db_account_book.dict()
+            )
+            new_children_account_book.created_date = datetime.datetime.now()
+            new_children_account_book.updated_date = datetime.datetime.now()
+            new_children_account_book.owner = current_user
+            await new_children_account_book.save()
+            await copy_account_books(
+                db_account, db_children_account_book, new_children_account_book
+            )
+
+    for db_account_book in db_account_books:
+        new_account_book = models.account_books.AccountBook(db_account_book.dict())
+        new_account_book.created_date = datetime.datetime.now()
+        new_account_book.updated_date = datetime.datetime.now()
+        new_account_book.owner = current_user
+        await new_account_book.save()
+
+        await copy_account_books(db_account, db_account_book, db_new_account_book)
+
+    return new_db_space
+
+
 @router.delete("/{space_id}")
 async def delete(
     space_id: PydanticObjectId,

@@ -18,19 +18,19 @@ class CreatedTransaction:
         description (str):  Example: Desctription.
         value (Union[float, str]):
         currency (CurrencyEnum):
-        tags (List[str]):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-04-20T11:27:28.471451').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-07-27T16:36:19.830912').
+        tags (Union[Unset, List[str]]):
     """
 
     description: str
     value: Union[float, str]
     currency: CurrencyEnum
-    tags: List[str]
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2024-04-20T11:27:28.471451")
+    date: Union[Unset, datetime.datetime] = isoparse("2024-07-27T16:36:19.830912")
+    tags: Union[Unset, List[str]] = UNSET
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -41,8 +41,6 @@ class CreatedTransaction:
 
         currency = self.currency.value
 
-        tags = self.tags
-
         from_account_book_id = self.from_account_book_id
 
         to_account_book_id = self.to_account_book_id
@@ -51,6 +49,10 @@ class CreatedTransaction:
         if not isinstance(self.date, Unset):
             date = self.date.isoformat()
 
+        tags: Union[Unset, List[str]] = UNSET
+        if not isinstance(self.tags, Unset):
+            tags = self.tags
+
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -58,13 +60,14 @@ class CreatedTransaction:
                 "description": description,
                 "value": value,
                 "currency": currency,
-                "tags": tags,
                 "from_account_book_id": from_account_book_id,
                 "to_account_book_id": to_account_book_id,
             }
         )
         if date is not UNSET:
             field_dict["date"] = date
+        if tags is not UNSET:
+            field_dict["tags"] = tags
 
         return field_dict
 
@@ -80,8 +83,6 @@ class CreatedTransaction:
 
         currency = CurrencyEnum(d.pop("currency"))
 
-        tags = cast(List[str], d.pop("tags"))
-
         from_account_book_id = d.pop("from_account_book_id")
 
         to_account_book_id = d.pop("to_account_book_id")
@@ -93,14 +94,16 @@ class CreatedTransaction:
         else:
             date = isoparse(_date)
 
+        tags = cast(List[str], d.pop("tags", UNSET))
+
         created_transaction = cls(
             description=description,
             value=value,
             currency=currency,
-            tags=tags,
             from_account_book_id=from_account_book_id,
             to_account_book_id=to_account_book_id,
             date=date,
+            tags=tags,
         )
 
         created_transaction.additional_properties = d
