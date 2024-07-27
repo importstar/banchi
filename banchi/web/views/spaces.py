@@ -70,6 +70,34 @@ def view(space_id):
     return render_template("/spaces/view.html", space=space, account=account)
 
 
+@module.route("/<space_id>/copy", methods=["GET", "POST"])
+def copy(space_id):
+    form = forms.spaces.SpaceForm()
+    client = banchi_api_clients.client.get_current_client()
+    space = None
+    if space_id:
+        space = get_v1_spaces_space_id_get.sync(client=client, space_id=space_id)
+        form = forms.spaces.SpaceForm(obj=space)
+        form.name.data = f"{form.name.data} - copy"
+
+    if not form.validate_on_submit():
+        return render_template("/spaces/create-or-edit.html", form=form)
+
+    if not space:
+        space = models.CreatedSpace.from_dict(form.data)
+        response = create_v1_spaces_post.sync(client=client, json_body=space)
+    else:
+        space = models.UpdatedSpace.from_dict(form.data)
+        response = update_v1_spaces_space_id_put.sync(
+            client=client, json_body=space, space_id=space_id
+        )
+
+    if not response:
+        print("error cannot save")
+
+    return redirect(url_for("spaces.index"))
+
+
 @module.route("/<space_id>/roles")
 def list_roles(space_id):
     client = banchi_api_clients.client.get_current_client()

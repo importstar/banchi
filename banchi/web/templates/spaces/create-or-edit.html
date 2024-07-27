@@ -5,10 +5,13 @@
 {% block breadcrumbs %}
 {{ super() }}
 <i class="right angle icon divider"></i>
-{% if 'edit' not in request.path %}
-  <div class="active section">Create Space</div>
-{% else %}
+{% if 'edit' in request.path %}
   <div class="active section">Edit Space</div>
+{% elif 'copy' in request.path %}
+  <div class="active section">Copy Space</div>
+
+{% else %}
+  <div class="active section">Create Space</div>
 {% endif %}
 {% endblock %}
 
@@ -22,11 +25,13 @@
       {{ renderer.render_field(form.code) }}
       {{ renderer.render_field(form.tax_id) }}
       </div>
-      <button name="subnit" type="submit" class="ui primary button">
-        {% if 'edit' not in request.path %}
-          Create
-        {% else %}
+      <button name="submit" type="submit" class="ui primary button">
+        {% if 'edit' in request.path %}
           Edit
+        {% elif 'copy' in request.path %}
+          Copy
+        {% else %}
+          Create
         {% endif %}
       </button>
     </form>

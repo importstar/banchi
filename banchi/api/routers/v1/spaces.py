@@ -112,9 +112,10 @@ async def update(
     return db_space
 
 
-@router.get("/{space_id}/copy")
+@router.post("/{space_id}/copy")
 async def copy(
     space_id: PydanticObjectId,
+    space: schemas.spaces.CreatedSpace,
     db_space: typing.Annotated[
         models.spaces.Space, Depends(deps.get_current_user_space)
     ],
@@ -127,7 +128,7 @@ async def copy(
     # db_space.updated_by = current_user
     # await db_space.save()
 
-    data = db_space.dict()
+    data = space.dict()
     data["owner"] = current_user
     data["updated_by"] = current_user
     data["code"] = f"{db_space.code}-copy"
