@@ -121,18 +121,10 @@ async def copy(
     ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
-    # data = space.dict()
-    # await db_space.update(Set(data))
-
-    # db_space.updated_date = datetime.datetime.now()
-    # db_space.updated_by = current_user
-    # await db_space.save()
 
     data = space.dict()
     data["owner"] = current_user
     data["updated_by"] = current_user
-    # data["code"] = f"{db_space.code}-copy"
-    # data["name"] = f"{db_space.name}-copy"
 
     new_db_space = models.Space.parse_obj(data)
     await new_db_space.save()
@@ -157,6 +149,7 @@ async def copy(
     data.pop("id")
 
     db_new_account = models.Account.parse_obj(data)
+    db_new_account.name = f"{space.name} Account"
     db_new_account.created_date = datetime.datetime.now()
     db_new_account.updated_date = datetime.datetime.now()
     db_new_account.creator = current_user
@@ -180,7 +173,7 @@ async def copy(
         ).to_list()
         for db_children_account_book in db_children_account_books:
 
-            data = db_account_book.dict()
+            data = db_children_account_book.dict()
             data.pop("id")
             db_new_children_account_book = models.AccountBook.parse_obj(data)
             db_new_children_account_book.created_date = datetime.datetime.now()
