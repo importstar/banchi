@@ -169,39 +169,31 @@ Account Book {{ account_book.name }}
   </div>
 
 
-<div class="ui modal">
-  <i class="trash icon"></i>
+<div class="ui modal" id="delete-modal">
+  <i class="close icon"></i>
   <div class="header">
-    Profile Picture
+    Delete {{ account_book.name }} Account Book
   </div>
-  <div class="image content">
-    <div class="ui medium image">
-      <img src="/images/avatar/large/chris.jpg">
-    </div>
+  <div class="content">
     <div class="description">
-      <div class="ui header">We've auto-chosen a profile image for you.</div>
-      <p>We've grabbed the following image from the <a href="https://www.gravatar.com" target="_blank">gravatar</a> image associated with your registered e-mail address.</p>
-      <p>Is it okay to use this photo?</p>
+      <div class="ui header">Are you sure you want to delete the {{ account_book.name }} account book ?</div>
     </div>
   </div>
   <div class="actions">
     <button class="ui black deny button">
-      Nope
+      Cancel
     </button>
 
-      {# href="{{ url_for('account_books.delete', account_book_id=account_book.id) }}" #}
-    <button class="ui positive right labeled icon button">
-      Yep, that's me
-      <i class="checkmark icon"></i>
-    </button>
+    <a class="ui red right labeled icon button" href="{{ url_for('account_books.delete', account_book_id=account_book.id) }}">
+      Delete
+      <i class="trash icon"></i>
+    </a>
   </div>
 </div> 
 {% endblock %}
 
 {% block additional_js %}
   <script type="text/javascript">
-    console.log('hello');
-    document.getElementById(".ui.modal").modal('attach events', '#delete-account-book-{{ account_book.id }}', 'show');
-    console.log('world');
+  $('#delete-modal').modal('attach events', '#delete-account-book-{{ account_book.id }}', 'show');
  </script>
 {% endblock %}
