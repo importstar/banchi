@@ -14,7 +14,7 @@ class BanchiClient:
         self.base_url = app.config.get("BANCHI_API_BASE_URL")
         self.verify_ssl = app.config.get("BANCHI_API_VERIFY_SSL", False)
 
-    def get_current_client(self, timeout=30, is_anonymous=False):
+    def get_current_client(self, timeout=300, is_anonymous=False):
         tokens = session.get("tokens")
         expires_at = None
         if not tokens:
