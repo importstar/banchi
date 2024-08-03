@@ -52,7 +52,7 @@ Account {{ account.name }}
                 <i class="edit icon"></i>
               </a>
 
-              <a class="ui red circular icon button" href="{{ url_for('account_books.delete', account_book_id=account_book_id) }}">
+              <a class="ui red circular icon button" id="delete-account-book-{{ account_book_id }}">
                 <i class="trash icon"></i>
               </a>
             </td>
@@ -61,4 +61,36 @@ Account {{ account.name }}
       </tbody>
     </table>
   </div>
+
+{% for account_book in account_books %}
+  <div class="ui modal" id="delete-modal-{{ account_book.id }}">
+  <i class="close icon"></i>
+  <div class="header">
+    Delete {{ account_book.name }} Account Book
+  </div>
+  <div class="content">
+    <div class="description">
+      <div class="ui header">Are you sure you want to delete the {{ account_book.name }} account book ?</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="ui black deny button">
+      Cancel
+    </button>
+
+    <a class="ui red right labeled icon button" href="{{ url_for('account_books.delete', account_book_id=account_book.id) }}">
+      Delete
+      <i class="trash icon"></i>
+    </a>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $('#delete-modal-{{ account_book.id }}').modal('attach events', '#delete-account-book-{{ account_book.id }}', 'show');
+</script>
+
+
+{% endfor %}
+
 {% endblock %}
+

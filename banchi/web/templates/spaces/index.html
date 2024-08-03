@@ -46,11 +46,41 @@ Space
           <a class="ui icon button primary" href="{{ url_for('spaces.view', space_id=space.id) }}"><i class="eye icon"></i></a>
           <a class="ui icon button yellow" href="{{ url_for('spaces.create_or_edit', space_id=space.id) }}"><i class="edit icon"></i></a>
           <a class="ui icon button gray" href="{{ url_for('spaces.copy', space_id=space.id) }}"><i class="copy icon"></i></a>
-          <a class="ui icon button red" href="{{ url_for('spaces.delete', space_id=space.id) }}"><i class="trash icon"></i></a>
+          <a class="ui icon button red" id="delete-space-{{ space.id }}"><i class="trash icon"></i></a>
         </div>
       </div>
     </div>
     {% endfor %}
 
   </div>
+
+{% for space in spaces %}
+  <div class="ui modal" id="delete-modal-{{ space.id }}">
+  <i class="close icon"></i>
+  <div class="header">
+    Delete {{ space.name }} Account Book
+  </div>
+  <div class="content">
+    <div class="description">
+      <div class="ui header">Are you sure you want to delete the {{ space.name }} account book ?</div>
+    </div>
+  </div>
+  <div class="actions">
+    <button class="ui black deny button">
+      Cancel
+    </button>
+
+    <a class="ui red right labeled icon button" href="{{ url_for('spaces.delete', space_id=space.id) }}">
+      Delete
+      <i class="trash icon"></i>
+    </a>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $('#delete-modal-{{ space.id }}').modal('attach events', '#delete-space-{{ space.id }}', 'show');
+</script>
+
+{% endfor %}
+
 {% endblock %}
