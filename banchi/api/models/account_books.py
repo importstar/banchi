@@ -35,6 +35,10 @@ class AccountBook(schemas.account_books.AccountBook, Document):
     creator: Link[users.User]
     updated_by: Link[users.User]
 
+    balance: DecimalAnnotation = 0
+    increase: DecimalAnnotation = 0
+    decrease: DecimalAnnotation = 0
+
     children: list[BackLink["AccountBook"]] = Field(original_field="parent")
 
 

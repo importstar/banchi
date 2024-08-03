@@ -51,7 +51,7 @@ Account Book {{ account_book.name }}
           <div class="description">
             {% set sub_balance = get_balance_sub_balance(c_account_book, balance.children) %}
             <div>
-              <span>net balance:</span> <span class="right floated bold" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_balance|float) }}</span>
+              <span>net balance:</span> <span class="right floated bold" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_balance|float) }} - {{ c_account_book.balance }} </span>
             </div>
             <div>
               <span>net increase:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_increase|float) }}</span>
@@ -155,9 +155,9 @@ Account Book {{ account_book.name }}
     <div class="ui aligned grid">
       <div class="two column row">
         <div class="column">
-          Balance: {{ "{:,.2f}".format(balance['balance']|float) }} <br/>
-          Increase: {{ "{:,.2f}".format(balance['increase']|float) }} <br/>
-          Decrease: {{ "{:,.2f}".format(balance['decrease']|float) }} <br/>
+          Balance: {{ "{:,.2f}".format(account_book.balance|float) }}<br/>
+          Increase: {{ "{:,.2f}".format(account_book.increase|float) }} <br/>
+          Decrease: {{ "{:,.2f}".format(account_book.decrease|float) }} <br/>
         </div>
         <div class="column">
           Net balance: {{ "{:,.2f}".format(balance['net_balance']|float) }} <br/>

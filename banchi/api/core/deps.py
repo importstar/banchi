@@ -186,7 +186,6 @@ async def get_account_book(
         models.account_books.AccountBook.status == "active",
         fetch_links=True,
     )
-
     db_account = await get_account(db_account_book.account.id, user)
 
     if not db_account:

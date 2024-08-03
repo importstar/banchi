@@ -144,6 +144,17 @@ async def create(
     data = await transform_transaction(transaction, current_user)
     data["creator"] = current_user
 
+    db_from_account_book = data["from_account_book"]
+    db_to_account_book = data["to_account_book"]
+
+    db_from_account_book.balance -= data["value"]
+    db_from_account_book.decrease += data["value"]
+    db_to_account_book.balance += data["value"]
+    db_to_account_book.increase += data["value"]
+
+    await db_to_account_book.save()
+    await db_from_account_book.save()
+
     db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
 
