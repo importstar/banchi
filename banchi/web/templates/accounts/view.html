@@ -41,7 +41,7 @@ Account {{ account.name }}
               </a>
             </td>
             <td> {{ account_book['obj'].type.title() }} </td>
-            <td class="right aligned"> {{ account_book['account_balance'].children | length }} </td>
+            <td class="right aligned"> {{ account_book['account_balance'].children  }} </td>
             <td class="right aligned" style="font-weight: bold;"> {{ "{:,.2f}".format(account_book['account_balance'].net_balance|float) }} </td>
             <td>
               <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">

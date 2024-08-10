@@ -51,7 +51,9 @@ class AccountBookBalance(BaseModel):
     net_increase: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
     net_decrease: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
 
-    children: list[AccountBookBalance] = []
+    children: int = 0
+
+    # children: list[AccountBookBalance] = []
 
 
 class BaseAccountBook(BaseModel):

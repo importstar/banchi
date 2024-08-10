@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Response, status
 from loguru import logger
 
 from beanie import PydanticObjectId
-from beanie.operators import Inc, Set
+from beanie.operators import Inc, Set, In
 
 from banchi.api import models
 from banchi.api.core import deps
@@ -68,6 +68,45 @@ async def get(
     return db_account_book
 
 
+@router.get("/{account_book_id}/children")
+async def get_children(
+    account_book_id: PydanticObjectId,
+    db_account_book: typing.Annotated[
+        models.account_books.AccountBook, Depends(deps.get_account_book)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> schemas.account_books.AccountBookList:
+
+    pipline = [
+        {"$match": {"_id": db_account_book.id}},
+        {
+            "$graphLookup": {
+                "from": "account_books",
+                "startWith": "$_id",
+                "connectFromField": "_id",
+                "connectToField": "parent.$id",
+                "as": "children",
+                "maxDepth": 0,
+            }
+        },
+    ]
+
+    account_book_agg = (
+        await models.account_books.AccountBook.find().aggregate(pipline).to_list()
+    )
+
+    children_ids = []
+    if len(account_book_agg) > 0:
+        children_ids = [c["_id"] for c in account_book_agg[0]["children"]]
+
+    db_account_books = await models.account_books.AccountBook.find(
+        In(models.account_books.AccountBook.id, children_ids), fetch_links=True
+    ).to_list()
+
+    print(">>>", len(db_account_books), db_account_books)
+    return dict(account_books=db_account_books)
+
+
 async def get_account_book_balance_by_trasaction(
     db_account_book, attribute="from_account_book"
 ):
@@ -117,7 +156,7 @@ async def get_account_book_balance_by_account_book_summary(db_account_book):
                 "quantity": {"$sum": 1},
                 "balance": {"$sum": "$children.balance"},
                 "increase": {"$sum": "$children.increase"},
-                "decrease": {"$sum": "children.decrease"},
+                "decrease": {"$sum": "$children.decrease"},
             }
         },
     ]
@@ -131,32 +170,31 @@ async def get_account_book_balance_by_account_book_summary(db_account_book):
         data = account_book_agg[0]
 
     results = dict(
-        balance=bson.Decimal128(0.0),
-        increase=bson.Decimal128(0.0),
-        decrease=bson.Decimal128(0.0),
+        balance=decimal.Decimal(0),
+        increase=decimal.Decimal(0),
+        decrease=decimal.Decimal(0),
         quantity=0,
     )
-    results.update(data)
-    print("xxx", results)
+    if "_id" in data:
+        data.pop("_id")
 
     for key in results.keys():
-        if key != "quantity":
-            results[key] += getattr(db_account_book, key, bson.Decimal128(0))
+        if key == "quantity":
+            results[key] = data.get(key, 0) + getattr(db_account_book, key, 0)
         else:
-            results[key] += getattr(db_account_book, key, 0)
+            results[key] = decimal.Decimal(str(data.get(key, 0))) + decimal.Decimal(
+                str(getattr(db_account_book, key, 0))
+            )
 
     results["quantity"] += 1
 
-    print(">>>", results)
     return results
 
 
-async def get_account_book_balance(
+async def get_account_book_balance_by_trasaction(
     db_account_book, receive=False
 ) -> schemas.account_books.AccountBookBalance:
     balance = increase = decrease = 0
-
-    await get_account_book_balance_by_account_book_summary(db_account_book)
 
     decrease = await get_account_book_balance_by_trasaction(
         db_account_book, "from_account_book"
@@ -201,6 +239,30 @@ async def get_account_book_balance(
     return account_book_balance
 
 
+async def get_account_book_balance_by_summary(
+    db_account_book, receive=False
+) -> schemas.account_books.AccountBookBalance:
+    balance = increase = decrease = 0
+
+    results = await get_account_book_balance_by_account_book_summary(db_account_book)
+
+    net_balance = results.get("balance", 0)
+    net_increase = results.get("increase", 0)
+    net_decrease = results.get("decrease", 0)
+
+    account_book_balance = schemas.account_books.AccountBookBalance(
+        id=db_account_book.id,
+        balance=db_account_book.balance,
+        decrease=db_account_book.decrease,
+        increase=db_account_book.increase,
+        net_balance=net_balance,
+        net_decrease=net_decrease,
+        net_increase=net_increase,
+        children=results.get("quantity", 0),
+    )
+    return account_book_balance
+
+
 @router.get(
     "/{account_book_id}/balance",
     response_model_by_alias=False,
@@ -212,7 +274,7 @@ async def get_balance(
     ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBookBalance:
-    return await get_account_book_balance(db_account_book, True)
+    return await get_account_book_balance_by_summary(db_account_book)
 
 
 @router.put("/{account_book_id}")

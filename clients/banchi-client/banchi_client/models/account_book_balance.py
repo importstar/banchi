@@ -13,23 +13,23 @@ class AccountBookBalance:
     """
     Attributes:
         id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        balance (Union[Unset, str]):  Default: '0'.
-        increase (Union[Unset, str]):  Default: '0'.
-        decrease (Union[Unset, str]):  Default: '0'.
-        net_balance (Union[Unset, str]):  Default: '0'.
-        net_increase (Union[Unset, str]):  Default: '0'.
-        net_decrease (Union[Unset, str]):  Default: '0'.
-        children (Union[Unset, List['AccountBookBalance']]):
+        balance (str):
+        increase (str):
+        decrease (str):
+        net_balance (str):
+        net_increase (str):
+        net_decrease (str):
+        children (Union[Unset, int]):  Default: 0.
     """
 
     id: str
-    balance: Union[Unset, str] = "0"
-    increase: Union[Unset, str] = "0"
-    decrease: Union[Unset, str] = "0"
-    net_balance: Union[Unset, str] = "0"
-    net_increase: Union[Unset, str] = "0"
-    net_decrease: Union[Unset, str] = "0"
-    children: Union[Unset, List["AccountBookBalance"]] = UNSET
+    balance: str
+    increase: str
+    decrease: str
+    net_balance: str
+    net_increase: str
+    net_decrease: str
+    children: Union[Unset, int] = 0
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -47,32 +47,21 @@ class AccountBookBalance:
 
         net_decrease = self.net_decrease
 
-        children: Union[Unset, List[Dict[str, Any]]] = UNSET
-        if not isinstance(self.children, Unset):
-            children = []
-            for children_item_data in self.children:
-                children_item = children_item_data.to_dict()
-                children.append(children_item)
+        children = self.children
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "id": id,
+                "balance": balance,
+                "increase": increase,
+                "decrease": decrease,
+                "net_balance": net_balance,
+                "net_increase": net_increase,
+                "net_decrease": net_decrease,
             }
         )
-        if balance is not UNSET:
-            field_dict["balance"] = balance
-        if increase is not UNSET:
-            field_dict["increase"] = increase
-        if decrease is not UNSET:
-            field_dict["decrease"] = decrease
-        if net_balance is not UNSET:
-            field_dict["net_balance"] = net_balance
-        if net_increase is not UNSET:
-            field_dict["net_increase"] = net_increase
-        if net_decrease is not UNSET:
-            field_dict["net_decrease"] = net_decrease
         if children is not UNSET:
             field_dict["children"] = children
 
@@ -83,24 +72,19 @@ class AccountBookBalance:
         d = src_dict.copy()
         id = d.pop("id")
 
-        balance = d.pop("balance", UNSET)
+        balance = d.pop("balance")
 
-        increase = d.pop("increase", UNSET)
+        increase = d.pop("increase")
 
-        decrease = d.pop("decrease", UNSET)
+        decrease = d.pop("decrease")
 
-        net_balance = d.pop("net_balance", UNSET)
+        net_balance = d.pop("net_balance")
 
-        net_increase = d.pop("net_increase", UNSET)
+        net_increase = d.pop("net_increase")
 
-        net_decrease = d.pop("net_decrease", UNSET)
+        net_decrease = d.pop("net_decrease")
 
-        children = []
-        _children = d.pop("children", UNSET)
-        for children_item_data in _children or []:
-            children_item = AccountBookBalance.from_dict(children_item_data)
-
-            children.append(children_item)
+        children = d.pop("children", UNSET)
 
         account_book_balance = cls(
             id=id,

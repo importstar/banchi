@@ -26,6 +26,9 @@ class AccountBook:
         account (ReferenceAccount):
         parent (Union['ReferenceAccountBook', None]):
         creator (ReferenceUser):
+        increase (str):
+        decrease (str):
+        balance (str):
         description (Union[Unset, str]):  Default: ''. Example: Description.
         type (Union[Unset, AccountTypeEnum]):  Default: AccountTypeEnum.ASSET.
         smallest_fraction (Union[Unset, SmallestFractionEnum]):  Default: SmallestFractionEnum.VALUE_100.
@@ -38,6 +41,9 @@ class AccountBook:
     account: "ReferenceAccount"
     parent: Union["ReferenceAccountBook", None]
     creator: "ReferenceUser"
+    increase: str
+    decrease: str
+    balance: str
     description: Union[Unset, str] = ""
     type: Union[Unset, AccountTypeEnum] = AccountTypeEnum.ASSET
     smallest_fraction: Union[Unset, SmallestFractionEnum] = SmallestFractionEnum.VALUE_100
@@ -61,6 +67,12 @@ class AccountBook:
             parent = self.parent
 
         creator = self.creator.to_dict()
+
+        increase = self.increase
+
+        decrease = self.decrease
+
+        balance = self.balance
 
         description = self.description
 
@@ -87,6 +99,9 @@ class AccountBook:
                 "account": account,
                 "parent": parent,
                 "creator": creator,
+                "increase": increase,
+                "decrease": decrease,
+                "balance": balance,
             }
         )
         if description is not UNSET:
@@ -132,6 +147,12 @@ class AccountBook:
 
         creator = ReferenceUser.from_dict(d.pop("creator"))
 
+        increase = d.pop("increase")
+
+        decrease = d.pop("decrease")
+
+        balance = d.pop("balance")
+
         description = d.pop("description", UNSET)
 
         _type = d.pop("type", UNSET)
@@ -163,6 +184,9 @@ class AccountBook:
             account=account,
             parent=parent,
             creator=creator,
+            increase=increase,
+            decrease=decrease,
+            balance=balance,
             description=description,
             type=type,
             smallest_fraction=smallest_fraction,

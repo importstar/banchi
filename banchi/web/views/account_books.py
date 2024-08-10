@@ -15,6 +15,7 @@ from banchi_client.api.v1 import (
     get_v1_account_books_account_book_id_get,
     get_v1_transactions_transaction_id_get,
     get_label_v1_account_books_account_book_id_label_get,
+    get_children_v1_account_books_account_book_id_children_get,
     get_balance_v1_account_books_account_book_id_balance_get,
     delete_v1_account_books_account_book_id_delete,
     delete_v1_transactions_transaction_id_delete,
@@ -123,9 +124,7 @@ def create_or_edit(account_book_id):
 
     if not account_book:
         account_book = models.CreatedAccountBook.from_dict(data)
-        response = create_v1_account_books_post.sync(
-            client=client, body=account_book
-        )
+        response = create_v1_account_books_post.sync(client=client, body=account_book)
     else:
         account_book = models.UpdatedAccountBook.from_dict(data)
         response = update_v1_account_books_account_book_id_put.sync(
@@ -163,6 +162,18 @@ def view(account_book_id):
         client=client, account_book_id=account_book.id
     )
 
+    response = get_children_v1_account_books_account_book_id_children_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+
+    account_book_children = response.account_books
+    account_book_children_balance = dict()
+    for abc in account_book_children:
+        abc_balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
+            client=client, account_book_id=abc.id
+        )
+        account_book_children_balance[abc.id] = abc_balance
+
     response = get_all_v1_account_books_get.sync(
         client=client, account_id=account_book.account.id
     )
@@ -170,16 +181,17 @@ def view(account_book_id):
 
     display_names = utils.account_books.get_display_names(account_books)
 
-    account_book_children = [
-        ab for ab in account_books if ab.parent and ab.parent.id == account_book.id
-    ]
+    # account_book_children = [
+    #     ab for ab in account_books if ab.parent and ab.parent.id == account_book.id
+    # ]
 
-    def get_balance_sub_balance(account_book, balance):
-        for b in balance:
-            if b.id == account_book.id:
-                return b
-        return None
+    # def get_balance_sub_balance(account_book, balance):
+    #     for b in balance:
+    #         if b.id == account_book.id:
+    #             return b
+    #     return None
 
+    print(">>>", account_book_children_balance)
     return render_template(
         "/account_books/view.html",
         account_book=account_book,
@@ -188,7 +200,9 @@ def view(account_book_id):
         label=label,
         balance=balance,
         account_book_children=account_book_children,
-        get_balance_sub_balance=get_balance_sub_balance,
+        account_book_children_balance=account_book_children_balance,
+        # account_book_children=account_book_children,
+        # get_balance_sub_balance=get_balance_sub_balance,
     )
 
 
@@ -339,9 +353,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
     data["value"] = float(data["value"])
     if not transaction:
         transaction = models.CreatedTransaction.from_dict(data)
-        response = create_v1_transactions_post.sync(
-            client=client, body=transaction
-        )
+        response = create_v1_transactions_post.sync(client=client, body=transaction)
     else:
         transaction = models.UpdatedTransaction.from_dict(data)
         response = update_v1_transactions_transaction_id_put.sync(

@@ -49,15 +49,14 @@ Account Book {{ account_book.name }}
         <div class="content">
           <div class="header">{{ c_account_book.name }}</div>
           <div class="description">
-            {% set sub_balance = get_balance_sub_balance(c_account_book, balance.children) %}
             <div>
-              <span>net balance:</span> <span class="right floated bold" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_balance|float) }} - {{ c_account_book.balance }} </span>
+              <span>net balance:</span> <span class="right floated bold" style="font-weight: bold;">{{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_balance']|float) }} - {{ c_account_book.balance }} </span>
             </div>
             <div>
-              <span>net increase:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_increase|float) }}</span>
+              <span>net increase:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_increase']|float) }}</span>
             </div>
             <div>
-              <span>net decrease:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(sub_balance.net_decrease|float) }}</span>
+              <span>net decrease:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_decrease']|float) }}</span>
             </div>
 
           </div>
