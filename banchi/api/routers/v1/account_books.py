@@ -97,10 +97,66 @@ async def get_account_book_balance_by_trasaction(
     return value
 
 
+async def get_account_book_balance_by_account_book_summary(db_account_book):
+
+    pipline = [
+        {"$match": {"_id": db_account_book.id}},
+        {
+            "$graphLookup": {
+                "from": "account_books",
+                "startWith": "$_id",
+                "connectFromField": "_id",
+                "connectToField": "parent.$id",
+                "as": "children",
+            }
+        },
+        {"$unwind": {"path": "$children"}},
+        {
+            "$group": {
+                "_id": None,
+                "quantity": {"$sum": 1},
+                "balance": {"$sum": "$children.balance"},
+                "increase": {"$sum": "$children.increase"},
+                "decrease": {"$sum": "children.decrease"},
+            }
+        },
+    ]
+
+    account_book_agg = (
+        await models.account_books.AccountBook.find().aggregate(pipline).to_list()
+    )
+
+    data = dict()
+    if len(account_book_agg) > 0:
+        data = account_book_agg[0]
+
+    results = dict(
+        balance=bson.Decimal128(0.0),
+        increase=bson.Decimal128(0.0),
+        decrease=bson.Decimal128(0.0),
+        quantity=0,
+    )
+    results.update(data)
+    print("xxx", results)
+
+    for key in results.keys():
+        if key != "quantity":
+            results[key] += getattr(db_account_book, key, bson.Decimal128(0))
+        else:
+            results[key] += getattr(db_account_book, key, 0)
+
+    results["quantity"] += 1
+
+    print(">>>", results)
+    return results
+
+
 async def get_account_book_balance(
     db_account_book, receive=False
 ) -> schemas.account_books.AccountBookBalance:
     balance = increase = decrease = 0
+
+    await get_account_book_balance_by_account_book_summary(db_account_book)
 
     decrease = await get_account_book_balance_by_trasaction(
         db_account_book, "from_account_book"
