@@ -1,4 +1,5 @@
 {% extends '/account_books/index.html' %}
+{% import '/base/pagination.html' as pagination %}
 
 {% block dashboard_title %}
 Account Book {{ account_book.name }}
@@ -96,7 +97,7 @@ Account Book {{ account_book.name }}
         </tr>
       </thead>
       <tbody>
-        {% for transaction in transactions %}
+        {% for transaction in transaction_chunk.transactions %}
           <tr>
             <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
             <td>
@@ -165,6 +166,11 @@ Account Book {{ account_book.name }}
         </div>
       </div>
     </div>
+    
+    <div style="padding-top: 1vh;">
+      {{ pagination.render_pagination(transaction_chunk.page, transaction_chunk.page_size, transaction_chunk.size_per_page, request.path) }}
+    </div>
+
   </div>
 
 

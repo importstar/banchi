@@ -148,12 +148,16 @@ def view(account_book_id):
         client=client, account_book_id=account_book_id
     )
 
+    page = int(request.args.get("page", "1"))
+    size_per_page = int(request.args.get("size_per_page", "50"))
     response = get_all_v1_transactions_get.sync(
         client=client,
         from_account_book_id=account_book.id,
         to_account_book_id=account_book.id,
+        page=page,
+        size_per_page=size_per_page,
     )
-    transactions = response.transactions
+    transaction_chunk = response
 
     label = get_label_v1_account_books_account_book_id_label_get.sync(
         client=client, account_book_id=account_book.id
@@ -196,7 +200,7 @@ def view(account_book_id):
         "/account_books/view.html",
         account_book=account_book,
         account_book_display_names=display_names,
-        transactions=transactions,
+        transaction_chunk=transaction_chunk,
         label=label,
         balance=balance,
         account_book_children=account_book_children,

@@ -103,7 +103,7 @@ async def get_children(
         In(models.account_books.AccountBook.id, children_ids), fetch_links=True
     ).to_list()
 
-    print(">>>", len(db_account_books), db_account_books)
+    # print(">>>", len(db_account_books), db_account_books)
     return dict(account_books=db_account_books)
 
 

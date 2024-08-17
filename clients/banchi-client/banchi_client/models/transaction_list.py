@@ -1,7 +1,9 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar
+from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+
+from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.transaction import Transaction
@@ -15,9 +17,15 @@ class TransactionList:
     """
     Attributes:
         transactions (List['Transaction']):
+        page (Union[Unset, int]):  Default: 1.
+        size_per_page (Union[Unset, int]):  Default: 50.
+        page_size (Union[Unset, int]):  Default: 1.
     """
 
     transactions: List["Transaction"]
+    page: Union[Unset, int] = 1
+    size_per_page: Union[Unset, int] = 50
+    page_size: Union[Unset, int] = 1
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -26,6 +34,12 @@ class TransactionList:
             transactions_item = transactions_item_data.to_dict()
             transactions.append(transactions_item)
 
+        page = self.page
+
+        size_per_page = self.size_per_page
+
+        page_size = self.page_size
+
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -33,6 +47,12 @@ class TransactionList:
                 "transactions": transactions,
             }
         )
+        if page is not UNSET:
+            field_dict["page"] = page
+        if size_per_page is not UNSET:
+            field_dict["size_per_page"] = size_per_page
+        if page_size is not UNSET:
+            field_dict["page_size"] = page_size
 
         return field_dict
 
@@ -48,8 +68,17 @@ class TransactionList:
 
             transactions.append(transactions_item)
 
+        page = d.pop("page", UNSET)
+
+        size_per_page = d.pop("size_per_page", UNSET)
+
+        page_size = d.pop("page_size", UNSET)
+
         transaction_list = cls(
             transactions=transactions,
+            page=page,
+            size_per_page=size_per_page,
+            page_size=page_size,
         )
 
         transaction_list.additional_properties = d

@@ -34,6 +34,9 @@ class Transaction(bases.BaseSchema, BaseTransaction):
 
 class TransactionList(BaseModel):
     transactions: list[Transaction]
+    page: int = 1
+    size_per_page: int = 50
+    page_size: int = 1
 
 
 class CreatedTransaction(BaseTransaction):

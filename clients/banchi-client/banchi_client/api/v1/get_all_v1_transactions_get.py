@@ -7,13 +7,15 @@ from ... import errors
 from ...client import AuthenticatedClient, Client
 from ...models.http_validation_error import HTTPValidationError
 from ...models.transaction_list import TransactionList
-from ...types import UNSET, Response
+from ...types import UNSET, Response, Unset
 
 
 def _get_kwargs(
     *,
     from_account_book_id: Union[None, str],
     to_account_book_id: Union[None, str],
+    page: Union[None, Unset, int] = 1,
+    size_per_page: Union[None, Unset, int] = 50,
 ) -> Dict[str, Any]:
     params: Dict[str, Any] = {}
 
@@ -24,6 +26,20 @@ def _get_kwargs(
     json_to_account_book_id: Union[None, str]
     json_to_account_book_id = to_account_book_id
     params["to_account_book_id"] = json_to_account_book_id
+
+    json_page: Union[None, Unset, int]
+    if isinstance(page, Unset):
+        json_page = UNSET
+    else:
+        json_page = page
+    params["page"] = json_page
+
+    json_size_per_page: Union[None, Unset, int]
+    if isinstance(size_per_page, Unset):
+        json_size_per_page = UNSET
+    else:
+        json_size_per_page = size_per_page
+    params["size_per_page"] = json_size_per_page
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -69,12 +85,16 @@ def sync_detailed(
     client: AuthenticatedClient,
     from_account_book_id: Union[None, str],
     to_account_book_id: Union[None, str],
+    page: Union[None, Unset, int] = 1,
+    size_per_page: Union[None, Unset, int] = 50,
 ) -> Response[Union[HTTPValidationError, TransactionList]]:
     """Get All
 
     Args:
         from_account_book_id (Union[None, str]):
         to_account_book_id (Union[None, str]):
+        page (Union[None, Unset, int]):  Default: 1.
+        size_per_page (Union[None, Unset, int]):  Default: 50.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -87,6 +107,8 @@ def sync_detailed(
     kwargs = _get_kwargs(
         from_account_book_id=from_account_book_id,
         to_account_book_id=to_account_book_id,
+        page=page,
+        size_per_page=size_per_page,
     )
 
     response = client.get_httpx_client().request(
@@ -101,12 +123,16 @@ def sync(
     client: AuthenticatedClient,
     from_account_book_id: Union[None, str],
     to_account_book_id: Union[None, str],
+    page: Union[None, Unset, int] = 1,
+    size_per_page: Union[None, Unset, int] = 50,
 ) -> Optional[Union[HTTPValidationError, TransactionList]]:
     """Get All
 
     Args:
         from_account_book_id (Union[None, str]):
         to_account_book_id (Union[None, str]):
+        page (Union[None, Unset, int]):  Default: 1.
+        size_per_page (Union[None, Unset, int]):  Default: 50.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -120,6 +146,8 @@ def sync(
         client=client,
         from_account_book_id=from_account_book_id,
         to_account_book_id=to_account_book_id,
+        page=page,
+        size_per_page=size_per_page,
     ).parsed
 
 
@@ -128,12 +156,16 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     from_account_book_id: Union[None, str],
     to_account_book_id: Union[None, str],
+    page: Union[None, Unset, int] = 1,
+    size_per_page: Union[None, Unset, int] = 50,
 ) -> Response[Union[HTTPValidationError, TransactionList]]:
     """Get All
 
     Args:
         from_account_book_id (Union[None, str]):
         to_account_book_id (Union[None, str]):
+        page (Union[None, Unset, int]):  Default: 1.
+        size_per_page (Union[None, Unset, int]):  Default: 50.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -146,6 +178,8 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         from_account_book_id=from_account_book_id,
         to_account_book_id=to_account_book_id,
+        page=page,
+        size_per_page=size_per_page,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -158,12 +192,16 @@ async def asyncio(
     client: AuthenticatedClient,
     from_account_book_id: Union[None, str],
     to_account_book_id: Union[None, str],
+    page: Union[None, Unset, int] = 1,
+    size_per_page: Union[None, Unset, int] = 50,
 ) -> Optional[Union[HTTPValidationError, TransactionList]]:
     """Get All
 
     Args:
         from_account_book_id (Union[None, str]):
         to_account_book_id (Union[None, str]):
+        page (Union[None, Unset, int]):  Default: 1.
+        size_per_page (Union[None, Unset, int]):  Default: 50.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -178,5 +216,7 @@ async def asyncio(
             client=client,
             from_account_book_id=from_account_book_id,
             to_account_book_id=to_account_book_id,
+            page=page,
+            size_per_page=size_per_page,
         )
     ).parsed

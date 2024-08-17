@@ -1,12 +1,13 @@
 import datetime
 import io
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status, Query
 
 from loguru import logger
 
 import bson
 import typing
+import math
 from beanie.odm.operators.find.logical import Or, And
 from beanie.operators import Inc, Set
 
@@ -53,43 +54,60 @@ async def get_all(
     from_account_book_id: PydanticObjectId | None,
     to_account_book_id: PydanticObjectId | None,
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
+    page: typing.Annotated[int | None, Query()] = 1,
+    size_per_page: typing.Annotated[int | None, Query()] = 50,
 ) -> schemas.transactions.TransactionList:
-    query_args = [
-        models.transactions.Transaction.status == "active",
-    ]
+    print(">>>", page, size_per_page)
+    from_account_book = None
+    to_account_book = None
 
-    from_account_books = []
-    to_account_books = []
-    all_transactions = []
+    account_book_query = []
     if from_account_book_id:
         from_account_book = await deps.get_account_book(
             from_account_book_id, current_user
         )
-        if from_account_book:
-            from_account_books = await models.transactions.Transaction.find(
-                *query_args,
-                models.transactions.Transaction.from_account_book.id
-                == from_account_book_id,
-                fetch_links=True,
-            ).to_list()
-
+        account_book_query = (
+            models.transactions.Transaction.from_account_book.id == from_account_book_id
+        )
     if to_account_book_id:
         to_account_book = await deps.get_account_book(to_account_book_id, current_user)
-        if to_account_book:
-            to_account_books = await models.transactions.Transaction.find(
-                *query_args,
-                models.transactions.Transaction.to_account_book.id
-                == to_account_book_id,
-                fetch_links=True,
-            ).to_list()
+        account_book_query = (
+            models.transactions.Transaction.to_account_book.id == to_account_book_id
+        )
 
-    if not from_account_book_id and not to_account_book_id:
-        all_transactions = await query.to_list()
+    if from_account_book_id and to_account_book_id:
+        account_book_query = Or(
+            models.transactions.Transaction.from_account_book.id
+            == from_account_book_id,
+            models.transactions.Transaction.to_account_book.id == to_account_book_id,
+        )
 
-    db_transactions = all_transactions + to_account_books + from_account_books
-    db_transactions.sort(key=lambda t: t.date, reverse=True)
+    query_args = [
+        models.transactions.Transaction.status == "active",
+        account_book_query,
+    ]
 
-    return dict(transactions=db_transactions)
+    transaction_count = await models.transactions.Transaction.find(
+        *query_args,
+    ).count()
+
+    db_transactions = (
+        await models.transactions.Transaction.find(
+            *query_args,
+            fetch_links=True,
+        )
+        .sort(-models.transactions.Transaction.date)
+        .limit(size_per_page)
+        .skip((page - 1) * size_per_page)
+        .to_list()
+    )
+
+    return dict(
+        transactions=db_transactions,
+        page=page,
+        size_per_page=size_per_page,
+        page_size=int(math.ceil(transaction_count / size_per_page)),
+    )
 
 
 @router.get("/get_recursive")
