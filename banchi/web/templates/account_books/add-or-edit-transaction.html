@@ -29,6 +29,7 @@
       </div>
 
       {{ renderer.render_multiple_select(form.tags) }}
+      {{ renderer.render_field(form.remarks) }}
       <button name="subnit" type="submit" class="ui primary button">
         {% if 'edit' not in request.path %}
           Add

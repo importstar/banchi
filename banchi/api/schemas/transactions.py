@@ -19,6 +19,8 @@ class BaseTransaction(BaseModel):
     currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
     tags: list[str] = Field(default=[])
 
+    remarks: str | None = Field(..., default="", example="Text Remark")
+
 
 class Transaction(bases.BaseSchema, BaseTransaction):
     from_account_book: account_books.ReferenceAccountBook
