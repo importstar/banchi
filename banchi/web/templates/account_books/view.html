@@ -54,10 +54,10 @@ Account Book {{ account_book.name }}
               <span>net balance:</span> <span class="right floated bold" style="font-weight: bold;">{{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_balance']|float) }}</span>
             </div>
             <div>
-              <span>net increase:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_increase']|float) }}</span>
+              <span>net {{ label.positive.title() }}:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_increase']|float) }}</span>
             </div>
             <div>
-              <span>net decrease:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_decrease']|float) }}</span>
+              <span>net {{ label.negative.title() }}:</span> <span class="right floated" style="font-weight: bold;">{{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_decrease']|float) }}</span>
             </div>
 
           </div>
@@ -158,13 +158,13 @@ Account Book {{ account_book.name }}
       <div class="two column row">
         <div class="column">
           Balance: {{ "{:,.2f}".format(account_book.balance|float) }}<br/>
-          Increase: {{ "{:,.2f}".format(account_book.increase|float) }} <br/>
-          Decrease: {{ "{:,.2f}".format(account_book.decrease|float) }} <br/>
+          {{ label.positive.title() }}: {{ "{:,.2f}".format(account_book.increase|float) }} <br/>
+          {{ label.negative.title() }}: {{ "{:,.2f}".format(account_book.decrease|float) }} <br/>
         </div>
         <div class="column">
           Net balance: {{ "{:,.2f}".format(balance['net_balance']|float) }} <br/>
-          Net increase: {{ "{:,.2f}".format(balance['net_increase']|float) }} <br/>
-          Net decrease: {{ "{:,.2f}".format(balance['net_decrease']|float) }} <br/>
+          Net {{ label.positive.title() }}: {{ "{:,.2f}".format(balance['net_increase']|float) }} <br/>
+          Net {{ label.negative.title() }}: {{ "{:,.2f}".format(balance['net_decrease']|float) }} <br/>
         </div>
       </div>
     </div>

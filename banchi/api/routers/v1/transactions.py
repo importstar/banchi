@@ -165,9 +165,17 @@ async def create(
     db_from_account_book = data["from_account_book"]
     db_to_account_book = data["to_account_book"]
 
-    db_from_account_book.balance -= data["value"]
+    if db_from_account_book.type in ["income", "equity", "liability"]:
+        db_from_account_book.balance += data["value"]
+    else:
+        db_from_account_book.balance -= data["value"]
+
+    if db_to_account_book.type in ["income", "equity", "liability"]:
+        db_to_account_book.balance -= data["value"]
+    else:
+        db_to_account_book.balance += data["value"]
+
     db_from_account_book.decrease += data["value"]
-    db_to_account_book.balance += data["value"]
     db_to_account_book.increase += data["value"]
 
     await db_to_account_book.save()
