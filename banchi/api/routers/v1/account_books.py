@@ -262,7 +262,7 @@ async def get_account_book_balance_by_summary(
         children=results.get("quantity", 0),
     )
 
-    print(account_book_balance)
+    # print(account_book_balance)
     return account_book_balance
 
 
