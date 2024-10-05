@@ -246,4 +246,5 @@ async def get_by_tags(
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.TransactionList:
-    return db_transactions
+
+    return dict(transactions=db_transactions)

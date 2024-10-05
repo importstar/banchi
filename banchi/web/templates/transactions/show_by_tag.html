@@ -1,20 +1,14 @@
-{% extends '/account_books/index.html' %}
+{% extends '/transactions/index.html' %}
 
 {% block dashboard_title %}
-Account Book {{ account_book.name }}
+Transactions By {{ tag }}
 {% endblock %}
 
 {% block breadcrumbs %}
   {{ super() }}
-  {% if account_book %}
-    <i class="right angle icon divider"></i>
-    {% if request.endpoint == 'account_books.view' %}
-      <div class="active section">Account Book: {{ account_book.name }} </div>
-    {% elif account_book %}
-      <a class="section" href="{{ url_for('account_books.view', account_book_id=account_book.id ) }}">Account Book: {{ account_book.name }} </a>
-    {% endif %}
-  {% endif %}
 
+  <i class="right angle icon divider"></i>
+  <div class="section active">{{ tag }}</div>
 {% endblock %}
 
 {% block title %}
@@ -23,6 +17,7 @@ Account Book {{ account_book.name }}
 
 {% block content %}
   <div>
+    {#
     <a class="ui primary icon button" href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id) }}">
       <i class="money icon"></i> Add Transaction
     </a>
@@ -37,7 +32,7 @@ Account Book {{ account_book.name }}
     <a class="ui yellow icon button" href="{{ url_for('account_books.create_or_edit', account_book_id=account_book.id) }}">
       <i class="edit icon"></i> Edit Account Book
     </a>
-
+    #}
   </div>
 
   <div style="padding-top:1vh;">
@@ -88,15 +83,15 @@ Account Book {{ account_book.name }}
           <th>Date</th>
           <th>Description</th>
           <th>Transfer</th>
-          <th>{{ label.positive.title() }}</th>
-          <th>{{ label.negative.title() }}</th>
+          <th>Increase</th>
+          <th>Decrease</th>
           <th>User</th>
           <th>Operation</th>
         </tr>
       </thead>
       <tbody>
-        {% for transaction in transactions %}
-          <tr>
+        {% for transaction in transactions.transactions %}
+          <tr class="top aligned">
             <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
             <td>
               {{ transaction.description }}
@@ -106,30 +101,33 @@ Account Book {{ account_book.name }}
               {% endfor %}
             </td>
             <td>
-              {% if transaction.from_account_book.id != account_book.id %}
+              
                 <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
                   {{ account_book_display_names[transaction.from_account_book.id] }}
-                </a>
-              {% else %}
+                </a> 
+                >>
                 <a href="{{ url_for('account_books.view', account_book_id=transaction.to_account_book.id) }}">
                   {{ account_book_display_names[transaction.to_account_book.id] }}
                 </a>
-              {% endif %}
+
             </td>
-              {% if transaction.from_account_book.id != account_book.id %}
-              
-                <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-                <td class="right aligned"></td>
-              {% else %}
-                <td></td>
-                <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-              {% endif %}
+            
+            {% if transaction.to_account_book.type in ['asset'] %}
+              <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+              <td class="right aligned">  {{ transaction.from_account_book.type }}  </td>
+            {% else %}
+              <td></td>
+              <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+            {% endif %}
+            
             <td>
               {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
             </td>
             <td class="single line">
+              {#
               <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon yellow circular button"><i class="edit icon"></i></a>
               <a href="{{ url_for('account_books.delete_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}" class="ui icon red circular button"><i class="trash icon"></i></a>
+              #}
             </td>
           </tr>
         {% endfor %}
@@ -140,10 +138,10 @@ Account Book {{ account_book.name }}
           <th></th>
           <th></th>
           <th class="right aligned">
-            {{ "{:,.2f}".format(balance['increase']|float) }}
+            {#{ "{:,.2f}".format(balance['increase']|float) }#}
           </th>
           <th class="right aligned">
-            {{ "{:,.2f}".format(balance['decrease']|float) }}
+            {#{ "{:,.2f}".format(balance['decrease']|float) }#}
           </th>
           <th></th>
           <th></th>
@@ -152,6 +150,7 @@ Account Book {{ account_book.name }}
     </table>
     <div class="ui aligned grid">
       <div class="two column row">
+        {#
         <div class="column">
           Balance: {{ "{:,.2f}".format(balance['balance']|float) }} <br/>
           Increase: {{ "{:,.2f}".format(balance['increase']|float) }} <br/>
@@ -162,6 +161,7 @@ Account Book {{ account_book.name }}
           Net increase: {{ "{:,.2f}".format(balance['net_increase']|float) }} <br/>
           Net decrease: {{ "{:,.2f}".format(balance['net_decrease']|float) }} <br/>
         </div>
+        #}
       </div>
     </div>
   </div>

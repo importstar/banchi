@@ -16,8 +16,8 @@ from banchi_client.api.v1 import (
     get_v1_transactions_transaction_id_get,
     get_by_tags_v1_transactions_tags_tag_get,
     get_label_v1_account_books_account_book_id_label_get,
-    get_balance_v1_account_books_account_book_id_balance_get,
     delete_v1_account_books_account_book_id_delete,
+    get_balance_v1_account_books_account_book_id_balance_get,
     delete_v1_transactions_transaction_id_delete,
 )
 
@@ -38,12 +38,29 @@ def index():
 
 @module.route("/tags/<tag>")
 def show_by_tag(tag):
+
     client = banchi_api_clients.client.get_current_client()
     transactions = get_by_tags_v1_transactions_tags_tag_get.sync(client=client, tag=tag)
+
+    account_id = ""
+    if transactions.transactions:
+        account_book_id = transactions.transactions[0].from_account_book.id
+        account_book = get_v1_account_books_account_book_id_get.sync(
+            client=client, account_book_id=account_book_id
+        )
+        print(">>>>", account_book)
+        account_id = account_book.account.id
+
+    response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
+    account_books = response.account_books
+
+    display_names = utils.account_books.get_display_names(account_books)
 
     return render_template(
         "/transactions/show_by_tag.html",
         transactions=transactions,
+        account_book_display_names=display_names,
+        tag=tag,
     )
 
 
@@ -124,9 +141,7 @@ def add_or_edi(transaction_id):
     data["value"] = float(data["value"])
     if not transaction:
         transaction = models.CreatedTransaction.from_dict(data)
-        response = create_v1_transactions_post.sync(
-            client=client, body=transaction
-        )
+        response = create_v1_transactions_post.sync(client=client, body=transaction)
     else:
         transaction = models.UpdatedTransaction.from_dict(data)
         response = update_v1_transactions_transaction_id_put.sync(

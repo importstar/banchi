@@ -98,7 +98,7 @@ Account Book {{ account_book.name }}
       </thead>
       <tbody>
         {% for transaction in transaction_chunk.transactions %}
-          <tr>
+          <tr class="top aligned">
             <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
             <td>
               {{ transaction.description }}

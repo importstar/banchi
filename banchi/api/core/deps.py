@@ -212,7 +212,7 @@ async def get_transaction(
         models.transactions.Transaction.id == transaction_id,
         models.transactions.Transaction.status == "active",
         fetch_links=True,
-    )
+    ).to_list()
 
     if not db_transaction:
         raise HTTPException(
@@ -239,7 +239,7 @@ async def get_transactions_by_tag(
         models.transactions.Transaction.tags == tag,
         models.transactions.Transaction.status == "active",
         fetch_links=True,
-    )
+    ).to_list()
 
     if not db_transactions:
         raise HTTPException(
