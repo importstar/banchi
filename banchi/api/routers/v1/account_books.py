@@ -78,7 +78,7 @@ async def get_children(
 ) -> schemas.account_books.AccountBookList:
 
     pipline = [
-        {"$match": {"_id": db_account_book.id}},
+        {"$match": {"_id": db_account_book.id, "status": "active"}},
         {
             "$graphLookup": {
                 "from": "account_books",
@@ -87,6 +87,7 @@ async def get_children(
                 "connectToField": "parent.$id",
                 "as": "children",
                 "maxDepth": 0,
+                "restrictSearchWithMatch": {"status": "active"},
             }
         },
     ]
@@ -259,6 +260,8 @@ async def get_account_book_balance_by_summary(
         net_increase=net_increase,
         children=results.get("quantity", 0),
     )
+
+    # print(account_book_balance)
     return account_book_balance
 
 
@@ -273,6 +276,7 @@ async def get_balance(
     ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBookBalance:
+
     return await get_account_book_balance_by_summary(db_account_book)
 
 

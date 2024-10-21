@@ -1,0 +1,16 @@
+{% extends '/base/default-dashboard.html' %}
+
+{% block dashboard_title %}
+Transactions
+{% endblock %}
+
+{% block breadcrumbs %}
+  {% if request.endpoint == 'transactions.index' %}
+    <a class="active section">Transactions</a>
+  {% else %}
+    {# <a href="{{ url_for('account_books.index', account_id=account_book.account.id) }}" class="section">Account Books</a> #}
+    <a class="section">Transactions</a>
+  {% endif %}
+{% endblock %}
+
+

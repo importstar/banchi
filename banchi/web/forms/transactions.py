@@ -33,3 +33,4 @@ class TransactionForm(FlaskForm):
     )
 
     tags = fields.SelectMultipleField("Tags", choices=[], validate_choice=False)
+    remarks = fields.TextAreaField("Remarks")

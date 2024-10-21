@@ -186,6 +186,13 @@ async def get_account_book(
         models.account_books.AccountBook.status == "active",
         fetch_links=True,
     )
+
+    if not db_account_book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found account book",
+        )
+
     db_account = await get_account(db_account_book.account.id, user)
 
     if not db_account:
@@ -205,7 +212,7 @@ async def get_transaction(
         models.transactions.Transaction.id == transaction_id,
         models.transactions.Transaction.status == "active",
         fetch_links=True,
-    )
+    ).to_list()
 
     if not db_transaction:
         raise HTTPException(
@@ -232,7 +239,7 @@ async def get_transactions_by_tag(
         models.transactions.Transaction.tags == tag,
         models.transactions.Transaction.status == "active",
         fetch_links=True,
-    )
+    ).to_list()
 
     if not db_transactions:
         raise HTTPException(

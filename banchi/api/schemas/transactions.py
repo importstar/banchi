@@ -19,6 +19,8 @@ class BaseTransaction(BaseModel):
     currency: accounts.CurrencyEnum = Field(..., example=accounts.CurrencyEnum.THB)
     tags: list[str] = Field(default=[])
 
+    remarks: str | None = Field(default="", example="Text Remark")
+
 
 class Transaction(bases.BaseSchema, BaseTransaction):
     from_account_book: account_books.ReferenceAccountBook
@@ -34,6 +36,9 @@ class Transaction(bases.BaseSchema, BaseTransaction):
 
 class TransactionList(BaseModel):
     transactions: list[Transaction]
+    page: int = 1
+    size_per_page: int = 50
+    page_size: int = 1
 
 
 class CreatedTransaction(BaseTransaction):
