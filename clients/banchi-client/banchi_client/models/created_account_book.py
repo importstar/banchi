@@ -3,9 +3,6 @@ from typing import Any, Dict, List, Type, TypeVar, Union, cast
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..models.account_type_enum import AccountTypeEnum
-from ..models.currency_enum import CurrencyEnum
-from ..models.smallest_fraction_enum import SmallestFractionEnum
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="CreatedAccountBook")
@@ -19,18 +16,18 @@ class CreatedAccountBook:
         parent_id (Union[None, str]):
         account_id (str):  Example: 0.
         description (Union[Unset, str]):  Default: ''. Example: Description.
-        type (Union[Unset, AccountTypeEnum]):  Default: AccountTypeEnum.ASSET.
-        smallest_fraction (Union[Unset, SmallestFractionEnum]):  Default: SmallestFractionEnum.VALUE_100.
-        currency (Union[Unset, CurrencyEnum]):  Default: CurrencyEnum.THB.
+        type (Union[Unset, Any]):  Default: 'asset'. Example: asset.
+        smallest_fraction (Union[Unset, Any]):  Default: 100. Example: 100.
+        currency (Union[Unset, Any]):  Default: 'THB'. Example: THB.
     """
 
     name: str
     parent_id: Union[None, str]
     account_id: str
     description: Union[Unset, str] = ""
-    type: Union[Unset, AccountTypeEnum] = AccountTypeEnum.ASSET
-    smallest_fraction: Union[Unset, SmallestFractionEnum] = SmallestFractionEnum.VALUE_100
-    currency: Union[Unset, CurrencyEnum] = CurrencyEnum.THB
+    type: Union[Unset, Any] = "asset"
+    smallest_fraction: Union[Unset, Any] = 100
+    currency: Union[Unset, Any] = "THB"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -43,17 +40,11 @@ class CreatedAccountBook:
 
         description = self.description
 
-        type: Union[Unset, str] = UNSET
-        if not isinstance(self.type, Unset):
-            type = self.type.value
+        type = self.type
 
-        smallest_fraction: Union[Unset, int] = UNSET
-        if not isinstance(self.smallest_fraction, Unset):
-            smallest_fraction = self.smallest_fraction.value
+        smallest_fraction = self.smallest_fraction
 
-        currency: Union[Unset, str] = UNSET
-        if not isinstance(self.currency, Unset):
-            currency = self.currency.value
+        currency = self.currency
 
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -91,26 +82,11 @@ class CreatedAccountBook:
 
         description = d.pop("description", UNSET)
 
-        _type = d.pop("type", UNSET)
-        type: Union[Unset, AccountTypeEnum]
-        if isinstance(_type, Unset):
-            type = UNSET
-        else:
-            type = AccountTypeEnum(_type)
+        type = d.pop("type", UNSET)
 
-        _smallest_fraction = d.pop("smallest_fraction", UNSET)
-        smallest_fraction: Union[Unset, SmallestFractionEnum]
-        if isinstance(_smallest_fraction, Unset):
-            smallest_fraction = UNSET
-        else:
-            smallest_fraction = SmallestFractionEnum(_smallest_fraction)
+        smallest_fraction = d.pop("smallest_fraction", UNSET)
 
-        _currency = d.pop("currency", UNSET)
-        currency: Union[Unset, CurrencyEnum]
-        if isinstance(_currency, Unset):
-            currency = UNSET
-        else:
-            currency = CurrencyEnum(_currency)
+        currency = d.pop("currency", UNSET)
 
         created_account_book = cls(
             name=name,

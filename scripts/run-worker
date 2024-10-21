@@ -1,2 +1,2 @@
 #!/bin/sh -e
-APP_ENV=dev banchai-worker
+APP_ENV=dev poetry run banchai-worker

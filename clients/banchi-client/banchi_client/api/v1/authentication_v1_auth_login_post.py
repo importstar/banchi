@@ -14,7 +14,7 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     *,
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = UNSET,
+    name: Union[Unset, Any] = "auth:login",
 ) -> Dict[str, Any]:
     headers: Dict[str, Any] = {}
 
@@ -42,11 +42,11 @@ def _get_kwargs(
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[Union[HTTPValidationError, Token]]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = Token.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = HTTPValidationError.from_dict(response.json())
 
         return response_422
@@ -71,12 +71,12 @@ def sync_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = UNSET,
+    name: Union[Unset, Any] = "auth:login",
 ) -> Response[Union[HTTPValidationError, Token]]:
     """Authentication
 
     Args:
-        name (Union[Unset, Any]):
+        name (Union[Unset, Any]):  Default: 'auth:login'.
         body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
@@ -103,12 +103,12 @@ def sync(
     *,
     client: Union[AuthenticatedClient, Client],
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = UNSET,
+    name: Union[Unset, Any] = "auth:login",
 ) -> Optional[Union[HTTPValidationError, Token]]:
     """Authentication
 
     Args:
-        name (Union[Unset, Any]):
+        name (Union[Unset, Any]):  Default: 'auth:login'.
         body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
@@ -130,12 +130,12 @@ async def asyncio_detailed(
     *,
     client: Union[AuthenticatedClient, Client],
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = UNSET,
+    name: Union[Unset, Any] = "auth:login",
 ) -> Response[Union[HTTPValidationError, Token]]:
     """Authentication
 
     Args:
-        name (Union[Unset, Any]):
+        name (Union[Unset, Any]):  Default: 'auth:login'.
         body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
@@ -160,12 +160,12 @@ async def asyncio(
     *,
     client: Union[AuthenticatedClient, Client],
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = UNSET,
+    name: Union[Unset, Any] = "auth:login",
 ) -> Optional[Union[HTTPValidationError, Token]]:
     """Authentication
 
     Args:
-        name (Union[Unset, Any]):
+        name (Union[Unset, Any]):  Default: 'auth:login'.
         body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
