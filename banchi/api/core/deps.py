@@ -212,7 +212,7 @@ async def get_transaction(
         models.transactions.Transaction.id == transaction_id,
         models.transactions.Transaction.status == "active",
         fetch_links=True,
-    ).to_list()
+    )
 
     if not db_transaction:
         raise HTTPException(
