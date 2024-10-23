@@ -93,8 +93,7 @@ async def get_all(
 
     db_transactions = (
         await models.transactions.Transaction.find(
-            *query_args,
-            fetch_links=True,
+            *query_args, fetch_links=True, nesting_depth=1
         )
         .sort(-models.transactions.Transaction.date)
         .limit(size_per_page)
@@ -196,10 +195,6 @@ async def get(
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
 
-    print("db_transaction -->")
-    import pprint
-
-    pprint.pprint(db_transaction.dict())
     return db_transaction
 
 
