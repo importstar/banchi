@@ -19,7 +19,7 @@ def _get_kwargs() -> Dict[str, Any]:
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[AccountList]:
-    if response.status_code == 200:
+    if response.status_code == HTTPStatus.OK:
         response_200 = AccountList.from_dict(response.json())
 
         return response_200

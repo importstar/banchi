@@ -70,7 +70,7 @@ def show_by_tag(tag):
     defaults=dict(account_book_id=None, transaction_id=None),
 )
 @module.route("/<transaction_id>/edit", methods=["GET", "POST"])
-def add_or_edi(transaction_id):
+def add_or_edit(transaction_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = None
 
@@ -114,7 +114,7 @@ def add_or_edi(transaction_id):
     form.to_account_book_id.choices = account_book_choices
     form.from_account_book_id.choices = account_book_choices
 
-    print(">>>", form.errors, form.data)
+    # print(">>>", form.errors, form.data)
     if not form.validate_on_submit():
         if request.method == "GET" and account_book:
             form.from_account_book_id.data = str(account_book.id)
@@ -139,6 +139,7 @@ def add_or_edi(transaction_id):
 
     data["date"] = data["date"].isoformat()
     data["value"] = float(data["value"])
+
     if not transaction:
         transaction = models.CreatedTransaction.from_dict(data)
         response = create_v1_transactions_post.sync(client=client, body=transaction)

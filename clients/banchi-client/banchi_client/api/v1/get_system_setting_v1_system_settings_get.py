@@ -21,7 +21,7 @@ def _get_kwargs() -> Dict[str, Any]:
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[SystemSettingInResponse]:
-    if response.status_code == 200:
+    if response.status_code == HTTPStatus.OK:
         response_200 = SystemSettingInResponse.from_dict(response.json())
 
         return response_200

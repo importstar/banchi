@@ -28,8 +28,9 @@ class Transaction:
         to_account_book (ReferenceAccountBook):
         creator (ReferenceUser):
         updated_by (ReferenceUser):
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-08-17T16:55:24.175499').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-10-23T11:24:03.219397').
         tags (Union[Unset, List[str]]):
+        remarks (Union[None, Unset, str]):  Default: ''. Example: Text Remark.
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
@@ -41,8 +42,9 @@ class Transaction:
     to_account_book: "ReferenceAccountBook"
     creator: "ReferenceUser"
     updated_by: "ReferenceUser"
-    date: Union[Unset, datetime.datetime] = isoparse("2024-08-17T16:55:24.175499")
+    date: Union[Unset, datetime.datetime] = isoparse("2024-10-23T11:24:03.219397")
     tags: Union[Unset, List[str]] = UNSET
+    remarks: Union[None, Unset, str] = ""
     status: Union[Unset, str] = "active"
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -71,6 +73,12 @@ class Transaction:
         if not isinstance(self.tags, Unset):
             tags = self.tags
 
+        remarks: Union[None, Unset, str]
+        if isinstance(self.remarks, Unset):
+            remarks = UNSET
+        else:
+            remarks = self.remarks
+
         status = self.status
 
         field_dict: Dict[str, Any] = {}
@@ -91,6 +99,8 @@ class Transaction:
             field_dict["date"] = date
         if tags is not UNSET:
             field_dict["tags"] = tags
+        if remarks is not UNSET:
+            field_dict["remarks"] = remarks
         if status is not UNSET:
             field_dict["status"] = status
 
@@ -127,6 +137,15 @@ class Transaction:
 
         tags = cast(List[str], d.pop("tags", UNSET))
 
+        def _parse_remarks(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        remarks = _parse_remarks(d.pop("remarks", UNSET))
+
         status = d.pop("status", UNSET)
 
         transaction = cls(
@@ -140,6 +159,7 @@ class Transaction:
             updated_by=updated_by,
             date=date,
             tags=tags,
+            remarks=remarks,
             status=status,
         )
 

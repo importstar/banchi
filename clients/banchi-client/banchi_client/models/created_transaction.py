@@ -20,8 +20,9 @@ class CreatedTransaction:
         currency (CurrencyEnum):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-08-17T16:55:24.175499').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2024-10-23T11:24:03.219397').
         tags (Union[Unset, List[str]]):
+        remarks (Union[None, Unset, str]):  Default: ''. Example: Text Remark.
     """
 
     description: str
@@ -29,8 +30,9 @@ class CreatedTransaction:
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2024-08-17T16:55:24.175499")
+    date: Union[Unset, datetime.datetime] = isoparse("2024-10-23T11:24:03.219397")
     tags: Union[Unset, List[str]] = UNSET
+    remarks: Union[None, Unset, str] = ""
     additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -53,6 +55,12 @@ class CreatedTransaction:
         if not isinstance(self.tags, Unset):
             tags = self.tags
 
+        remarks: Union[None, Unset, str]
+        if isinstance(self.remarks, Unset):
+            remarks = UNSET
+        else:
+            remarks = self.remarks
+
         field_dict: Dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -68,6 +76,8 @@ class CreatedTransaction:
             field_dict["date"] = date
         if tags is not UNSET:
             field_dict["tags"] = tags
+        if remarks is not UNSET:
+            field_dict["remarks"] = remarks
 
         return field_dict
 
@@ -96,6 +106,15 @@ class CreatedTransaction:
 
         tags = cast(List[str], d.pop("tags", UNSET))
 
+        def _parse_remarks(data: object) -> Union[None, Unset, str]:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(Union[None, Unset, str], data)
+
+        remarks = _parse_remarks(d.pop("remarks", UNSET))
+
         created_transaction = cls(
             description=description,
             value=value,
@@ -104,6 +123,7 @@ class CreatedTransaction:
             to_account_book_id=to_account_book_id,
             date=date,
             tags=tags,
+            remarks=remarks,
         )
 
         created_transaction.additional_properties = d

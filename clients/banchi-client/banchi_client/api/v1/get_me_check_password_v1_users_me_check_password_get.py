@@ -18,7 +18,7 @@ def _get_kwargs() -> Dict[str, Any]:
 
 
 def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[bool]:
-    if response.status_code == 200:
+    if response.status_code == HTTPStatus.OK:
         response_200 = cast(bool, response.json())
         return response_200
     if client.raise_on_unexpected_status:

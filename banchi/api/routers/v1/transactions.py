@@ -57,7 +57,7 @@ async def get_all(
     page: typing.Annotated[int | None, Query()] = 1,
     size_per_page: typing.Annotated[int | None, Query()] = 50,
 ) -> schemas.transactions.TransactionList:
-    print(">>>", page, size_per_page)
+    # print(">>>", page, size_per_page)
     from_account_book = None
     to_account_book = None
 
@@ -195,6 +195,11 @@ async def get(
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
+
+    print("db_transaction -->")
+    import pprint
+
+    pprint.pprint(db_transaction.dict())
     return db_transaction
 
 
@@ -214,6 +219,7 @@ async def update(
     db_transaction.value = data["value"]
     db_transaction.to_account_book = data["to_account_book"]
     db_transaction.from_account_book = data["from_account_book"]
+
     await db_transaction.save()
 
     await db_transaction.fetch_all_links()
