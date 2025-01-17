@@ -45,7 +45,7 @@ services:
             - .env
             # environment:
             # BANCHI_SETTINGS: backend/.env
-        command: /venv/bin/gunicorn  -w 5 --bind 0.0.0.0:9000 --worker-class uvicorn.workers.UvicornWorker --timeout 600 --keep-alive 10 "banchi.api:get_application()"
+        command: /venv/bin/gunicorn --bind 0.0.0.0:9000 --worker-class uvicorn.workers.UvicornWorker --timeout 600 --keep-alive 10 "banchi.api:get_application()"
         logging:
             options:
                 max-size: "10m"
@@ -88,7 +88,7 @@ services:
         restart: always
         environment:
             BANCHI_SETTINGS: /app/.env
-        command: /venv/bin/gunicorn -w 8 --keep-alive 10 --timeout 1200 --bind 0.0.0.0:9000 "banchi.web:create_app()"
+        command: /venv/bin/gunicorn --keep-alive 10 --timeout 1200 --bind 0.0.0.0:9000 "banchi.web:create_app()"
         logging:
             options:
                 max-size: "10m"
