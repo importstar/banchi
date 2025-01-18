@@ -234,6 +234,18 @@ async def delete(
     db_transaction.status = "delete"
     db_transaction.updated_date = datetime.datetime.now()
     db_transaction.updated_by = current_user
+
+    to_account_book = db_transaction.to_account_book
+    from_account_book = db_transaction.from_account_book
+
+    to_account_book.balance -= db_transaction.value
+    from_account_book.balance += db_transaction.value
+    to_account_book.increase += db_transaction.value
+    from_account_book.decrease += db_transaction.value
+
+    to_account_book.save()
+    from_account_book.save()
+
     await db_transaction.save()
 
     return db_transaction

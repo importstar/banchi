@@ -7,7 +7,7 @@ import pathlib
 import os
 
 import redis
-from rq import Worker, Queue, Connection, SimpleWorker
+from rq import Worker, Queue, SimpleWorker
 
 from banchi.api import models
 
@@ -18,33 +18,22 @@ logger = logging.getLogger(__name__)
 listen = ["default"]
 
 
-# def create_server():
-#     from app.core import config
-
-#     settings = config.get_app_settings()
-#     server = WorkerServer(settings)
-
-#     return server
-
-
-class GeneralWorker(SimpleWorker):
+class ProcessWorker(SimpleWorker):
     def __init__(self, *args, **kwargs):
         settings = kwargs.pop("settings")
         super().__init__(*args, **kwargs)
 
-        # models.init_mongoengine(settings)
+        models.init_mongoengine(settings)
 
 
 class WorkerServer:
     def __init__(self, settings):
         self.settings = settings
 
-        redis_url = settings.REDIS_URL
+        redis_url = settings.get("REDIS_URL", "redis://localhost:6379")
         self.conn = redis.from_url(redis_url)
 
         logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.DEBUG)
 
     def run(self):
-        with Connection(self.conn):
-            worker = GeneralWorker(list(map(Queue, listen)), settings=self.settings)
-            worker.work()
+        worker = ProcessWorker(listen, connection=self.conn, settings=self.settings)

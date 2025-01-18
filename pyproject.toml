@@ -27,6 +27,7 @@ openapi-python-client = "^0.21.2"
 fastapi = "^0.111.1"
 requests = "^2.32.3"
 banchi-client = { path = "./clients/banchi-client" }
+bcrypt = "^4.2.1"
 
 
 [tool.poetry.dev-dependencies]

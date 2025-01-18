@@ -1,4 +1,4 @@
-from banchiapi import worker
+from banchi import worker
 
 
 def main():
