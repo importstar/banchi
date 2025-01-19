@@ -240,7 +240,8 @@ async def delete(
 
     to_account_book.balance -= db_transaction.value
     from_account_book.balance += db_transaction.value
-    to_account_book.increase += db_transaction.value
+
+    to_account_book.increase -= db_transaction.value
     from_account_book.decrease += db_transaction.value
 
     to_account_book.save()

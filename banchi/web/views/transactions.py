@@ -160,4 +160,6 @@ def delete(transaction_id):
         client=client, transaction_id=transaction_id
     )
 
+    account_book_id = transaction.from_account_book.id
+
     return redirect(url_for("account_books.view", account_book_id=account_book_id))
