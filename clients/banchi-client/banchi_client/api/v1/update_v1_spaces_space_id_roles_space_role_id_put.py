@@ -36,11 +36,11 @@ def _get_kwargs(
 def _parse_response(
     *, client: Union[AuthenticatedClient, Client], response: httpx.Response
 ) -> Optional[Union[HTTPValidationError, SpaceRole]]:
-    if response.status_code == HTTPStatus.OK:
+    if response.status_code == 200:
         response_200 = SpaceRole.from_dict(response.json())
 
         return response_200
-    if response.status_code == HTTPStatus.UNPROCESSABLE_ENTITY:
+    if response.status_code == 422:
         response_422 = HTTPValidationError.from_dict(response.json())
 
         return response_422

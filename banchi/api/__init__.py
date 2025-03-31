@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.openapi.utils import get_openapi
 from fastapi.exceptions import RequestValidationError
 
@@ -36,4 +36,18 @@ def get_application() -> FastAPI:
         await init_router(application, settings)
 
     # init_rq(settings)
+
+    set_route_names_as_operation_ids(application)
     return application
+
+
+def set_route_names_as_operation_ids(app: FastAPI) -> None:
+    """
+    Simplify operation IDs so that generated API clients have simpler function
+    names.
+
+    Should be called only after all routes have been added.
+    """
+    for route in app.routes:
+        if isinstance(route, APIRouter):
+            route.operation_id = route.name
