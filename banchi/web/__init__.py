@@ -2,16 +2,16 @@ import optparse
 
 from flask import Flask
 
+
 from . import models
 from . import views
 from . import acl
 from . import oauth2
 from . import banchi_api_clients
 
-app = Flask(__name__)
-
 
 def create_app():
+    app = Flask(__name__)
     app.config.from_object("banchi.web.default_settings")
     app.config.from_envvar("BANCHI_SETTINGS", silent=True)
 
@@ -61,6 +61,10 @@ def get_program_options(default_host="127.0.0.1", default_port="8080"):
     )
 
     options, _ = parser.parse_args()
+    return options
+
+
+def init_profile(options, app):
 
     # If the user selects the profiling option, then we need
     # to do a little extra setup

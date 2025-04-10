@@ -3,6 +3,10 @@ import pathlib
 import importlib
 import logging
 
+from flask_htmx import HTMX
+
+htmx = HTMX()
+
 logger = logging.getLogger(__name__)
 
 
@@ -56,6 +60,7 @@ def get_subblueprints(directory):
 
 
 def register_blueprint(app):
+    htmx.init_app(app)
     app.add_template_filter(add_date_url)
     parent = pathlib.Path(__file__).parent
     blueprints = get_subblueprints(parent)
