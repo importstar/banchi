@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -14,19 +15,19 @@ T = TypeVar("T", bound="AccountList")
 class AccountList:
     """
     Attributes:
-        accounts (List['Account']):
+        accounts (list['Account']):
     """
 
-    accounts: List["Account"]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    accounts: list["Account"]
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         accounts = []
         for accounts_item_data in self.accounts:
             accounts_item = accounts_item_data.to_dict()
             accounts.append(accounts_item)
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -37,10 +38,10 @@ class AccountList:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.account import Account
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         accounts = []
         _accounts = d.pop("accounts")
         for accounts_item_data in _accounts:
@@ -56,7 +57,7 @@ class AccountList:
         return account_list
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

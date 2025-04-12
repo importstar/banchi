@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
@@ -16,8 +16,8 @@ def _get_kwargs(
     to_account_book_id: Union[None, str],
     page: Union[None, Unset, int] = 1,
     size_per_page: Union[None, Unset, int] = 50,
-) -> Dict[str, Any]:
-    params: Dict[str, Any] = {}
+) -> dict[str, Any]:
+    params: dict[str, Any] = {}
 
     json_from_account_book_id: Union[None, str]
     json_from_account_book_id = from_account_book_id
@@ -43,7 +43,7 @@ def _get_kwargs(
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    _kwargs: Dict[str, Any] = {
+    _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/v1/transactions",
         "params": params,

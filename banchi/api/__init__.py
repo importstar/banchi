@@ -14,7 +14,7 @@ from banchi.worker.redis_rq import init_rq
 from banchi.api import models
 
 
-def get_application() -> FastAPI:
+def create_app() -> FastAPI:
     settings = get_app_settings()
     settings.configure_logging()
     application = FastAPI(**settings.fastapi_kwargs)

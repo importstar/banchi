@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Dict, Optional, Union
+from typing import Any, Optional, Union
 
 import httpx
 
@@ -17,8 +17,8 @@ def _get_kwargs(
     citizen_id: Union[Unset, str] = "",
     current_page: Union[Unset, int] = 1,
     limit: Union[Unset, int] = 50,
-) -> Dict[str, Any]:
-    params: Dict[str, Any] = {}
+) -> dict[str, Any]:
+    params: dict[str, Any] = {}
 
     params["first_name"] = first_name
 
@@ -32,7 +32,7 @@ def _get_kwargs(
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
-    _kwargs: Dict[str, Any] = {
+    _kwargs: dict[str, Any] = {
         "method": "get",
         "url": "/v1/users",
         "params": params,

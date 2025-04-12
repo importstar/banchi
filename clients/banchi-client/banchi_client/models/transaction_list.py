@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -16,19 +17,19 @@ T = TypeVar("T", bound="TransactionList")
 class TransactionList:
     """
     Attributes:
-        transactions (List['Transaction']):
+        transactions (list['Transaction']):
         page (Union[Unset, int]):  Default: 1.
         size_per_page (Union[Unset, int]):  Default: 50.
         page_size (Union[Unset, int]):  Default: 1.
     """
 
-    transactions: List["Transaction"]
+    transactions: list["Transaction"]
     page: Union[Unset, int] = 1
     size_per_page: Union[Unset, int] = 50
     page_size: Union[Unset, int] = 1
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         transactions = []
         for transactions_item_data in self.transactions:
             transactions_item = transactions_item_data.to_dict()
@@ -40,7 +41,7 @@ class TransactionList:
 
         page_size = self.page_size
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -57,10 +58,10 @@ class TransactionList:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.transaction import Transaction
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         transactions = []
         _transactions = d.pop("transactions")
         for transactions_item_data in _transactions:
@@ -85,7 +86,7 @@ class TransactionList:
         return transaction_list
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

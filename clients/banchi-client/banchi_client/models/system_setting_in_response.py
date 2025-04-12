@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -10,21 +11,21 @@ T = TypeVar("T", bound="SystemSettingInResponse")
 class SystemSettingInResponse:
     """
     Attributes:
-        title_names (List[str]):
-        banks (List[str]):
+        title_names (list[str]):
+        banks (list[str]):
         bill_expired (Union[None, int]):
         year (Union[None, str]):
         vat (Union[None, float]):
     """
 
-    title_names: List[str]
-    banks: List[str]
+    title_names: list[str]
+    banks: list[str]
     bill_expired: Union[None, int]
     year: Union[None, str]
     vat: Union[None, float]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         title_names = self.title_names
 
         banks = self.banks
@@ -38,7 +39,7 @@ class SystemSettingInResponse:
         vat: Union[None, float]
         vat = self.vat
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -53,11 +54,11 @@ class SystemSettingInResponse:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
-        title_names = cast(List[str], d.pop("title_names"))
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        title_names = cast(list[str], d.pop("title_names"))
 
-        banks = cast(List[str], d.pop("banks"))
+        banks = cast(list[str], d.pop("banks"))
 
         def _parse_bill_expired(data: object) -> Union[None, int]:
             if data is None:
@@ -92,7 +93,7 @@ class SystemSettingInResponse:
         return system_setting_in_response
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

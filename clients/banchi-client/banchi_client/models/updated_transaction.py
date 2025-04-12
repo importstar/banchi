@@ -1,5 +1,6 @@
 import datetime
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -20,8 +21,8 @@ class UpdatedTransaction:
         currency (CurrencyEnum):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2025-03-31T19:00:08.209473').
-        tags (Union[Unset, List[str]]):
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2025-04-12T15:17:29.698935').
+        tags (Union[Unset, list[str]]):
         remarks (Union[None, Unset, str]):  Default: ''. Example: Text Remark.
     """
 
@@ -30,12 +31,12 @@ class UpdatedTransaction:
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2025-03-31T19:00:08.209473")
-    tags: Union[Unset, List[str]] = UNSET
+    date: Union[Unset, datetime.datetime] = isoparse("2025-04-12T15:17:29.698935")
+    tags: Union[Unset, list[str]] = UNSET
     remarks: Union[None, Unset, str] = ""
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         description = self.description
 
         value: Union[float, str]
@@ -51,7 +52,7 @@ class UpdatedTransaction:
         if not isinstance(self.date, Unset):
             date = self.date.isoformat()
 
-        tags: Union[Unset, List[str]] = UNSET
+        tags: Union[Unset, list[str]] = UNSET
         if not isinstance(self.tags, Unset):
             tags = self.tags
 
@@ -61,7 +62,7 @@ class UpdatedTransaction:
         else:
             remarks = self.remarks
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -82,8 +83,8 @@ class UpdatedTransaction:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         description = d.pop("description")
 
         def _parse_value(data: object) -> Union[float, str]:
@@ -104,7 +105,7 @@ class UpdatedTransaction:
         else:
             date = isoparse(_date)
 
-        tags = cast(List[str], d.pop("tags", UNSET))
+        tags = cast(list[str], d.pop("tags", UNSET))
 
         def _parse_remarks(data: object) -> Union[None, Unset, str]:
             if data is None:
@@ -130,7 +131,7 @@ class UpdatedTransaction:
         return updated_transaction
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

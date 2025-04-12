@@ -1,8 +1,12 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.account_type_enum import AccountTypeEnum
+from ..models.currency_enum import CurrencyEnum
+from ..models.smallest_fraction_enum import SmallestFractionEnum
 from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
@@ -27,9 +31,9 @@ class AccountBook:
         decrease (str):
         balance (str):
         description (Union[Unset, str]):  Default: ''. Example: Description.
-        type (Union[Unset, Any]):  Default: 'asset'. Example: asset.
-        smallest_fraction (Union[Unset, Any]):  Default: 100. Example: 100.
-        currency (Union[Unset, Any]):  Default: 'THB'. Example: THB.
+        type_ (Union[Unset, AccountTypeEnum]):
+        smallest_fraction (Union[Unset, SmallestFractionEnum]):
+        currency (Union[Unset, CurrencyEnum]):
         status (Union[Unset, str]):  Default: 'active'. Example: active.
     """
 
@@ -42,13 +46,13 @@ class AccountBook:
     decrease: str
     balance: str
     description: Union[Unset, str] = ""
-    type: Union[Unset, Any] = "asset"
-    smallest_fraction: Union[Unset, Any] = 100
-    currency: Union[Unset, Any] = "THB"
+    type_: Union[Unset, AccountTypeEnum] = UNSET
+    smallest_fraction: Union[Unset, SmallestFractionEnum] = UNSET
+    currency: Union[Unset, CurrencyEnum] = UNSET
     status: Union[Unset, str] = "active"
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         from ..models.reference_account_book import ReferenceAccountBook
 
         name = self.name
@@ -57,7 +61,7 @@ class AccountBook:
 
         account = self.account.to_dict()
 
-        parent: Union[Dict[str, Any], None]
+        parent: Union[None, dict[str, Any]]
         if isinstance(self.parent, ReferenceAccountBook):
             parent = self.parent.to_dict()
         else:
@@ -73,15 +77,21 @@ class AccountBook:
 
         description = self.description
 
-        type = self.type
+        type_: Union[Unset, str] = UNSET
+        if not isinstance(self.type_, Unset):
+            type_ = self.type_.value
 
-        smallest_fraction = self.smallest_fraction
+        smallest_fraction: Union[Unset, int] = UNSET
+        if not isinstance(self.smallest_fraction, Unset):
+            smallest_fraction = self.smallest_fraction.value
 
-        currency = self.currency
+        currency: Union[Unset, str] = UNSET
+        if not isinstance(self.currency, Unset):
+            currency = self.currency.value
 
         status = self.status
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -97,8 +107,8 @@ class AccountBook:
         )
         if description is not UNSET:
             field_dict["description"] = description
-        if type is not UNSET:
-            field_dict["type"] = type
+        if type_ is not UNSET:
+            field_dict["type"] = type_
         if smallest_fraction is not UNSET:
             field_dict["smallest_fraction"] = smallest_fraction
         if currency is not UNSET:
@@ -109,12 +119,12 @@ class AccountBook:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.reference_account import ReferenceAccount
         from ..models.reference_account_book import ReferenceAccountBook
         from ..models.reference_user import ReferenceUser
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         name = d.pop("name")
 
         id = d.pop("id")
@@ -146,11 +156,26 @@ class AccountBook:
 
         description = d.pop("description", UNSET)
 
-        type = d.pop("type", UNSET)
+        _type_ = d.pop("type", UNSET)
+        type_: Union[Unset, AccountTypeEnum]
+        if isinstance(_type_, Unset):
+            type_ = UNSET
+        else:
+            type_ = AccountTypeEnum(_type_)
 
-        smallest_fraction = d.pop("smallest_fraction", UNSET)
+        _smallest_fraction = d.pop("smallest_fraction", UNSET)
+        smallest_fraction: Union[Unset, SmallestFractionEnum]
+        if isinstance(_smallest_fraction, Unset):
+            smallest_fraction = UNSET
+        else:
+            smallest_fraction = SmallestFractionEnum(_smallest_fraction)
 
-        currency = d.pop("currency", UNSET)
+        _currency = d.pop("currency", UNSET)
+        currency: Union[Unset, CurrencyEnum]
+        if isinstance(_currency, Unset):
+            currency = UNSET
+        else:
+            currency = CurrencyEnum(_currency)
 
         status = d.pop("status", UNSET)
 
@@ -164,7 +189,7 @@ class AccountBook:
             decrease=decrease,
             balance=balance,
             description=description,
-            type=type,
+            type_=type_,
             smallest_fraction=smallest_fraction,
             currency=currency,
             status=status,
@@ -174,7 +199,7 @@ class AccountBook:
         return account_book
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

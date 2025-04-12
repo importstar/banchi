@@ -23,7 +23,7 @@ passlib = "^1.7.4"
 python-jose = "^3.3.0"
 python-multipart = "^0.0.9"
 flask-login = "^0.6.3"
-openapi-python-client = "^0.21.2"
+openapi-python-client = "^0.24.3"
 fastapi = "^0.111.1"
 requests = "^2.32.3"
 banchi-client = { path = "./clients/banchi-client" }

@@ -1,4 +1,5 @@
-from typing import Any, Dict, List, Type, TypeVar, cast
+from collections.abc import Mapping
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -14,17 +15,17 @@ class UpdatedUser:
         username (str):  Example: admin.
         first_name (str):  Example: Firstname.
         last_name (str):  Example: Lastname.
-        roles (List[str]):
+        roles (list[str]):
     """
 
     email: str
     username: str
     first_name: str
     last_name: str
-    roles: List[str]
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    roles: list[str]
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         email = self.email
 
         username = self.username
@@ -35,7 +36,7 @@ class UpdatedUser:
 
         roles = self.roles
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -50,8 +51,8 @@ class UpdatedUser:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         email = d.pop("email")
 
         username = d.pop("username")
@@ -60,7 +61,7 @@ class UpdatedUser:
 
         last_name = d.pop("last_name")
 
-        roles = cast(List[str], d.pop("roles"))
+        roles = cast(list[str], d.pop("roles"))
 
         updated_user = cls(
             email=email,
@@ -74,7 +75,7 @@ class UpdatedUser:
         return updated_user
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

@@ -45,7 +45,7 @@ services:
       - ./backend/.env
       # environment:
       # REZOURCE_SETTINGS: backend/.env
-    command: /venv/bin/gunicorn -w 2 --threads 5 --bind 0.0.0.0:9000 --worker-class uvicorn.workers.UvicornWorker --timeout 600 --keep-alive 10 "banchaiapi.main:get_application()"
+    command: /venv/bin/gunicorn -w 2 --threads 5 --bind 0.0.0.0:9000 --worker-class uvicorn.workers.UvicornWorker --timeout 600 --keep-alive 10 "banchaiapi.main:create_app()"
     logging:
       options:
         max-size: "10m"

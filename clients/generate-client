@@ -8,7 +8,7 @@ import httpx
 
 
 def generate(
-    name, url="http://localhost:8000/openapi.json", config="client-generator.yml"
+    name, url="http://localhost:9000/openapi.json", config="client-generator.yml"
 ):
     print("Banchi Client Generator")
 
@@ -17,6 +17,6 @@ def generate(
 if __name__ == "__main__":
     generate(
         "banchi",
-        "http://localhost:8000/openapi.json",
+        "http://localhost:9000/openapi.json",
         "config/banchi-client-generator.yml",
     )

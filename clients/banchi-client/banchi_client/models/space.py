@@ -1,4 +1,5 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Type, TypeVar, Union, cast
+from collections.abc import Mapping
+from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -30,9 +31,9 @@ class Space:
     id: str
     owner: "ReferenceUser"
     status: Union[Unset, str] = "active"
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         name = self.name
 
         code: Union[None, str]
@@ -47,7 +48,7 @@ class Space:
 
         status = self.status
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -64,10 +65,10 @@ class Space:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.reference_user import ReferenceUser
 
-        d = src_dict.copy()
+        d = dict(src_dict)
         name = d.pop("name")
 
         def _parse_code(data: object) -> Union[None, str]:
@@ -103,7 +104,7 @@ class Space:
         return space
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:

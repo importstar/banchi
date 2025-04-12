@@ -1,5 +1,6 @@
 import datetime
-from typing import Any, Dict, List, Type, TypeVar, Union, cast
+from collections.abc import Mapping
+from typing import Any, TypeVar, Union, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -19,7 +20,7 @@ class User:
         first_name (str):  Example: Firstname.
         last_name (str):  Example: Lastname.
         id (str):  Example: 0.
-        roles (Union[List[str], None]):  Example: ['user'].
+        roles (Union[None, list[str]]):  Example: ['user'].
         last_login_date (Union[None, Unset, datetime.datetime]):  Example: 2023-01-01T00:00:00.000000.
         register_date (Union[None, Unset, datetime.datetime]):  Example: 2023-01-01T00:00:00.000000.
     """
@@ -29,12 +30,12 @@ class User:
     first_name: str
     last_name: str
     id: str
-    roles: Union[List[str], None]
+    roles: Union[None, list[str]]
     last_login_date: Union[None, Unset, datetime.datetime] = UNSET
     register_date: Union[None, Unset, datetime.datetime] = UNSET
-    additional_properties: Dict[str, Any] = _attrs_field(init=False, factory=dict)
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         email = self.email
 
         username = self.username
@@ -45,7 +46,7 @@ class User:
 
         id = self.id
 
-        roles: Union[List[str], None]
+        roles: Union[None, list[str]]
         if isinstance(self.roles, list):
             roles = self.roles
 
@@ -68,7 +69,7 @@ class User:
         else:
             register_date = self.register_date
 
-        field_dict: Dict[str, Any] = {}
+        field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
@@ -88,8 +89,8 @@ class User:
         return field_dict
 
     @classmethod
-    def from_dict(cls: Type[T], src_dict: Dict[str, Any]) -> T:
-        d = src_dict.copy()
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
         email = d.pop("email")
 
         username = d.pop("username")
@@ -100,18 +101,18 @@ class User:
 
         id = d.pop("id")
 
-        def _parse_roles(data: object) -> Union[List[str], None]:
+        def _parse_roles(data: object) -> Union[None, list[str]]:
             if data is None:
                 return data
             try:
                 if not isinstance(data, list):
                     raise TypeError()
-                roles_type_0 = cast(List[str], data)
+                roles_type_0 = cast(list[str], data)
 
                 return roles_type_0
             except:  # noqa: E722
                 pass
-            return cast(Union[List[str], None], data)
+            return cast(Union[None, list[str]], data)
 
         roles = _parse_roles(d.pop("roles"))
 
@@ -164,7 +165,7 @@ class User:
         return user
 
     @property
-    def additional_keys(self) -> List[str]:
+    def additional_keys(self) -> list[str]:
         return list(self.additional_properties.keys())
 
     def __getitem__(self, key: str) -> Any:
