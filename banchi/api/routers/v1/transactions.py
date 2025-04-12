@@ -212,8 +212,26 @@ async def update(
 
     data = await transform_transaction(transaction, current_user)
     db_transaction.value = data["value"]
+
+    if db_transaction.from_account_book != data["from_account_book_id"]:
+        db_transaction.from_account_book.balance -= db_transaction.value
+        db_transaction.from_account_book.decrease += db_transaction.value
+    else:
+        db_transaction.from_account_book.balance += db_transaction.value
+        db_transaction.from_account_book.increase -= db_transaction.value
+    if db_transaction.to_account_book != data["to_account_book_id"]:
+        db_transaction.to_account_book.balance += db_transaction.value
+        db_transaction.to_account_book.increase -= db_transaction.value
+    else:
+        db_transaction.to_account_book.balance -= db_transaction.value
+        db_transaction.to_account_book.decrease += db_transaction.value
+    await db_transaction.to_account_book.save()
+    await db_transaction.from_account_book.save()
+
     db_transaction.to_account_book = data["to_account_book"]
     db_transaction.from_account_book = data["from_account_book"]
+    db_transaction.updated_date = datetime.datetime.now()
+    db_transaction.updated_by = current_user
 
     await db_transaction.save()
 
