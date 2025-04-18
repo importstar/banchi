@@ -5,65 +5,71 @@ Account {{ account.name }}
 {% endblock %}
 
 {% block breadcrumbs %}
-  {{ super() }}
-  <div class="divider">/</div>
-  <div class="active section">Account: {{ account.name }} </div>
+{{ super() }}
+<div class="divider">/</div>
+<div class="active section">Account: {{ account.name }} </div>
 
 {% endblock %}
 
 {% block title %}
-  {{ self.dashboard_title() }}
+{{ self.dashboard_title() }}
 {% endblock %}
 
 {% block content %}
-  <div style="padding-bottom: 10px;">
-    <a class="ui primary icon button" href="{{ url_for('account_books.add_or_edit_transaction', account_id=account.id) }}"><i class="add icon"></i> Add Transaction</a>
-    <a class="ui primary icon button" href="{{ url_for('account_books.create_or_edit', account_id=account.id) }}"><i class="file icon"></i> Create Account Book</a>
-  </div>
-  <div>
-    <table class="ui large table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Children</th>
-          <th>Balance</th>
-          <th>Tool</th>
+<div style="padding-bottom: 10px;">
+  <a class="ui primary icon button"
+    href="{{ url_for('account_books.add_or_edit_transaction', account_id=account.id) }}"><i class="add icon"></i> Add
+    Transaction</a>
+  <a class="ui primary icon button" href="{{ url_for('account_books.create_or_edit', account_id=account.id) }}"><i
+      class="file icon"></i> Create Account Book</a>
+</div>
+<div>
+  <table class="ui large table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Children</th>
+        <th>Balance</th>
+        <th>Tool</th>
 
-        </tr>
-      </thead>
-      <tbody>
-        {% for account_book_id, account_book in display_account_books.items() %}
-          <tr class="{{ 'blue' if not account_book['obj'].parent }}">
-            <td style="font-weight: bold;">
-              <a href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
-                {{ account_book['name'] }}
-              </a>
-            </td>
-            <td> {{ account_book['obj'].type.title() }} </td>
-            <td class="right aligned"> {{ account_book['account_balance'].children  }} </td>
-            <td class="right aligned" style="font-weight: bold;"> {{ "{:,.2f}".format(account_book['account_balance'].net_balance|float) }} </td>
-            <td>
-              <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
-                <i class="eye icon"></i>
-              </a>
+      </tr>
+    </thead>
+    <tbody>
+      {% for account_book_id, account_book in display_account_books.items() %}
+      <tr class="{{ 'blue' if not account_book['obj'].parent }}">
+        <td style="font-weight: bold;">
+          <a href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
+            {{ account_book['name'] }}
+          </a>
+        </td>
+        <td> {{ account_book['obj'].type.title() if account_book['obj'].type }} </td>
+        <td class="right aligned"> {{ account_book['account_balance'].children }} </td>
+        <td class="right aligned" style="font-weight: bold;"> {{
+          "{:,.2f}".format(account_book['account_balance'].net_balance|float) }} </td>
+        <td>
+          <a class="ui primary circular icon button"
+            href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
+            <i class="eye icon"></i>
+          </a>
 
-              <a class="ui yellow circular icon button" href="{{ url_for('account_books.create_or_edit', account_book_id=account_book_id) }}">
-                <i class="edit icon"></i>
-              </a>
+          <a class="ui yellow circular icon button"
+            href="{{ url_for('account_books.create_or_edit', account_book_id=account_book_id) }}">
+            <i class="edit icon"></i>
+          </a>
 
-              <a class="ui red circular icon button" id="delete-account-book-{{ account_book_id }}">
-                <i class="trash icon"></i>
-              </a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+          <a class="ui red circular icon button" id="delete-account-book-{{ account_book_id }}">
+            <i class="trash icon"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 
 {% for account_book in account_books %}
-  <div class="ui modal" id="delete-modal-{{ account_book.id }}">
+<div class="ui modal" id="delete-modal-{{ account_book.id }}">
   <i class="close icon"></i>
   <div class="header">
     Delete {{ account_book.name }} Account Book
@@ -78,7 +84,8 @@ Account {{ account.name }}
       Cancel
     </button>
 
-    <a class="ui red right labeled icon button" href="{{ url_for('account_books.delete', account_book_id=account_book.id) }}">
+    <a class="ui red right labeled icon button"
+      href="{{ url_for('account_books.delete', account_book_id=account_book.id) }}">
       Delete
       <i class="trash icon"></i>
     </a>
@@ -93,4 +100,3 @@ Account {{ account.name }}
 {% endfor %}
 
 {% endblock %}
-
