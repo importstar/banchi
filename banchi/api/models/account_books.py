@@ -51,7 +51,7 @@ class AccountBookSummary(Document):
         alias="_id",
     )
 
-    type_: str
+    type: str
 
     increse: DecimalAnnotation
     decrese: DecimalAnnotation

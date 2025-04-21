@@ -210,6 +210,7 @@ async def get_account_book_balance_by_trasaction(
 
     account_book_balance = schemas.account_books.AccountBookBalance(
         id=db_account_book.id,
+        type=db_account_book.type,
         balance=balance,
         decrease=decrease,
         increase=increase,

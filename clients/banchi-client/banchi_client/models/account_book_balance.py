@@ -4,6 +4,7 @@ from typing import Any, TypeVar, Union
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.account_type_enum import AccountTypeEnum
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="AccountBookBalance")
@@ -21,6 +22,7 @@ class AccountBookBalance:
         net_increase (str):
         net_decrease (str):
         children (Union[Unset, int]):  Default: 0.
+        type_ (Union[Unset, AccountTypeEnum]):
     """
 
     id: str
@@ -31,6 +33,7 @@ class AccountBookBalance:
     net_increase: str
     net_decrease: str
     children: Union[Unset, int] = 0
+    type_: Union[Unset, AccountTypeEnum] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -50,6 +53,10 @@ class AccountBookBalance:
 
         children = self.children
 
+        type_: Union[Unset, str] = UNSET
+        if not isinstance(self.type_, Unset):
+            type_ = self.type_.value
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -65,6 +72,8 @@ class AccountBookBalance:
         )
         if children is not UNSET:
             field_dict["children"] = children
+        if type_ is not UNSET:
+            field_dict["type"] = type_
 
         return field_dict
 
@@ -87,6 +96,13 @@ class AccountBookBalance:
 
         children = d.pop("children", UNSET)
 
+        _type_ = d.pop("type", UNSET)
+        type_: Union[Unset, AccountTypeEnum]
+        if isinstance(_type_, Unset):
+            type_ = UNSET
+        else:
+            type_ = AccountTypeEnum(_type_)
+
         account_book_balance = cls(
             id=id,
             balance=balance,
@@ -96,6 +112,7 @@ class AccountBookBalance:
             net_increase=net_increase,
             net_decrease=net_decrease,
             children=children,
+            type_=type_,
         )
 
         account_book_balance.additional_properties = d
