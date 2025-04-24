@@ -1,0 +1,100 @@
+version: '3'
+services:
+    mongodb:
+        image: mongo
+        container_name: banchi-mongodb
+        volumes:
+            - ../deployment/banchi/mongodb/data/db:/data/db
+            - /etc/localtime:/etc/localtime:ro
+        restart: always
+        networks:
+            - default
+        logging:
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+    # redis:
+    #     image: redis
+    #     container_name: banchi-redis
+    #     volumes:
+    #         - ../deployment/banchi/redis/data:/data
+    #     restart: always
+    #     networks:
+    #         - default
+    #     logging:
+    #         options:
+    #             max-size: "10m"
+    #             max-file: "3"
+
+    api:
+        # build: ./
+        image: banchi/banchi-image:latest
+        container_name: banchi-api
+        volumes:
+            # - ../deployment:/deployment
+            - /etc/localtime:/etc/localtime:ro
+            - .env:/app/.env
+        ports:
+            - 9080:9000
+        links:
+            - mongodb
+        networks:
+            - default
+        restart: always
+        env_file:
+            - .env
+            # environment:
+            # BANCHI_SETTINGS: backend/.env
+        command: /venv/bin/gunicorn --bind 0.0.0.0:9000 --worker-class uvicorn.workers.UvicornWorker --timeout 600 --keep-alive 10 "banchi.api:get_application()"
+        logging:
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+    # worker:
+    #     build: banchiapi
+    #     image: banchi-api-image
+    #     container_name: banchi-worker
+    #     volumes:
+    #         # - ../deployment:/deployment
+    #         - /etc/localtime:/etc/localtime:ro
+    #     links:
+    #         - redis
+    #     networks:
+    #         - default
+    #     restart: always
+    #     env_file:
+    #         - .env
+    #     # command: /venv/bin/python -m poetry run banchi-worker
+    #     command: /venv/bin/banchi-worker
+    #     logging:
+    #         options:
+    #             max-size: "10m"
+    #             max-file: "3"
+
+    web:
+        # build: .
+        image: banchi/banchi-image:latest
+        container_name: banchi-web
+        volumes:
+            - ../../deployment:/deployment
+            - /etc/localtime:/etc/localtime:ro
+            - .env:/app/.env
+        ports:
+            - 9081:9000
+        networks:
+            - default
+        env_file:
+            - .env
+        restart: always
+        environment:
+            BANCHI_SETTINGS: /app/.env
+        command: /venv/bin/gunicorn --keep-alive 10 --timeout 1200 --bind 0.0.0.0:9000 "banchi.web:create_app()"
+        logging:
+            options:
+                max-size: "10m"
+                max-file: "3"
+
+networks:
+    default:
