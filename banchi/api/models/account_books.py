@@ -53,8 +53,11 @@ class AccountBookSummary(Document):
 
     type: str
 
-    increse: DecimalAnnotation
-    decrese: DecimalAnnotation
+    increse: DecimalAnnotation = 0
+    decrese: DecimalAnnotation = 0
+    balance: DecimalAnnotation = 0
+
+    date: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     account_book: Link["AccountBook"]
 
