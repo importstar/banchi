@@ -90,7 +90,7 @@ def create_or_edit(account_book_id):
         )
 
         form.parent_id.data = parent_id
-        form.type.data = parent.type
+        form.type.data = parent.type_
 
     if account_id:
         response = get_all_v1_account_books_get.sync(
