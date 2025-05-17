@@ -5,58 +5,65 @@ Account Book
 {% endblock %}
 
 {% block breadcrumbs %}
-  {% if request.endpoint == 'account_books.index' %}
-    <a class="active section">Account Books</a>
-  {% elif account_book %}
-    <a href="{{ url_for('account_books.index', account_id=account_book.account.id) }}" class="section">Account Books</a>
-  {% elif request.args.get('account_id') %}
-    <a href="{{ url_for('account_books.index', account_id=request.args.get('account_id')) }}" class="section">Account Books</a>
- 
-  {% else %}
-    <a href="{{ url_for('account_books.index') }}" class="section">Account Books</a>
-  {% endif %}
+{% if request.endpoint == 'account_books.index' %}
+<a class="active section">Account Books</a>
+{% elif account_book %}
+<a href="{{ url_for('account_books.index', account_id=account_book.account.id) }}" class="section">Account Books</a>
+{% elif request.args.get('account_id') %}
+<a href="{{ url_for('account_books.index', account_id=request.args.get('account_id')) }}" class="section">Account
+  Books</a>
+
+{% else %}
+<a href="{{ url_for('account_books.index') }}" class="section">Account Books</a>
+{% endif %}
 {% endblock %}
 
 
 {% block content %}
-  <div class="ui segment">
-    <a class="ui button icon primary" href="{{ url_for('accounts.view', account_id=request.args.get('account_id')) }}"><i class="eye icon"></i> Account</a>
-    <a class="ui button icon primary" href="{{ url_for('account_books.create_or_edit', account_id=request.args.get('account_id'))  }}"><i class="file icon"></i> Create Account Book</a>
-    <a class="ui button icon primary" href="{{ url_for('account_books.add_or_edit_transaction', account_id=request.args.get('account_id'))  }}"><i class="money icon"></i> Add Transaction</a>
-  </div>
-    
-  <div>
-    <h2 class="ui head">Account Book</h2>
+<div class="ui segment">
+  <a class="ui button icon primary" href="{{ url_for('accounts.view', account_id=request.args.get('account_id')) }}"><i
+      class="eye icon"></i> Account</a>
+  <a class="ui button icon primary"
+    href="{{ url_for('account_books.create_or_edit', account_id=request.args.get('account_id'))  }}"><i
+      class="file icon"></i> Create Account Book</a>
+  <a class="ui button icon primary"
+    href="{{ url_for('account_books.add_or_edit_transaction', account_id=request.args.get('account_id'))  }}"><i
+      class="money icon"></i> Add Transaction</a>
+</div>
 
-     <table class="ui table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Balance</th>
-          <th>Tool</th>
+<div>
+  <h2 class="ui head">Account Book</h2>
 
-        </tr>
-      </thead>
-      <tbody>
-        {% for account_book_id, account_book in display_account_books.items() %}
-          <tr class="{{ 'blue' if not account_book['obj'].parent }}">
-            <td>
-              <a href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
-                {{ account_book['name'] }}
-              </a>
-            </td>
-            <td> {{ account_book['obj'].type.title() }} </td>
-            <td class="right aligned"> {{ "{:,.2f}".format(account_book['account_balance'].net_balance|float) }} </td>
-            <td>
-              <a class="ui primary circular icon button" href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
-                <i class="eye icon"></i>
-              </a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+  <table class="ui table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Balance</th>
+        <th>Tool</th>
 
-  </div>
+      </tr>
+    </thead>
+    <tbody>
+      {% for account_book_id, account_book in display_account_books.items() %}
+      <tr class="{{ 'blue' if not account_book['obj'].parent }}">
+        <td>
+          <a href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
+            {{ account_book['name'] }}
+          </a>
+        </td>
+        <td> {{ account_book['obj'].type_.title() }} </td>
+        <td class="right aligned"> {{ "{:,.2f}".format(account_book['account_balance'].net_balance|float) }} </td>
+        <td>
+          <a class="ui primary circular icon button"
+            href="{{ url_for('account_books.view', account_book_id=account_book_id) }}">
+            <i class="eye icon"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</div>
 {% endblock %}
