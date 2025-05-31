@@ -51,10 +51,11 @@ async def get_account_book_balance(
     else:
         balance = increase - decrease
 
-    db_account_book.increase = increase
-    db_account_book.decrease = decrease
+    # db_account_book.increase = increase
+    # db_account_book.decrease = decrease
     db_account_book.balance = balance
     await db_account_book.save()
+    return balance
 
 
 async def create_user_admin():
@@ -73,8 +74,8 @@ async def create_user_admin():
         models.account_books.AccountBook.status == "active"
     ).to_list()
     for account_book in account_books:
-        print("check", account_book.name)
-        await get_account_book_balance(account_book)
+        balance = await get_account_book_balance(account_book)
+        print(f"check {account_book.name:<50} balance:{str(balance)}")
 
 
 if __name__ == "__main__":

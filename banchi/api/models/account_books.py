@@ -36,8 +36,8 @@ class AccountBook(schemas.account_books.AccountBook, Document):
     updated_by: Link[users.User]
 
     balance: DecimalAnnotation = 0
-    increase: DecimalAnnotation = 0
-    decrease: DecimalAnnotation = 0
+    # increase: DecimalAnnotation = 0
+    # decrease: DecimalAnnotation = 0
 
     children: list[BackLink["AccountBook"]] = Field(original_field="parent")
 
@@ -57,6 +57,8 @@ class AccountBookSummary(Document):
     decrese: DecimalAnnotation = 0
     balance: DecimalAnnotation = 0
 
+    year: int
+    month: int
     date: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     account_book: Link["AccountBook"]

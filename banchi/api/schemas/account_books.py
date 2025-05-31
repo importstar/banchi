@@ -99,8 +99,8 @@ class AccountBook(bases.BaseSchema, BaseAccountBook):
         example="active",
     )
 
-    increase: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
-    decrease: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
+    # increase: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
+    # decrease: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
     balance: decimal.Decimal = Field(..., example=0.0, decimal_places=2)
 
     # @computed_field
