@@ -3,6 +3,9 @@ import sys
 from banchi.api import models, schemas
 import datetime
 import asyncio
+import decimal
+import bson
+import calendar
 
 
 async def get_account_book_balance_by_trasaction(
@@ -77,71 +80,96 @@ async def get_account_book_balance(
         db_account_book, "to_account_book"
     )
 
-    import pprint
+    # import pprint
 
-    pprint.pprint(decrease_month_account_summary)
-    pprint.pprint(increase_month_account_summary)
+    # print('decrease ->')
+    # pprint.pprint(decrease_month_account_summary)
+    # print('increase ->')
+    # pprint.pprint(increase_month_account_summary)
 
-    return 0
-    min_year = 0
-    min_month = 0
-    if decrease_month_account_summary or increase_month_account_summary:
-        doc_min_year = min(
-            increase_month_account_summary[:1] + decrease_month_account_summary[:1],
-            key=lambda x: x["year"],
+    if not decrease_month_account_summary and not increase_month_account_summary:
+        return 
+
+    increase_min_year = min(
+            increase_month_account_summary.keys(), default=0
         )
+    decrease_min_year = min(
+        decrease_month_account_summary.keys(), default=0
+    )
 
-        doc_min_month = min(
-            increase_month_account_summary[:1] + decrease_month_account_summary[:1],
-            key=lambda x: x["month"],
-        )
+    min_year = increase_min_year
+    if decrease_min_year > 0 and decrease_min_year < min_year:
+        min_year = decrease_min_year
 
-        min_year = doc_min_year["year"]
-        min_month = doc_min_month["month"]
+    if not min_year:
+        return 
 
-    print(min_year, min_month)
-    return 0
+
     for year_iter in range(min_year, datetime.datetime.now().year + 1):
         for month_iter in range(1, 13):
+            print('->', year_iter, month_iter)
 
-            decrease_month = next(
-                (
-                    item
-                    for item in decrease_month_account_summary
-                    if item["_id"]["year"] == year_iter
-                    and item["_id"]["month"] == month_iter
-                ),
-                None,
+            db_account_book_summary = await models.account_books.AccountBookSummary.find_one(
+                models.AccountBookSummary.account_book.id==db_account_book.id,
+                models.AccountBookSummary.year==year_iter,
+                models.AccountBookSummary.month==month_iter,
             )
-            increase_month = next(
-                (
-                    item
-                    for item in increase_month_account_summary
-                    if item["_id"]["year"] == year_iter
-                    and item["_id"]["month"] == month_iter
-                ),
-                None,
+
+
+            decrease_month_result_check = all(
+                [
+                    year_iter  in decrease_month_account_summary,
+                    month_iter  in decrease_month_account_summary.get(year_iter,[]),
+                ])
+            
+            increase_month_result_check = all(
+                [
+                    year_iter  in increase_month_account_summary,
+                    month_iter in increase_month_account_summary.get(year_iter,[]),
+                ]
             )
-            print(f"{increase_month_account_summary}")
+            
 
-            print(f"checking: \n{decrease_month=}, \n{increase_month=}")
+            if not decrease_month_result_check and not increase_month_result_check:
+                if db_account_book_summary:
+                    await db_account_book_summary.delete()
+                continue
 
-            decrease = increase = 0
-            if decrease_month:
-                decrease = decrease_month["total"] if decrease_month else 0
-            if increase_month:
-                increase = increase_month["total"] if increase_month else 0
+            if not db_account_book_summary:
+                db_account_book_summary = models.account_books.AccountBookSummary(
+                    account_book=db_account_book,
+                    year=year_iter,
+                    month=month_iter,
+                    date=datetime.datetime(year=year_iter, month=month_iter, day=calendar.monthrange(year_iter,month_iter)[1])
+                )
 
-    if db_account_book.type in ["income", "equity", "liability"]:
-        balance = decrease - increase
-    else:
-        balance = increase - decrease
+            decrease = 0
+            increase = 0
+            balance = 0
+            if decrease_month_result_check:
+                decrease = decrease_month_account_summary[year_iter][month_iter]
 
-    # db_account_book.increase = increase
-    # db_account_book.decrease = decrease
-    db_account_book.balance = balance
-    await db_account_book.save()
-    return balance
+            if increase_month_result_check:
+                increase = increase_month_account_summary[year_iter][month_iter]
+
+
+            if type(decrease) is bson.Decimal128:
+                decrease = decrease.to_decimal()
+
+            if type(increase) is bson.Decimal128:
+                increase = increase.to_decimal()
+
+            if db_account_book.type in ["income", "equity", "liability"]:
+                balance = decrease - increase
+            else:
+                balance = increase - decrease
+
+            db_account_book_summary.balance = balance
+            db_account_book_summary.increase = increase
+            db_account_book_summary.decrease = decrease
+
+            await db_account_book_summary.save()
+
 
 
 async def main():
@@ -160,8 +188,8 @@ async def main():
         models.account_books.AccountBook.status == "active"
     ).to_list()
     for account_book in account_books:
-        balance = await get_account_book_balance(account_book)
-        print("check account book id:", account_book.name, balance)
+        await get_account_book_balance(account_book)
+        print("check account book id:", account_book.name)
 
 
 if __name__ == "__main__":

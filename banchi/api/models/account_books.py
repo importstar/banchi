@@ -51,10 +51,8 @@ class AccountBookSummary(Document):
         alias="_id",
     )
 
-    type: str
-
-    increse: DecimalAnnotation = 0
-    decrese: DecimalAnnotation = 0
+    increase: DecimalAnnotation = 0
+    decrease: DecimalAnnotation = 0
     balance: DecimalAnnotation = 0
 
     year: int

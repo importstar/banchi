@@ -13,7 +13,7 @@ from . import transactions
 from .users import User
 from .spaces import Space, SpaceRole
 from .accounts import Account
-from .account_books import AccountBook
+from .account_books import AccountBook, AccountBookSummary
 
 DocumentType = TypeVar("DocumentType", bound=beanie.Document)
 
