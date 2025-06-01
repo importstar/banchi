@@ -42,7 +42,7 @@ class AccountBook(schemas.account_books.AccountBook, Document):
     children: list[BackLink["AccountBook"]] = Field(original_field="parent")
 
 
-class AccountBookSummary(Document):
+class AccountBookSummary(schemas.account_books.AccountBookSummary, Document):
     class Settings:
         name = "account_book_summaries"
 
@@ -58,6 +58,8 @@ class AccountBookSummary(Document):
     year: int
     month: int
     date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+
+
 
     account_book: Link["AccountBook"]
 

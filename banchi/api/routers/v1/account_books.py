@@ -155,8 +155,8 @@ async def get_account_book_balance_by_account_book_summary(db_account_book):
                 "_id": None,
                 "quantity": {"$sum": 1},
                 "balance": {"$sum": "$children.balance"},
-                "increase": {"$sum": "$children.increase"},
-                "decrease": {"$sum": "$children.decrease"},
+                # "increase": {"$sum": "$children.increase"},
+                # "decrease": {"$sum": "$children.decrease"},
             }
         },
     ]
@@ -171,8 +171,8 @@ async def get_account_book_balance_by_account_book_summary(db_account_book):
 
     results = dict(
         balance=decimal.Decimal(0),
-        increase=decimal.Decimal(0),
-        decrease=decimal.Decimal(0),
+        # increase=decimal.Decimal(0),
+        # decrease=decimal.Decimal(0),
         quantity=0,
     )
     if "_id" in data:
@@ -228,7 +228,7 @@ async def get_account_book_balance_by_trasaction(
     ).to_list()
 
     for account_book_child in account_book_children:
-        child_account_book_balance = await get_account_book_balance(
+        child_account_book_balance = await get_account_book_balance_by_trasaction(
             account_book_child,
             True,
         )
@@ -248,17 +248,11 @@ async def get_account_book_balance_by_summary(
     results = await get_account_book_balance_by_account_book_summary(db_account_book)
 
     net_balance = results.get("balance", 0)
-    net_increase = results.get("increase", 0)
-    net_decrease = results.get("decrease", 0)
 
     account_book_balance = schemas.account_books.AccountBookBalance(
         id=db_account_book.id,
         balance=db_account_book.balance,
-        decrease=db_account_book.decrease,
-        increase=db_account_book.increase,
         net_balance=net_balance,
-        net_decrease=net_decrease,
-        net_increase=net_increase,
         children=results.get("quantity", 0),
     )
 

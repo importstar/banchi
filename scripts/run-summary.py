@@ -164,6 +164,8 @@ async def get_account_book_balance(
             else:
                 balance = increase - decrease
 
+            print(f'{balance=}, {increase=}, {decrease=}')
+
             db_account_book_summary.balance = balance
             db_account_book_summary.increase = increase
             db_account_book_summary.decrease = decrease

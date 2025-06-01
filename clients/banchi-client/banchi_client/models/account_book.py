@@ -27,8 +27,6 @@ class AccountBook:
         account (ReferenceAccount):
         parent (Union['ReferenceAccountBook', None]):
         creator (ReferenceUser):
-        increase (str):
-        decrease (str):
         balance (str):
         description (Union[Unset, str]):  Default: ''. Example: Description.
         type_ (Union[Unset, AccountTypeEnum]):
@@ -42,8 +40,6 @@ class AccountBook:
     account: "ReferenceAccount"
     parent: Union["ReferenceAccountBook", None]
     creator: "ReferenceUser"
-    increase: str
-    decrease: str
     balance: str
     description: Union[Unset, str] = ""
     type_: Union[Unset, AccountTypeEnum] = UNSET
@@ -68,10 +64,6 @@ class AccountBook:
             parent = self.parent
 
         creator = self.creator.to_dict()
-
-        increase = self.increase
-
-        decrease = self.decrease
 
         balance = self.balance
 
@@ -100,8 +92,6 @@ class AccountBook:
                 "account": account,
                 "parent": parent,
                 "creator": creator,
-                "increase": increase,
-                "decrease": decrease,
                 "balance": balance,
             }
         )
@@ -148,10 +138,6 @@ class AccountBook:
 
         creator = ReferenceUser.from_dict(d.pop("creator"))
 
-        increase = d.pop("increase")
-
-        decrease = d.pop("decrease")
-
         balance = d.pop("balance")
 
         description = d.pop("description", UNSET)
@@ -185,8 +171,6 @@ class AccountBook:
             account=account,
             parent=parent,
             creator=creator,
-            increase=increase,
-            decrease=decrease,
             balance=balance,
             description=description,
             type_=type_,
