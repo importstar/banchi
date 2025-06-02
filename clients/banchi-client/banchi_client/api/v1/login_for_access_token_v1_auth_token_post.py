@@ -5,7 +5,9 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.body_login_for_access_token_v1_auth_token_post import BodyLoginForAccessTokenV1AuthTokenPost
+from ...models.body_login_for_access_token_v1_auth_token_post import (
+    BodyLoginForAccessTokenV1AuthTokenPost,
+)
 from ...models.http_validation_error import HTTPValidationError
 from ...models.token import Token
 from ...types import Response

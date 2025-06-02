@@ -59,8 +59,6 @@ class AccountBookSummary(schemas.account_books.AccountBookSummary, Document):
     month: int
     date: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
-
-
     account_book: Link["AccountBook"]
 
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)

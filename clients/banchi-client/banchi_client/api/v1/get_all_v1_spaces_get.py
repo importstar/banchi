@@ -18,7 +18,9 @@ def _get_kwargs() -> dict[str, Any]:
     return _kwargs
 
 
-def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[SpaceList]:
+def _parse_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Optional[SpaceList]:
     if response.status_code == 200:
         response_200 = SpaceList.from_dict(response.json())
 
@@ -29,7 +31,9 @@ def _parse_response(*, client: Union[AuthenticatedClient, Client], response: htt
         return None
 
 
-def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[SpaceList]:
+def _build_response(
+    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
+) -> Response[SpaceList]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,

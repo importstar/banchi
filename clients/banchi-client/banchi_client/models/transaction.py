@@ -29,7 +29,7 @@ class Transaction:
         to_account_book (ReferenceAccountBook):
         creator (ReferenceUser):
         updated_by (ReferenceUser):
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2025-06-01T20:28:51.619408').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2025-06-02T20:16:37.692374').
         tags (Union[Unset, list[str]]):
         remarks (Union[None, Unset, str]):  Default: ''. Example: Text Remark.
         status (Union[Unset, str]):  Default: 'active'. Example: active.
@@ -43,7 +43,7 @@ class Transaction:
     to_account_book: "ReferenceAccountBook"
     creator: "ReferenceUser"
     updated_by: "ReferenceUser"
-    date: Union[Unset, datetime.datetime] = isoparse("2025-06-01T20:28:51.619408")
+    date: Union[Unset, datetime.datetime] = isoparse("2025-06-02T20:16:37.692374")
     tags: Union[Unset, list[str]] = UNSET
     remarks: Union[None, Unset, str] = ""
     status: Union[Unset, str] = "active"

@@ -44,13 +44,37 @@ class SmallestFractionEnum(int, enum.Enum):
 
 class AccountBookBalance(BaseModel):
     id: PydanticObjectId
-    balance: decimal.Decimal = Field(default=0, example=0.0, decimal_places=2, )
-    increase: decimal.Decimal = Field(default=0, example=0.0, decimal_places=2, )
-    decrease: decimal.Decimal = Field(default=0, example=0.0, decimal_places=2, )
+    balance: decimal.Decimal = Field(
+        default=0,
+        example=0.0,
+        decimal_places=2,
+    )
+    increase: decimal.Decimal = Field(
+        default=0,
+        example=0.0,
+        decimal_places=2,
+    )
+    decrease: decimal.Decimal = Field(
+        default=0,
+        example=0.0,
+        decimal_places=2,
+    )
 
-    net_balance: decimal.Decimal = Field(default=0, example=0.0, decimal_places=2, )
-    net_increase: decimal.Decimal = Field(default=0, example=0.0, decimal_places=2, )
-    net_decrease: decimal.Decimal = Field(default=0, example=0.0, decimal_places=2, )
+    net_balance: decimal.Decimal = Field(
+        default=0,
+        example=0.0,
+        decimal_places=2,
+    )
+    net_increase: decimal.Decimal = Field(
+        default=0,
+        example=0.0,
+        decimal_places=2,
+    )
+    net_decrease: decimal.Decimal = Field(
+        default=0,
+        example=0.0,
+        decimal_places=2,
+    )
 
     children: int = 0
     type: AccountTypeEnum = Field(
@@ -63,8 +87,8 @@ class AccountBookBalance(BaseModel):
 
 class AccountBookSummary(BaseModel):
 
-    id: PydanticObjectId 
-   
+    id: PydanticObjectId
+
     increase: decimal.Decimal = 0
     decrease: decimal.Decimal = 0
     balance: decimal.Decimal = 0
@@ -73,10 +97,11 @@ class AccountBookSummary(BaseModel):
     month: int
     date: datetime.datetime
 
-    account_book: ReferenceAccountBook
+    # account_book: ReferenceAccountBook
 
-    created_date: datetime.datetime 
-    updated_date: datetime.datetime 
+    created_date: datetime.datetime
+    updated_date: datetime.datetime
+
 
 class BaseAccountBook(BaseModel):
     name: str = Field(..., example="Account Book Name")

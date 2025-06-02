@@ -19,7 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
 
 async def get_current_user(
-    token: typing.Annotated[str, Depends(oauth2_scheme)]
+    token: typing.Annotated[str, Depends(oauth2_scheme)],
 ) -> models.users.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -45,7 +45,7 @@ async def get_current_user(
 
 
 async def get_current_active_user(
-    current_user: typing.Annotated[models.users.User, Depends(get_current_user)]
+    current_user: typing.Annotated[models.users.User, Depends(get_current_user)],
     # current_user: models.users.User = Depends(get_current_user),
 ) -> models.users.User:
     if current_user.status != "active":
@@ -64,7 +64,7 @@ async def get_current_active_superuser(
 
 
 async def get_current_user_spaces(
-    user: typing.Annotated[models.users.User, Depends(get_current_user)]
+    user: typing.Annotated[models.users.User, Depends(get_current_user)],
 ) -> list[models.spaces.Space]:
     space_roles = await models.spaces.SpaceRole.find(
         models.spaces.SpaceRole.member.id == user.id,

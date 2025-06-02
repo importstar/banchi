@@ -26,7 +26,7 @@ flask-login = "^0.6.3"
 openapi-python-client = "^0.24.3"
 fastapi = "^0.111.1"
 requests = "^2.32.3"
-banchi-client = { path = "./clients/banchi-client" }
+banchi-client = {path = "clients/banchi-client"}
 bcrypt = "^4.2.1"
 flask-htmx = "^0.4.0"
 livereload = "^2.7.1"

@@ -55,6 +55,8 @@ async def get_account_book_balance_by_trasaction(
 
     datas = {}
 
+    # print('account_book_agg ->', account_book_agg)
+
     for data in account_book_agg:
         year = data["year"]
         month = data["month"]
@@ -80,59 +82,70 @@ async def get_account_book_balance(
         db_account_book, "to_account_book"
     )
 
-    # import pprint
+    import pprint
 
-    # print('decrease ->')
-    # pprint.pprint(decrease_month_account_summary)
-    # print('increase ->')
-    # pprint.pprint(increase_month_account_summary)
+    print("decrease ->")
+    pprint.pprint(decrease_month_account_summary)
+    print("increase ->")
+    pprint.pprint(increase_month_account_summary)
 
-    if not decrease_month_account_summary and not increase_month_account_summary:
-        return 
+    increase_min_year = min(increase_month_account_summary.keys(), default=0)
+    decrease_min_year = min(decrease_month_account_summary.keys(), default=0)
 
-    increase_min_year = min(
-            increase_month_account_summary.keys(), default=0
-        )
-    decrease_min_year = min(
-        decrease_month_account_summary.keys(), default=0
-    )
+    if increase_min_year == decrease_min_year == 0:
+        db_account_book_summaries = await models.account_books.AccountBookSummary.find(
+            models.AccountBookSummary.account_book.id == db_account_book.id
+        ).delete()
+
+        return
 
     min_year = increase_min_year
-    if decrease_min_year > 0 and decrease_min_year < min_year:
+
+    if min_year == 0:
         min_year = decrease_min_year
+    if min_year > 0 and decrease_min_year > 0:
+        min_year = min(increase_min_year, decrease_min_year)
 
+    # print('min_year ->', min_year, increase_min_year, decrease_min_year)
     if not min_year:
-        return 
-
+        return
 
     for year_iter in range(min_year, datetime.datetime.now().year + 1):
         for month_iter in range(1, 13):
-            print('->', year_iter, month_iter)
 
-            db_account_book_summary = await models.account_books.AccountBookSummary.find_one(
-                models.AccountBookSummary.account_book.id==db_account_book.id,
-                models.AccountBookSummary.year==year_iter,
-                models.AccountBookSummary.month==month_iter,
+            db_account_book_summary = (
+                await models.account_books.AccountBookSummary.find_one(
+                    models.AccountBookSummary.account_book.id == db_account_book.id,
+                    models.AccountBookSummary.year == year_iter,
+                    models.AccountBookSummary.month == month_iter,
+                )
             )
-
 
             decrease_month_result_check = all(
                 [
-                    year_iter  in decrease_month_account_summary,
-                    month_iter  in decrease_month_account_summary.get(year_iter,[]),
-                ])
-            
-            increase_month_result_check = all(
-                [
-                    year_iter  in increase_month_account_summary,
-                    month_iter in increase_month_account_summary.get(year_iter,[]),
+                    year_iter in decrease_month_account_summary,
+                    month_iter in decrease_month_account_summary.get(year_iter, []),
                 ]
             )
-            
 
-            if not decrease_month_result_check and not increase_month_result_check:
+            increase_month_result_check = all(
+                [
+                    year_iter in increase_month_account_summary,
+                    month_iter in increase_month_account_summary.get(year_iter, []),
+                ]
+            )
+
+            print(
+                "->",
+                year_iter,
+                month_iter,
+                decrease_month_result_check,
+                increase_month_result_check,
+            )
+            if not (decrease_month_result_check or increase_month_result_check):
                 if db_account_book_summary:
                     await db_account_book_summary.delete()
+
                 continue
 
             if not db_account_book_summary:
@@ -140,7 +153,11 @@ async def get_account_book_balance(
                     account_book=db_account_book,
                     year=year_iter,
                     month=month_iter,
-                    date=datetime.datetime(year=year_iter, month=month_iter, day=calendar.monthrange(year_iter,month_iter)[1])
+                    date=datetime.datetime(
+                        year=year_iter,
+                        month=month_iter,
+                        day=calendar.monthrange(year_iter, month_iter)[1],
+                    ),
                 )
 
             decrease = 0
@@ -151,7 +168,6 @@ async def get_account_book_balance(
 
             if increase_month_result_check:
                 increase = increase_month_account_summary[year_iter][month_iter]
-
 
             if type(decrease) is bson.Decimal128:
                 decrease = decrease.to_decimal()
@@ -164,14 +180,13 @@ async def get_account_book_balance(
             else:
                 balance = increase - decrease
 
-            print(f'{balance=}, {increase=}, {decrease=}')
+            print(f"{balance=}, {increase=}, {decrease=}")
 
             db_account_book_summary.balance = balance
             db_account_book_summary.increase = increase
             db_account_book_summary.decrease = decrease
 
             await db_account_book_summary.save()
-
 
 
 async def main():
@@ -190,8 +205,8 @@ async def main():
         models.account_books.AccountBook.status == "active"
     ).to_list()
     for account_book in account_books:
+        print("check account book id:", account_book.id, account_book.name)
         await get_account_book_balance(account_book)
-        print("check account book id:", account_book.name)
 
 
 if __name__ == "__main__":

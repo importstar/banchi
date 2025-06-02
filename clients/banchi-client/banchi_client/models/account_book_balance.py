@@ -15,23 +15,23 @@ class AccountBookBalance:
     """
     Attributes:
         id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        balance (str):
-        increase (str):
-        decrease (str):
-        net_balance (str):
-        net_increase (str):
-        net_decrease (str):
+        balance (Union[Unset, str]):  Default: '0'.
+        increase (Union[Unset, str]):  Default: '0'.
+        decrease (Union[Unset, str]):  Default: '0'.
+        net_balance (Union[Unset, str]):  Default: '0'.
+        net_increase (Union[Unset, str]):  Default: '0'.
+        net_decrease (Union[Unset, str]):  Default: '0'.
         children (Union[Unset, int]):  Default: 0.
         type_ (Union[Unset, AccountTypeEnum]):
     """
 
     id: str
-    balance: str
-    increase: str
-    decrease: str
-    net_balance: str
-    net_increase: str
-    net_decrease: str
+    balance: Union[Unset, str] = "0"
+    increase: Union[Unset, str] = "0"
+    decrease: Union[Unset, str] = "0"
+    net_balance: Union[Unset, str] = "0"
+    net_increase: Union[Unset, str] = "0"
+    net_decrease: Union[Unset, str] = "0"
     children: Union[Unset, int] = 0
     type_: Union[Unset, AccountTypeEnum] = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -62,14 +62,20 @@ class AccountBookBalance:
         field_dict.update(
             {
                 "id": id,
-                "balance": balance,
-                "increase": increase,
-                "decrease": decrease,
-                "net_balance": net_balance,
-                "net_increase": net_increase,
-                "net_decrease": net_decrease,
             }
         )
+        if balance is not UNSET:
+            field_dict["balance"] = balance
+        if increase is not UNSET:
+            field_dict["increase"] = increase
+        if decrease is not UNSET:
+            field_dict["decrease"] = decrease
+        if net_balance is not UNSET:
+            field_dict["net_balance"] = net_balance
+        if net_increase is not UNSET:
+            field_dict["net_increase"] = net_increase
+        if net_decrease is not UNSET:
+            field_dict["net_decrease"] = net_decrease
         if children is not UNSET:
             field_dict["children"] = children
         if type_ is not UNSET:
@@ -82,17 +88,17 @@ class AccountBookBalance:
         d = dict(src_dict)
         id = d.pop("id")
 
-        balance = d.pop("balance")
+        balance = d.pop("balance", UNSET)
 
-        increase = d.pop("increase")
+        increase = d.pop("increase", UNSET)
 
-        decrease = d.pop("decrease")
+        decrease = d.pop("decrease", UNSET)
 
-        net_balance = d.pop("net_balance")
+        net_balance = d.pop("net_balance", UNSET)
 
-        net_increase = d.pop("net_increase")
+        net_increase = d.pop("net_increase", UNSET)
 
-        net_decrease = d.pop("net_decrease")
+        net_decrease = d.pop("net_decrease", UNSET)
 
         children = d.pop("children", UNSET)
 

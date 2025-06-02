@@ -267,12 +267,41 @@ async def get_account_book_balance_by_summary(
 async def get_balance(
     account_book_id: PydanticObjectId,
     db_account_book: typing.Annotated[
-        models.account_books.AccountBook, Depends(deps.get_account_book)
+        models.AccountBook, Depends(deps.get_account_book)
     ],
-    current_user: models.users.User = Depends(deps.get_current_user),
+    current_user: models.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBookBalance:
 
     return await get_account_book_balance_by_summary(db_account_book)
+
+
+@router.get(
+    "/{account_book_id}/summary",
+    response_model_by_alias=False,
+)
+async def get_summary(
+    account_book_id: PydanticObjectId,
+    year: int,
+    month: int,
+    db_account_book: typing.Annotated[
+        models.AccountBook, Depends(deps.get_account_book)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> schemas.account_books.AccountBookSummary:
+    db_account_book_summary = await models.account_books.AccountBookSummary.find_one(
+        models.account_books.AccountBookSummary.account_book.id == db_account_book.id,
+        models.account_books.AccountBookSummary.year == year,
+        models.account_books.AccountBookSummary.month == month,
+    )
+    if not db_account_book_summary:
+        db_account_book_summary = models.account_books.AccountBookSummary(
+            account_book=db_account_book,
+            year=year,
+            month=month,
+            date=datetime.datetime.now(),
+        )
+
+    return db_account_book_summary
 
 
 @router.put("/{account_book_id}")

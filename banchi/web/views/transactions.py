@@ -48,7 +48,6 @@ def show_by_tag(tag):
         account_book = get_v1_account_books_account_book_id_get.sync(
             client=client, account_book_id=account_book_id
         )
-        print(">>>>", account_book)
         account_id = account_book.account.id
 
     response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)

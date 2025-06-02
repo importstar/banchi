@@ -16,6 +16,7 @@ from banchi_client.api.v1 import (
     get_v1_transactions_transaction_id_get,
     get_label_v1_account_books_account_book_id_label_get,
     get_children_v1_account_books_account_book_id_children_get,
+    get_summary_v1_account_books_account_book_id_summary_get,
     get_balance_v1_account_books_account_book_id_balance_get,
     delete_v1_account_books_account_book_id_delete,
     delete_v1_transactions_transaction_id_delete,
@@ -166,6 +167,14 @@ def view(account_book_id):
         client=client, account_book_id=account_book.id
     )
 
+    now = datetime.datetime.now()
+
+    month_summary = get_summary_v1_account_books_account_book_id_summary_get.sync(
+        client=client, account_book_id=account_book.id, year=now.year, month=now.month
+    )
+
+    # print(">>>", month_summary)
+
     response = get_children_v1_account_books_account_book_id_children_get.sync(
         client=client, account_book_id=account_book.id
     )
@@ -203,6 +212,7 @@ def view(account_book_id):
         transaction_chunk=transaction_chunk,
         label=label,
         balance=balance,
+        month_summary=month_summary,
         account_book_children=account_book_children,
         account_book_children_balance=account_book_children_balance,
         # account_book_children=account_book_children,

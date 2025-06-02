@@ -8,6 +8,8 @@ from loguru import logger
 import bson
 import typing
 import math
+import decimal
+import calendar
 from beanie.odm.operators.find.logical import Or, And
 from beanie.operators import Inc, Set
 
@@ -47,6 +49,133 @@ async def transform_transaction(transaction, current_user):
     data["updated_by"] = current_user
 
     return data
+
+
+async def calculate_summary_account_book(
+    db_from_account_book: models.AccountBook,
+    db_to_account_book: models.AccountBook,
+    value: decimal.Decimal,
+    year: int,
+    month: int,
+    type: str = "add",
+) -> dict:
+
+    db_from_account_book_summary = models.AccountBookSummary(
+        account_book=db_from_account_book,
+        year=year,
+        month=month,
+        date=datetime.datetime(
+            year=year, month=month, day=calendar.monthrange(year, month)[1]
+        ),
+    )
+    db_to_account_book_summary = models.AccountBookSummary(
+        account_book=db_to_account_book,
+        year=year,
+        month=month,
+        date=datetime.datetime(
+            year=year, month=month, day=calendar.monthrange(year, month)[1]
+        ),
+    )
+
+    if not db_from_account_book_summary:
+        print("new summary from")
+        db_from_account_book_summary = models.AccountBookSummary(
+            account_book=db_from_account_book,
+            year=year,
+            month=month,
+            date=datetime.datetime(
+                year=year, month=month, day=calendar.monthrange(year, month)[1]
+            ),
+        )
+    if not db_to_account_book_summary:
+        print("new summary to")
+        db_to_account_book_summary = models.AccountBookSummary(
+            account_book=db_to_account_book,
+            year=year,
+            month=month,
+            date=datetime.datetime(
+                year=year, month=month, day=calendar.monthrange(year, month)[1]
+            ),
+        )
+
+    if type == "add":
+        print("summary add")
+        if db_from_account_book.type in ["income", "equity", "liability"]:
+            db_from_account_book_summary.balance += value
+        else:
+            db_from_account_book_summary.balance -= value
+
+        if db_to_account_book.type in ["income", "equity", "liability"]:
+            db_to_account_book_summary.balance -= value
+        else:
+            db_to_account_book_summary.balance += value
+
+        db_from_account_book_summary.decrease += value
+        db_to_account_book_summary.increase += value
+
+    elif type == "remove":
+        print("summary remove")
+        if db_from_account_book.type in ["income", "equity", "liability"]:
+            db_from_account_book_summary.balance -= value
+        else:
+            db_from_account_book_summary.balance += value
+
+        if db_to_account_book.type in ["income", "equity", "liability"]:
+            db_to_account_book_summary.balance += value
+        else:
+            db_to_account_book_summary.balance -= value
+
+        db_from_account_book_summary.decrease -= value
+        db_to_account_book_summary.increase -= value
+
+    print(
+        "from",
+        db_from_account_book_summary.account_book.name,
+        db_from_account_book_summary.balance,
+        db_from_account_book_summary.increase,
+        db_from_account_book_summary.decrease,
+    )
+    print(
+        "to",
+        db_to_account_book_summary.account_book.name,
+        db_to_account_book_summary.balance,
+        db_to_account_book_summary.increase,
+        db_to_account_book_summary.decrease,
+    )
+
+    await db_to_account_book_summary.save()
+    await db_from_account_book_summary.save()
+
+
+async def calculate_balance_account_book(
+    db_from_account_book: models.AccountBook,
+    db_to_account_book: models.AccountBook,
+    value: decimal.Decimal,
+    type: str = "add",
+) -> dict:
+    if type == "add":
+        if db_from_account_book.type in ["income", "equity", "liability"]:
+            db_from_account_book.balance += value
+        else:
+            db_from_account_book.balance -= value
+
+        if db_to_account_book.type in ["income", "equity", "liability"]:
+            db_to_account_book.balance -= value
+        else:
+            db_to_account_book.balance += value
+    elif type == "remove":
+        if db_from_account_book.type in ["income", "equity", "liability"]:
+            db_from_account_book.balance -= value
+        else:
+            db_from_account_book.balance += value
+
+        if db_to_account_book.type in ["income", "equity", "liability"]:
+            db_to_account_book.balance += value
+        else:
+            db_to_account_book.balance -= value
+
+    await db_to_account_book.save()
+    await db_from_account_book.save()
 
 
 @router.get("")
@@ -164,24 +293,39 @@ async def create(
     db_from_account_book = data["from_account_book"]
     db_to_account_book = data["to_account_book"]
 
-    if db_from_account_book.type in ["income", "equity", "liability"]:
-        db_from_account_book.balance += data["value"]
-    else:
-        db_from_account_book.balance -= data["value"]
+    await calculate_balance_account_book(
+        db_from_account_book,
+        db_to_account_book,
+        data["value"],
+        type="add",
+    )
 
-    if db_to_account_book.type in ["income", "equity", "liability"]:
-        db_to_account_book.balance -= data["value"]
-    else:
-        db_to_account_book.balance += data["value"]
+    # if db_from_account_book.type in ["income", "equity", "liability"]:
+    #     db_from_account_book.balance += data["value"]
+    # else:
+    #     db_from_account_book.balance -= data["value"]
 
-    db_from_account_book.decrease += data["value"]
-    db_to_account_book.increase += data["value"]
+    # if db_to_account_book.type in ["income", "equity", "liability"]:
+    #     db_to_account_book.balance -= data["value"]
+    # else:
+    #     db_to_account_book.balance += data["value"]
+
+    # db_from_account_book.decrease += data["value"]
+    # db_to_account_book.increase += data["value"]
 
     await db_to_account_book.save()
     await db_from_account_book.save()
 
     db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
+
+    await calculate_summary_account_book(
+        db_from_account_book,
+        db_to_account_book,
+        data["value"],
+        data["date"].year,
+        data["date"].month,
+    )
 
     return db_transaction
 
@@ -207,24 +351,43 @@ async def update(
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
+
+    await calculate_summary_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        db_transaction.date.year,
+        db_transaction.date.month,
+        type="remove",
+    )
+    await calculate_balance_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        type="remove",
+    )
     data = transaction.dict()
     await db_transaction.update(Set(data))
 
     data = await transform_transaction(transaction, current_user)
     db_transaction.value = data["value"]
 
-    if db_transaction.from_account_book != data["from_account_book_id"]:
-        db_transaction.from_account_book.balance -= db_transaction.value
-        db_transaction.from_account_book.decrease += db_transaction.value
-    else:
-        db_transaction.from_account_book.balance += db_transaction.value
-        db_transaction.from_account_book.increase -= db_transaction.value
-    if db_transaction.to_account_book != data["to_account_book_id"]:
-        db_transaction.to_account_book.balance += db_transaction.value
-        db_transaction.to_account_book.increase -= db_transaction.value
-    else:
-        db_transaction.to_account_book.balance -= db_transaction.value
-        db_transaction.to_account_book.decrease += db_transaction.value
+    # print("x>>>", db_transaction.from_account_book.id, data["from_account_book_id"])
+
+    # if db_transaction.from_account_book != data["from_account_book_id"]:
+    #     db_transaction.from_account_book.balance -= db_transaction.value
+    #     # db_transaction.from_account_book.decrease += db_transaction.value
+    # else:
+    #     db_transaction.from_account_book.balance += db_transaction.value
+    #     # db_transaction.from_account_book.increase -= db_transaction.value
+
+    # if db_transaction.to_account_book != data["to_account_book_id"]:
+    #     db_transaction.to_account_book.balance += db_transaction.value
+    #     # db_transaction.to_account_book.increase -= db_transaction.value
+    # else:
+    #     db_transaction.to_account_book.balance -= db_transaction.value
+    #     # db_transaction.to_account_book.decrease += db_transaction.value
+
     await db_transaction.to_account_book.save()
     await db_transaction.from_account_book.save()
 
@@ -233,7 +396,22 @@ async def update(
     db_transaction.updated_date = datetime.datetime.now()
     db_transaction.updated_by = current_user
 
+    await calculate_balance_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        type="add",
+    )
     await db_transaction.save()
+
+    await calculate_summary_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        db_transaction.date.year,
+        db_transaction.date.month,
+        type="add",
+    )
 
     await db_transaction.fetch_all_links()
     return db_transaction
@@ -259,11 +437,20 @@ async def delete(
     to_account_book.balance -= db_transaction.value
     from_account_book.balance += db_transaction.value
 
-    to_account_book.increase -= db_transaction.value
-    from_account_book.decrease += db_transaction.value
+    # to_account_book.increase -= db_transaction.value
+    # from_account_book.decrease += db_transaction.value
 
     to_account_book.save()
     from_account_book.save()
+
+    await calculate_summary_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        db_transaction.date.year,
+        db_transaction.date.month,
+        type="remove",
+    )
 
     await db_transaction.save()
 

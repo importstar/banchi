@@ -116,7 +116,9 @@ class User:
 
         roles = _parse_roles(d.pop("roles"))
 
-        def _parse_last_login_date(data: object) -> Union[None, Unset, datetime.datetime]:
+        def _parse_last_login_date(
+            data: object,
+        ) -> Union[None, Unset, datetime.datetime]:
             if data is None:
                 return data
             if isinstance(data, Unset):
