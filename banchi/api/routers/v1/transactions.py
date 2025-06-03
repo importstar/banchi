@@ -60,25 +60,24 @@ async def calculate_summary_account_book(
     type: str = "add",
 ) -> dict:
 
-    db_from_account_book_summary = models.AccountBookSummary(
-        account_book=db_from_account_book,
-        year=year,
-        month=month,
-        date=datetime.datetime(
+    db_from_account_book_summary = await models.AccountBookSummary.find_one(
+        models.AccountBookSummary.account_book.id == db_from_account_book.id,
+        models.AccountBookSummary.year==year,
+        models.AccountBookSummary.month==month,
+        models.AccountBookSummary.date==datetime.datetime(
             year=year, month=month, day=calendar.monthrange(year, month)[1]
         ),
     )
-    db_to_account_book_summary = models.AccountBookSummary(
-        account_book=db_to_account_book,
-        year=year,
-        month=month,
-        date=datetime.datetime(
+    db_to_account_book_summary = await models.AccountBookSummary.find_one(
+        models.AccountBookSummary.account_book.id==db_to_account_book.id,
+        models.AccountBookSummary.year==year,
+        models.AccountBookSummary.month==month,
+        models.AccountBookSummary.date==datetime.datetime(
             year=year, month=month, day=calendar.monthrange(year, month)[1]
         ),
     )
 
     if not db_from_account_book_summary:
-        print("new summary from")
         db_from_account_book_summary = models.AccountBookSummary(
             account_book=db_from_account_book,
             year=year,
@@ -88,7 +87,6 @@ async def calculate_summary_account_book(
             ),
         )
     if not db_to_account_book_summary:
-        print("new summary to")
         db_to_account_book_summary = models.AccountBookSummary(
             account_book=db_to_account_book,
             year=year,
@@ -99,7 +97,6 @@ async def calculate_summary_account_book(
         )
 
     if type == "add":
-        print("summary add")
         if db_from_account_book.type in ["income", "equity", "liability"]:
             db_from_account_book_summary.balance += value
         else:
@@ -114,7 +111,6 @@ async def calculate_summary_account_book(
         db_to_account_book_summary.increase += value
 
     elif type == "remove":
-        print("summary remove")
         if db_from_account_book.type in ["income", "equity", "liability"]:
             db_from_account_book_summary.balance -= value
         else:
@@ -128,21 +124,6 @@ async def calculate_summary_account_book(
         db_from_account_book_summary.decrease -= value
         db_to_account_book_summary.increase -= value
 
-    print(
-        "from",
-        db_from_account_book_summary.account_book.name,
-        db_from_account_book_summary.balance,
-        db_from_account_book_summary.increase,
-        db_from_account_book_summary.decrease,
-    )
-    print(
-        "to",
-        db_to_account_book_summary.account_book.name,
-        db_to_account_book_summary.balance,
-        db_to_account_book_summary.increase,
-        db_to_account_book_summary.decrease,
-    )
-
     await db_to_account_book_summary.save()
     await db_from_account_book_summary.save()
 
@@ -153,6 +134,7 @@ async def calculate_balance_account_book(
     value: decimal.Decimal,
     type: str = "add",
 ) -> dict:
+    
     if type == "add":
         if db_from_account_book.type in ["income", "equity", "liability"]:
             db_from_account_book.balance += value
@@ -176,6 +158,7 @@ async def calculate_balance_account_book(
 
     await db_to_account_book.save()
     await db_from_account_book.save()
+
 
 
 @router.get("")
@@ -300,19 +283,6 @@ async def create(
         type="add",
     )
 
-    # if db_from_account_book.type in ["income", "equity", "liability"]:
-    #     db_from_account_book.balance += data["value"]
-    # else:
-    #     db_from_account_book.balance -= data["value"]
-
-    # if db_to_account_book.type in ["income", "equity", "liability"]:
-    #     db_to_account_book.balance -= data["value"]
-    # else:
-    #     db_to_account_book.balance += data["value"]
-
-    # db_from_account_book.decrease += data["value"]
-    # db_to_account_book.increase += data["value"]
-
     await db_to_account_book.save()
     await db_from_account_book.save()
 
@@ -372,29 +342,14 @@ async def update(
     data = await transform_transaction(transaction, current_user)
     db_transaction.value = data["value"]
 
-    # print("x>>>", db_transaction.from_account_book.id, data["from_account_book_id"])
 
-    # if db_transaction.from_account_book != data["from_account_book_id"]:
-    #     db_transaction.from_account_book.balance -= db_transaction.value
-    #     # db_transaction.from_account_book.decrease += db_transaction.value
-    # else:
-    #     db_transaction.from_account_book.balance += db_transaction.value
-    #     # db_transaction.from_account_book.increase -= db_transaction.value
-
-    # if db_transaction.to_account_book != data["to_account_book_id"]:
-    #     db_transaction.to_account_book.balance += db_transaction.value
-    #     # db_transaction.to_account_book.increase -= db_transaction.value
-    # else:
-    #     db_transaction.to_account_book.balance -= db_transaction.value
-    #     # db_transaction.to_account_book.decrease += db_transaction.value
-
-    await db_transaction.to_account_book.save()
-    await db_transaction.from_account_book.save()
 
     db_transaction.to_account_book = data["to_account_book"]
     db_transaction.from_account_book = data["from_account_book"]
     db_transaction.updated_date = datetime.datetime.now()
     db_transaction.updated_by = current_user
+
+    await db_transaction.save()
 
     await calculate_balance_account_book(
         db_transaction.from_account_book,
@@ -402,7 +357,6 @@ async def update(
         db_transaction.value,
         type="add",
     )
-    await db_transaction.save()
 
     await calculate_summary_account_book(
         db_transaction.from_account_book,
@@ -434,14 +388,17 @@ async def delete(
     to_account_book = db_transaction.to_account_book
     from_account_book = db_transaction.from_account_book
 
-    to_account_book.balance -= db_transaction.value
-    from_account_book.balance += db_transaction.value
 
-    # to_account_book.increase -= db_transaction.value
-    # from_account_book.decrease += db_transaction.value
+    await to_account_book.save()
+    await from_account_book.save()
+    await db_transaction.save()
 
-    to_account_book.save()
-    from_account_book.save()
+    await calculate_balance_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        type="remove",
+    )
 
     await calculate_summary_account_book(
         db_transaction.from_account_book,
@@ -452,7 +409,6 @@ async def delete(
         type="remove",
     )
 
-    await db_transaction.save()
 
     return db_transaction
 

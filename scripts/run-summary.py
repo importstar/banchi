@@ -103,10 +103,10 @@ async def get_account_book_balance(
 
     if min_year == 0:
         min_year = decrease_min_year
-    if min_year > 0 and decrease_min_year > 0:
+    elif min_year > 0 and decrease_min_year > 0:
         min_year = min(increase_min_year, decrease_min_year)
 
-    # print('min_year ->', min_year, increase_min_year, decrease_min_year)
+    print("min_year ->", min_year, increase_min_year, decrease_min_year)
     if not min_year:
         return
 
