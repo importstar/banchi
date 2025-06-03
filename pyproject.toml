@@ -19,7 +19,6 @@ redis = "^5.0.7"
 rq = "^1.16.2"
 beanie = "^1.26.0"
 pydantic = {extras = ["email"], version = "^2.6.4"}
-passlib = "^1.7.4"
 python-jose = "^3.3.0"
 python-multipart = "^0.0.9"
 flask-login = "^0.6.3"
@@ -31,6 +30,7 @@ bcrypt = "^4.2.1"
 flask-htmx = "^0.4.0"
 livereload = "^2.7.1"
 jinja2-fragments = "^1.9.0"
+libpass = "^1.9.1.post0"
 
 
 [tool.poetry.group.dev.dependencies]

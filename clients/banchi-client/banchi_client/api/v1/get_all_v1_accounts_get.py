@@ -18,9 +18,7 @@ def _get_kwargs() -> dict[str, Any]:
     return _kwargs
 
 
-def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[AccountList]:
+def _parse_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Optional[AccountList]:
     if response.status_code == 200:
         response_200 = AccountList.from_dict(response.json())
 
@@ -31,9 +29,7 @@ def _parse_response(
         return None
 
 
-def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[AccountList]:
+def _build_response(*, client: Union[AuthenticatedClient, Client], response: httpx.Response) -> Response[AccountList]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,

@@ -6,11 +6,11 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 from dateutil.parser import isoparse
 
-T = TypeVar("T", bound="Token")
+T = TypeVar("T", bound="AccessToken")
 
 
 @_attrs_define
-class Token:
+class AccessToken:
     """
     Attributes:
         access_token (str):
@@ -19,7 +19,6 @@ class Token:
         expires_at (datetime.datetime):
         scope (str):
         issued_at (datetime.datetime):
-        refresh_token (str):
     """
 
     access_token: str
@@ -28,7 +27,6 @@ class Token:
     expires_at: datetime.datetime
     scope: str
     issued_at: datetime.datetime
-    refresh_token: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -44,8 +42,6 @@ class Token:
 
         issued_at = self.issued_at.isoformat()
 
-        refresh_token = self.refresh_token
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -56,7 +52,6 @@ class Token:
                 "expires_at": expires_at,
                 "scope": scope,
                 "issued_at": issued_at,
-                "refresh_token": refresh_token,
             }
         )
 
@@ -77,20 +72,17 @@ class Token:
 
         issued_at = isoparse(d.pop("issued_at"))
 
-        refresh_token = d.pop("refresh_token")
-
-        token = cls(
+        access_token = cls(
             access_token=access_token,
             token_type=token_type,
             expires_in=expires_in,
             expires_at=expires_at,
             scope=scope,
             issued_at=issued_at,
-            refresh_token=refresh_token,
         )
 
-        token.additional_properties = d
-        return token
+        access_token.additional_properties = d
+        return access_token
 
     @property
     def additional_keys(self) -> list[str]:

@@ -1,4 +1,5 @@
 from banchi_client import Client, AuthenticatedClient
+from banchi_client.api.v1 import refresh_token_v1_auth_refresh_get
 from flask import session
 import datetime
 from werkzeug.exceptions import Unauthorized
@@ -35,16 +36,37 @@ class BanchiClient:
 
         now = datetime.datetime.now()
 
-        if now + datetime.timedelta(minutes=10) < expires_at:
-            token = tokens.get("access_token")
-            return AuthenticatedClient(
+
+        if now + datetime.timedelta(minutes=2) > expires_at:
+            refreash_token = tokens.get("refresh_token")
+            client = AuthenticatedClient(
                 base_url=self.base_url,
-                token=token,
+                token=refreash_token,
                 verify_ssl=self.verify_ssl,
                 timeout=timeout,
             )
 
-        raise Unauthorized()
+            try:
+                response = refresh_token_v1_auth_refresh_get.sync(
+                    client=client,
+                )
+                tokens = response.to_dict()
+            except Exception as e:
+                print("Error refreshing token:", e)
+                raise Unauthorized()
+            
+            session["tokens"].update(tokens)
+            
+
+
+        token = tokens.get("access_token")
+        return AuthenticatedClient(
+            base_url=self.base_url,
+            token=token,
+            verify_ssl=self.verify_ssl,
+            timeout=timeout,
+        )
+
 
 
 def init_client(app):

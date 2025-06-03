@@ -11,6 +11,7 @@ class BaseUser(BaseModel):
     username: str = Field(example="admin")
     first_name: str = Field(example="Firstname")
     last_name: str = Field(example="Lastname")
+    
 
 
 class User(bases.BaseSchema, BaseUser):
@@ -57,14 +58,16 @@ class UpdatedUser(BaseUser):
     roles: list[str]
 
 
-class Token(BaseModel):
+class AccessToken(BaseModel):
     access_token: str
-    refresh_token: str
     token_type: str
     expires_in: int
     expires_at: datetime.datetime
     scope: str
     issued_at: datetime.datetime
+
+class Token(AccessToken):
+    refresh_token: str 
 
 
 class TokenData(BaseModel):

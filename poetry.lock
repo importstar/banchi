@@ -939,6 +939,23 @@ files = [
 pydantic = ">=1.9.0"
 
 [[package]]
+name = "libpass"
+version = "1.9.1.post0"
+description = "Fork of passlib, a comprehensive password hashing framework supporting over 30 schemes"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "libpass-1.9.1.post0-py3-none-any.whl", hash = "sha256:5bb794bac97042b814ab1eeb187c72a95d128cefbcee3c00c630f062c2da199c"},
+    {file = "libpass-1.9.1.post0.tar.gz", hash = "sha256:5a4c3eb4985c6847cf046ae83c1ec1620bc157cf18714facad324650231c457e"},
+]
+
+[package.extras]
+argon2 = ["argon2-cffi (>=18.2.0)"]
+bcrypt = ["bcrypt (>=3.1.0)"]
+totp = ["cryptography (>=43.0.1)"]
+
+[[package]]
 name = "livereload"
 version = "2.7.1"
 description = "Python LiveReload is an awesome tool for web developers"
@@ -1153,24 +1170,6 @@ files = [
     {file = "packaging-25.0-py3-none-any.whl", hash = "sha256:29572ef2b1f17581046b3a2227d5c611fb25ec70ca1ba8554b24b0e69331a484"},
     {file = "packaging-25.0.tar.gz", hash = "sha256:d443872c98d677bf60f6a1f2f8c1cb748e8fe762d2bf9d3148b5599295b0fc4f"},
 ]
-
-[[package]]
-name = "passlib"
-version = "1.7.4"
-description = "comprehensive password hashing framework supporting over 30 schemes"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "passlib-1.7.4-py2.py3-none-any.whl", hash = "sha256:aa6bca462b8d8bda89c70b382f0c298a20b5560af6cbfa2dce410c0a2fb669f1"},
-    {file = "passlib-1.7.4.tar.gz", hash = "sha256:defd50f72b65c5402ab2c573830a6978e5f202ad0d984793c8dde2c4152ebe04"},
-]
-
-[package.extras]
-argon2 = ["argon2-cffi (>=18.2.0)"]
-bcrypt = ["bcrypt (>=3.1.0)"]
-build-docs = ["cloud-sptheme (>=1.10.1)", "sphinx (>=1.6)", "sphinxcontrib-fulltoc (>=1.2.0)"]
-totp = ["cryptography"]
 
 [[package]]
 name = "pathspec"
@@ -2331,4 +2330,4 @@ email = ["email-validator"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.11"
-content-hash = "60ce4ac92022424e9ac687a78648c438db587ca71dc3a565efaff4e9d7182dd5"
+content-hash = "817cb1a99da6aa52c618551fc80e2392f0aee1111c4a54c80c53beba7c294195"

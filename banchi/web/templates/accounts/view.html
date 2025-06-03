@@ -17,6 +17,9 @@ Account {{ account.name }}
 
 {% block content %}
 <div style="padding-bottom: 10px;">
+  <a class="ui primary icon button" href="{{ url_for('account_books.index', account_id=account.id) }}"><i
+      class="folder icon"></i> Account
+    Book</a>
   <a class="ui primary icon button"
     href="{{ url_for('account_books.add_or_edit_transaction', account_id=account.id) }}"><i class="add icon"></i> Add
     Transaction</a>

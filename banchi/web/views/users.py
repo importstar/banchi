@@ -89,6 +89,7 @@ def authorized_banchi():
 
     session["tokens"] = response.to_dict()
 
+
     client = banchi_api_clients.client.get_current_client()
     response = get_me_v1_users_me_get.sync(client=client)
 

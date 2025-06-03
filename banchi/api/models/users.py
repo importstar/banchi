@@ -18,6 +18,7 @@ class User(schemas.users.User, Document):
 
     password: str
     roles: list[str] = ["user"]
+    status: str = 'active'
 
     register_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)

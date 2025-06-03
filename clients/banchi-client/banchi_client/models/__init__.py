@@ -1,5 +1,6 @@
 """Contains all the data models used in inputs/outputs"""
 
+from .access_token import AccessToken
 from .account import Account
 from .account_book import AccountBook
 from .account_book_balance import AccountBookBalance
@@ -9,9 +10,6 @@ from .account_book_summary import AccountBookSummary
 from .account_list import AccountList
 from .account_type_enum import AccountTypeEnum
 from .body_authentication_v1_auth_login_post import BodyAuthenticationV1AuthLoginPost
-from .body_login_for_access_token_v1_auth_token_post import (
-    BodyLoginForAccessTokenV1AuthTokenPost,
-)
 from .changed_password import ChangedPassword
 from .created_account import CreatedAccount
 from .created_account_book import CreatedAccountBook
@@ -50,6 +48,7 @@ from .user_list import UserList
 from .validation_error import ValidationError
 
 __all__ = (
+    "AccessToken",
     "Account",
     "AccountBook",
     "AccountBookBalance",
@@ -59,7 +58,6 @@ __all__ = (
     "AccountList",
     "AccountTypeEnum",
     "BodyAuthenticationV1AuthLoginPost",
-    "BodyLoginForAccessTokenV1AuthTokenPost",
     "ChangedPassword",
     "CreatedAccount",
     "CreatedAccountBook",

@@ -37,7 +37,7 @@ class AppSettings(BaseAppSettings):
 
     JWT_TOKEN_PREFIX: str = "Token"
 
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 24 * 60  # 1 day
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 15   # 15 minute
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 7 * 24 * 60  # 7 days
 
     ALLOWED_HOSTS: List[str] = ["*"]

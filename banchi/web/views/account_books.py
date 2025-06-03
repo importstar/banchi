@@ -43,16 +43,24 @@ def index():
     account_books = response.account_books
     balances = dict()
     display_account_books = dict()
+    now = datetime.datetime.now()
 
     display_names = utils.account_books.get_display_names(account_books)
+    account_book_month_summaries = dict()
     for account_book in account_books:
         display_account_books[account_book.id] = dict(
             name=display_names[account_book.id],
             account_balance=get_balance_v1_account_books_account_book_id_balance_get.sync(
                 client=client, account_book_id=account_book.id
             ),
+            month_summary=get_summary_v1_account_books_account_book_id_summary_get.sync(
+                client=client,
+                account_book_id=account_book.id,
+                year=now.year,
+                month=now.month),
             obj=account_book,
         )
+
 
     display_account_books = OrderedDict(
         sorted(display_account_books.items(), key=lambda a: a[1]["name"])
@@ -186,6 +194,7 @@ def view(account_book_id):
             client=client, account_book_id=abc.id
         )
         account_book_children_balance[abc.id] = abc_balance
+
 
     response = get_all_v1_account_books_get.sync(
         client=client, account_id=account_book.account.id
