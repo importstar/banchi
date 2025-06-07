@@ -203,7 +203,7 @@ async def get_account_book_balance_by_trasaction(
         db_account_book, "to_account_book"
     )
 
-    if db_account_book.type in ["income", "equity", "liability"]:
+    if db_account_book.type in ["income", "equity"]:
         balance = decrease - increase
     else:
         balance = increase - decrease
@@ -357,7 +357,7 @@ async def get_label(
         equity=dict(positive="decrease", negative="increase"),
         expense=dict(positive="expense", negative="rebate"),
         income=dict(positive="charge", negative="income"),
-        liability=dict(positive="decrease", negative="increase"),
+        liability=dict(positive="increase", negative="decrease"),
         credit_card=dict(positive="payment", negative="charge"),
     )
     return labels[db_account_book.type]
