@@ -54,10 +54,18 @@ Account Book: {{ account_book.name }}
       <div class="content">
         <div class="header">{{ c_account_book.name }}</div>
         <div class="description">
+
           <div>
             <span>type:</span>
             <span class="right floated bold" style="font-weight: bold;">
               {{ c_account_book.type_.title() }}
+            </span>
+          </div>
+
+          <div>
+            <span>net balance:</span>
+            <span class="right floated bold" style="font-weight: bold;">
+              {{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_balance']|float) }}
             </span>
           </div>
           <div>
