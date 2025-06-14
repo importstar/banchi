@@ -12,6 +12,27 @@ from . import account_books
 import datetime
 
 
+class TransactionDocument(Document):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId,
+        alias="_id",
+    )
+
+    file_id: PydanticObjectId | None = Field(
+        default_factory=PydanticObjectId,
+    )
+    transaction: Link["Transaction"]
+    description: Optional[str] = None
+
+    created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    creator: Link[users.User]
+    updated_by: Link[users.User]
+
+    class Settings:
+        name = "transaction_documents"
+
+
 class Transaction(schemas.transactions.Transaction, Document):
     id: PydanticObjectId = Field(
         default_factory=PydanticObjectId,
@@ -25,6 +46,8 @@ class Transaction(schemas.transactions.Transaction, Document):
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     creator: Link[users.User]
     updated_by: Link[users.User]
+
+    files: list[Link[TransactionDocument]]
 
     class Settings:
         name = "transactions"
