@@ -357,7 +357,7 @@ async def get_label(
         equity=dict(positive="decrease", negative="increase"),
         expense=dict(positive="expense", negative="rebate"),
         income=dict(positive="charge", negative="income"),
-        liability=dict(positive="decrease", negative="increase"),
+        liability=dict(positive="increase", negative="decrease"),
         credit_card=dict(positive="payment", negative="charge"),
     )
     type_name = db_account_book.type

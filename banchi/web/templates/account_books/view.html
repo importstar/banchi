@@ -54,6 +54,14 @@ Account Book: {{ account_book.name }}
       <div class="content">
         <div class="header">{{ c_account_book.name }}</div>
         <div class="description">
+
+          <div>
+            <span>type:</span>
+            <span class="right floated bold" style="font-weight: bold;">
+              {{ c_account_book.type_.title() }}
+            </span>
+          </div>
+
           <div>
             <span>net balance:</span>
             <span class="right floated bold" style="font-weight: bold;">
@@ -213,7 +221,8 @@ Account Book: {{ account_book.name }}
 
     {% if transaction_chunk.page_size > 1 %}
     <div style="padding-top: 1vh;">
-      {{ pagination.render_pagination(transaction_chunk.page, transaction_chunk.page_size, transaction_chunk.size_per_page, request.path) }}
+      {{ pagination.render_pagination(transaction_chunk.page, transaction_chunk.page_size,
+      transaction_chunk.size_per_page, request.path) }}
     </div>
     {% endif %}
   </div>
