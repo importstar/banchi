@@ -163,6 +163,8 @@ def view(account_book_id):
         client=client, account_book_id=account_book_id
     )
 
+    form = forms.account_books.TransactionFilterForm()
+
     page = int(request.args.get("page", "1"))
     size_per_page = int(request.args.get("size_per_page", "50"))
     response = get_all_v1_transactions_get.sync(
@@ -219,6 +221,7 @@ def view(account_book_id):
     #     return None
 
     # print(">>>", account_book_children_balance)
+
     return render_template(
         "/account_books/view.html",
         account_book=account_book,
@@ -229,6 +232,7 @@ def view(account_book_id):
         month_summary=month_summary,
         account_book_children=account_book_children,
         account_book_children_balance=account_book_children_balance,
+        form=form,
         # account_book_children=account_book_children,
         # get_balance_sub_balance=get_balance_sub_balance,
     )

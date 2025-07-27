@@ -5,7 +5,7 @@ Created on Oct 13, 2013
 """
 
 from wtforms import validators
-from wtforms import fields
+from wtforms import fields, widgets
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed
@@ -13,6 +13,7 @@ from flask_wtf.file import FileAllowed
 from .fields import TagListField
 
 from banchi_client import models
+import datetime
 
 
 class AccountBookForm(FlaskForm):
@@ -41,4 +42,26 @@ class AccountBookForm(FlaskForm):
         "Currency",
         validators=[validators.InputRequired()],
         choices=[(e.value, e.value.upper()) for e in models.CurrencyEnum],
+    )
+
+
+class TransactionFilterForm(FlaskForm):
+    description = fields.StringField("Description", validators=[validators.Optional()])
+
+    started_date = fields.DateTimeField(
+        "Start Date",
+        format="%Y-%m-%d %H:%M:%S",
+        widget=widgets.TextInput(),
+        validators=[validators.Optional()],
+    )
+    ended_date = fields.DateTimeField(
+        "End Date",
+        format="%Y-%m-%d %H:%M:%S",
+        widget=widgets.TextInput(),
+        validators=[validators.Optional()],
+    )
+
+    value = fields.DecimalField(
+        "Value",
+        validators=[validators.Optional()],
     )

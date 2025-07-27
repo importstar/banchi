@@ -1,5 +1,8 @@
 {% extends '/account_books/index.html' %}
 {% import '/base/pagination.html' as pagination %}
+{% import '/base/html-renderer.html' as html_renderer %}
+
+
 
 {% block dashboard_title %}
 Account Book: {{ account_book.name }}
@@ -134,13 +137,27 @@ Account Book: {{ account_book.name }}
     </div>
   </div>
 
-  <div class="ui aligned grid">
-    <div class="two column row">
-      <div class="column">
+  <div class="">
+    <form method="GET" class="ui form">
+      <div class="five fields">
+        <div class="field">
+          {{ html_renderer.render_calendar(form.started_date) }}
+        </div>
+        <div class="field">
+          {{ html_renderer.render_calendar(form.ended_date) }}
+        </div>
+        <div class="field">
+          {{ html_renderer.render_field(form.description) }}
+        </div>
+        <div class="field">
+          {{ html_renderer.render_field(form.value) }}
+        </div>
+        <div class="field">
+          <label for="type"></label>
+          <button type="submit" class="ui primary button">Search</button>
+        </div>
       </div>
-      <div class="column">
-      </div>
-    </div>
+    </form>
   </div>
 
 
