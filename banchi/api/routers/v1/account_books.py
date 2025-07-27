@@ -139,7 +139,7 @@ async def get_account_book_balance_by_trasaction(
 async def get_account_book_balance_by_account_book_summary(db_account_book):
 
     pipline = [
-        {"$match": {"_id": db_account_book.id}},
+        {"$match": {"_id": db_account_book.id, "status": "active"}},
         {
             "$graphLookup": {
                 "from": "account_books",
@@ -203,7 +203,7 @@ async def get_account_book_balance_by_trasaction(
         db_account_book, "to_account_book"
     )
 
-    if db_account_book.type in ["income", "equity", "liability"]:
+    if db_account_book.type in ["income", "equity", "liability", "credit_card"]:
         balance = decrease - increase
     else:
         balance = increase - decrease
@@ -360,4 +360,7 @@ async def get_label(
         liability=dict(positive="decrease", negative="increase"),
         credit_card=dict(positive="payment", negative="charge"),
     )
-    return labels[db_account_book.type]
+    type_name = db_account_book.type
+    if type_name == "credit card":
+        type_name = "credit_card"
+    return labels[type_name]

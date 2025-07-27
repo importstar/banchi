@@ -57,10 +57,10 @@ def index():
                 client=client,
                 account_book_id=account_book.id,
                 year=now.year,
-                month=now.month),
+                month=now.month,
+            ),
             obj=account_book,
         )
-
 
     display_account_books = OrderedDict(
         sorted(display_account_books.items(), key=lambda a: a[1]["name"])
@@ -81,25 +81,29 @@ def create_or_edit(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = None
     account_id = request.args.get("account_id")
+    parent_id = request.args.get("parent_id", None)
 
     if account_book_id:
         account_book = get_v1_account_books_account_book_id_get.sync(
             client=client, account_book_id=account_book_id
         )
-        account_id = account_book.account.id
 
     if request.method == "GET" and account_book:
         form = forms.account_books.AccountBookForm(obj=account_book)
-        form.parent_id.data = account_book.parent.id
+        form.type.data = account_book.type_
+        if account_book.parent:
+            form.parent_id.data = account_book.parent.id
 
-    elif request.method == "GET" and not account_book and request.args.get("parent_id"):
-        parent_id = request.args.get("parent_id")
+    elif request.method == "GET" and not account_book and parent_id:
         parent = get_v1_account_books_account_book_id_get.sync(
             client=client, account_book_id=parent_id
         )
 
         form.parent_id.data = parent_id
         form.type.data = parent.type_
+
+    if account_book:
+        account_id = account_book.account.id
 
     if account_id:
         response = get_all_v1_account_books_get.sync(
@@ -121,7 +125,9 @@ def create_or_edit(account_book_id):
         )
 
     if not form.validate_on_submit():
-        return render_template("/account_books/create-or-edit.html", form=form)
+        return render_template(
+            "/account_books/create-or-edit.html", form=form, account_book=account_book
+        )
 
     data = form.data.copy()
     if data["parent_id"] == "-":
@@ -194,7 +200,6 @@ def view(account_book_id):
             client=client, account_book_id=abc.id
         )
         account_book_children_balance[abc.id] = abc_balance
-
 
     response = get_all_v1_account_books_get.sync(
         client=client, account_id=account_book.account.id

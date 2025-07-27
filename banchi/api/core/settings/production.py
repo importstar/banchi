@@ -5,4 +5,4 @@ class ProdAppSettings(AppSettings):
     MONGODB_HOST: str = "banchai-mongodb"
 
     class Config(AppSettings.Config):
-        env_file = "prod.env"
+        env_file = ".env.prod"

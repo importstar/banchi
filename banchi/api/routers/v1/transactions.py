@@ -62,17 +62,19 @@ async def calculate_summary_account_book(
 
     db_from_account_book_summary = await models.AccountBookSummary.find_one(
         models.AccountBookSummary.account_book.id == db_from_account_book.id,
-        models.AccountBookSummary.year==year,
-        models.AccountBookSummary.month==month,
-        models.AccountBookSummary.date==datetime.datetime(
+        models.AccountBookSummary.year == year,
+        models.AccountBookSummary.month == month,
+        models.AccountBookSummary.date
+        == datetime.datetime(
             year=year, month=month, day=calendar.monthrange(year, month)[1]
         ),
     )
     db_to_account_book_summary = await models.AccountBookSummary.find_one(
-        models.AccountBookSummary.account_book.id==db_to_account_book.id,
-        models.AccountBookSummary.year==year,
-        models.AccountBookSummary.month==month,
-        models.AccountBookSummary.date==datetime.datetime(
+        models.AccountBookSummary.account_book.id == db_to_account_book.id,
+        models.AccountBookSummary.year == year,
+        models.AccountBookSummary.month == month,
+        models.AccountBookSummary.date
+        == datetime.datetime(
             year=year, month=month, day=calendar.monthrange(year, month)[1]
         ),
     )
@@ -97,12 +99,17 @@ async def calculate_summary_account_book(
         )
 
     if type == "add":
-        if db_from_account_book.type in ["income", "equity", "liability"]:
+        if db_from_account_book.type in [
+            "income",
+            "equity",
+            "liability",
+            "credit card",
+        ]:
             db_from_account_book_summary.balance += value
         else:
             db_from_account_book_summary.balance -= value
 
-        if db_to_account_book.type in ["income", "equity", "liability"]:
+        if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
             db_to_account_book_summary.balance -= value
         else:
             db_to_account_book_summary.balance += value
@@ -111,12 +118,17 @@ async def calculate_summary_account_book(
         db_to_account_book_summary.increase += value
 
     elif type == "remove":
-        if db_from_account_book.type in ["income", "equity", "liability"]:
+        if db_from_account_book.type in [
+            "income",
+            "equity",
+            "liability",
+            "credit card",
+        ]:
             db_from_account_book_summary.balance -= value
         else:
             db_from_account_book_summary.balance += value
 
-        if db_to_account_book.type in ["income", "equity", "liability"]:
+        if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
             db_to_account_book_summary.balance += value
         else:
             db_to_account_book_summary.balance -= value
@@ -134,31 +146,40 @@ async def calculate_balance_account_book(
     value: decimal.Decimal,
     type: str = "add",
 ) -> dict:
-    
+
     if type == "add":
-        if db_from_account_book.type in ["income", "equity", "liability"]:
+        if db_from_account_book.type in [
+            "income",
+            "equity",
+            "liability",
+            "credit card",
+        ]:
             db_from_account_book.balance += value
         else:
             db_from_account_book.balance -= value
 
-        if db_to_account_book.type in ["income", "equity", "liability"]:
+        if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
             db_to_account_book.balance -= value
         else:
             db_to_account_book.balance += value
     elif type == "remove":
-        if db_from_account_book.type in ["income", "equity", "liability"]:
+        if db_from_account_book.type in [
+            "income",
+            "equity",
+            "liability",
+            "credit card",
+        ]:
             db_from_account_book.balance -= value
         else:
             db_from_account_book.balance += value
 
-        if db_to_account_book.type in ["income", "equity", "liability"]:
+        if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
             db_to_account_book.balance += value
         else:
             db_to_account_book.balance -= value
 
     await db_to_account_book.save()
     await db_from_account_book.save()
-
 
 
 @router.get("")
@@ -342,8 +363,6 @@ async def update(
     data = await transform_transaction(transaction, current_user)
     db_transaction.value = data["value"]
 
-
-
     db_transaction.to_account_book = data["to_account_book"]
     db_transaction.from_account_book = data["from_account_book"]
     db_transaction.updated_date = datetime.datetime.now()
@@ -388,7 +407,6 @@ async def delete(
     to_account_book = db_transaction.to_account_book
     from_account_book = db_transaction.from_account_book
 
-
     await to_account_book.save()
     await from_account_book.save()
     await db_transaction.save()
@@ -408,7 +426,6 @@ async def delete(
         db_transaction.date.month,
         type="remove",
     )
-
 
     return db_transaction
 

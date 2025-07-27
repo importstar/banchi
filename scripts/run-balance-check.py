@@ -46,7 +46,7 @@ async def get_account_book_balance(
         db_account_book, "to_account_book"
     )
 
-    if db_account_book.type in ["income", "equity", "liability"]:
+    if db_account_book.type in ["income", "equity", "liability", "credit card"]:
         balance = decrease - increase
     else:
         balance = increase - decrease

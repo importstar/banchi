@@ -175,7 +175,7 @@ async def get_account_book_balance(
             if type(increase) is bson.Decimal128:
                 increase = increase.to_decimal()
 
-            if db_account_book.type in ["income", "equity", "liability"]:
+            if db_account_book.type in ["income", "equity", "liability", "credit card"]:
                 balance = decrease - increase
             else:
                 balance = increase - decrease
