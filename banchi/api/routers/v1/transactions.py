@@ -234,7 +234,12 @@ async def get_all(
         pattern = re.compile(f"{''.join(pattern_text)}", re.IGNORECASE)
         query_args.append(RegEx(models.transactions.Transaction.description, pattern))
     if value:
-        query_args.append(models.transactions.Transaction.value == value)
+        query_args.append(
+            Or(
+                models.transactions.Transaction.value == value,
+                models.transactions.Transaction.value == -value,
+            )
+        )
 
     query_args.append(account_book_query)
 

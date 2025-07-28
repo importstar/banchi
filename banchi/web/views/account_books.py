@@ -169,12 +169,13 @@ def view(account_book_id):
     try:
         started_date = datetime.datetime.fromisoformat(args["started_date"])
         args["started_date"] = started_date
-    except ValueError:
+    except Exception:
         args.pop("started_date", None)
+
     try:
         ended_date = datetime.datetime.fromisoformat(args["ended_date"])
         args["ended_date"] = ended_date
-    except ValueError:
+    except Exception:
         args.pop("ended_date", None)
 
     if "description" in args and not args["description"]:
@@ -183,7 +184,7 @@ def view(account_book_id):
     try:
         if "value" in args:
             args["value"] = decimal.Decimal(args["value"])
-    except decimal.InvalidOperation:
+    except Exception:
         args.pop("value", None)
 
     response = get_all_v1_transactions_get.sync(
