@@ -10,9 +10,10 @@ import typing
 import math
 import decimal
 import calendar
-from beanie.odm.operators.find.logical import Or, And
-from beanie.operators import Inc, Set
 
+from beanie.operators import Inc, Set, In, Or, And, RegEx
+
+import re
 from beanie import PydanticObjectId
 
 from banchi.api import models
@@ -189,6 +190,10 @@ async def get_all(
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
     page: typing.Annotated[int | None, Query()] = 1,
     size_per_page: typing.Annotated[int | None, Query()] = 50,
+    started_date: typing.Annotated[datetime.datetime | None, Query()] = None,
+    ended_date: typing.Annotated[datetime.datetime | None, Query()] = None,
+    description: typing.Annotated[str | None, Query()] = None,
+    value: typing.Annotated[decimal.Decimal | None, Query()] = None,
 ) -> schemas.transactions.TransactionList:
     # print(">>>", page, size_per_page)
     from_account_book = None
@@ -217,8 +222,21 @@ async def get_all(
 
     query_args = [
         models.transactions.Transaction.status == "active",
-        account_book_query,
     ]
+
+    if started_date:
+        query_args.append(models.transactions.Transaction.date >= started_date)
+    if ended_date:
+        query_args.append(models.transactions.Transaction.date <= ended_date)
+
+    if description:
+        pattern_text = [f"(?=.*{t})" for t in description.split(" ")]
+        pattern = re.compile(f"{''.join(pattern_text)}", re.IGNORECASE)
+        query_args.append(RegEx(models.transactions.Transaction.description, pattern))
+    if value:
+        query_args.append(models.transactions.Transaction.value == value)
+
+    query_args.append(account_book_query)
 
     transaction_count = await models.transactions.Transaction.find(
         *query_args,

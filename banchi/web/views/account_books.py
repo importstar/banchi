@@ -163,16 +163,36 @@ def view(account_book_id):
         client=client, account_book_id=account_book_id
     )
 
-    form = forms.account_books.TransactionFilterForm()
-
     page = int(request.args.get("page", "1"))
     size_per_page = int(request.args.get("size_per_page", "50"))
+    args = request.args.to_dict().copy()
+    try:
+        started_date = datetime.datetime.fromisoformat(args["started_date"])
+        args["started_date"] = started_date
+    except ValueError:
+        args.pop("started_date", None)
+    try:
+        ended_date = datetime.datetime.fromisoformat(args["ended_date"])
+        args["ended_date"] = ended_date
+    except ValueError:
+        args.pop("ended_date", None)
+
+    if "description" in args and not args["description"]:
+        args.pop("description", None)
+
+    try:
+        if "value" in args:
+            args["value"] = decimal.Decimal(args["value"])
+    except decimal.InvalidOperation:
+        args.pop("value", None)
+
     response = get_all_v1_transactions_get.sync(
         client=client,
         from_account_book_id=account_book.id,
         to_account_book_id=account_book.id,
         page=page,
         size_per_page=size_per_page,
+        **args,
     )
     transaction_chunk = response
 
@@ -222,6 +242,7 @@ def view(account_book_id):
 
     # print(">>>", account_book_children_balance)
 
+    form = forms.account_books.TransactionFilterForm(data=args)
     return render_template(
         "/account_books/view.html",
         account_book=account_book,

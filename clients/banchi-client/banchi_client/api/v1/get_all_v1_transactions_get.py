@@ -1,3 +1,4 @@
+import datetime
 from http import HTTPStatus
 from typing import Any, Optional, Union
 
@@ -16,6 +17,10 @@ def _get_kwargs(
     to_account_book_id: Union[None, str],
     page: Union[None, Unset, int] = 1,
     size_per_page: Union[None, Unset, int] = 50,
+    started_date: Union[None, Unset, datetime.datetime] = UNSET,
+    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
+    description: Union[None, Unset, str] = UNSET,
+    value: Union[None, Unset, float, str] = UNSET,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {}
 
@@ -40,6 +45,38 @@ def _get_kwargs(
     else:
         json_size_per_page = size_per_page
     params["size_per_page"] = json_size_per_page
+
+    json_started_date: Union[None, Unset, str]
+    if isinstance(started_date, Unset):
+        json_started_date = UNSET
+    elif isinstance(started_date, datetime.datetime):
+        json_started_date = started_date.isoformat()
+    else:
+        json_started_date = started_date
+    params["started_date"] = json_started_date
+
+    json_ended_date: Union[None, Unset, str]
+    if isinstance(ended_date, Unset):
+        json_ended_date = UNSET
+    elif isinstance(ended_date, datetime.datetime):
+        json_ended_date = ended_date.isoformat()
+    else:
+        json_ended_date = ended_date
+    params["ended_date"] = json_ended_date
+
+    json_description: Union[None, Unset, str]
+    if isinstance(description, Unset):
+        json_description = UNSET
+    else:
+        json_description = description
+    params["description"] = json_description
+
+    json_value: Union[None, Unset, float, str]
+    if isinstance(value, Unset):
+        json_value = UNSET
+    else:
+        json_value = value
+    params["value"] = json_value
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -87,6 +124,10 @@ def sync_detailed(
     to_account_book_id: Union[None, str],
     page: Union[None, Unset, int] = 1,
     size_per_page: Union[None, Unset, int] = 50,
+    started_date: Union[None, Unset, datetime.datetime] = UNSET,
+    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
+    description: Union[None, Unset, str] = UNSET,
+    value: Union[None, Unset, float, str] = UNSET,
 ) -> Response[Union[HTTPValidationError, TransactionList]]:
     """Get All
 
@@ -95,6 +136,10 @@ def sync_detailed(
         to_account_book_id (Union[None, str]):
         page (Union[None, Unset, int]):  Default: 1.
         size_per_page (Union[None, Unset, int]):  Default: 50.
+        started_date (Union[None, Unset, datetime.datetime]):
+        ended_date (Union[None, Unset, datetime.datetime]):
+        description (Union[None, Unset, str]):
+        value (Union[None, Unset, float, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -109,6 +154,10 @@ def sync_detailed(
         to_account_book_id=to_account_book_id,
         page=page,
         size_per_page=size_per_page,
+        started_date=started_date,
+        ended_date=ended_date,
+        description=description,
+        value=value,
     )
 
     response = client.get_httpx_client().request(
@@ -125,6 +174,10 @@ def sync(
     to_account_book_id: Union[None, str],
     page: Union[None, Unset, int] = 1,
     size_per_page: Union[None, Unset, int] = 50,
+    started_date: Union[None, Unset, datetime.datetime] = UNSET,
+    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
+    description: Union[None, Unset, str] = UNSET,
+    value: Union[None, Unset, float, str] = UNSET,
 ) -> Optional[Union[HTTPValidationError, TransactionList]]:
     """Get All
 
@@ -133,6 +186,10 @@ def sync(
         to_account_book_id (Union[None, str]):
         page (Union[None, Unset, int]):  Default: 1.
         size_per_page (Union[None, Unset, int]):  Default: 50.
+        started_date (Union[None, Unset, datetime.datetime]):
+        ended_date (Union[None, Unset, datetime.datetime]):
+        description (Union[None, Unset, str]):
+        value (Union[None, Unset, float, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -148,6 +205,10 @@ def sync(
         to_account_book_id=to_account_book_id,
         page=page,
         size_per_page=size_per_page,
+        started_date=started_date,
+        ended_date=ended_date,
+        description=description,
+        value=value,
     ).parsed
 
 
@@ -158,6 +219,10 @@ async def asyncio_detailed(
     to_account_book_id: Union[None, str],
     page: Union[None, Unset, int] = 1,
     size_per_page: Union[None, Unset, int] = 50,
+    started_date: Union[None, Unset, datetime.datetime] = UNSET,
+    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
+    description: Union[None, Unset, str] = UNSET,
+    value: Union[None, Unset, float, str] = UNSET,
 ) -> Response[Union[HTTPValidationError, TransactionList]]:
     """Get All
 
@@ -166,6 +231,10 @@ async def asyncio_detailed(
         to_account_book_id (Union[None, str]):
         page (Union[None, Unset, int]):  Default: 1.
         size_per_page (Union[None, Unset, int]):  Default: 50.
+        started_date (Union[None, Unset, datetime.datetime]):
+        ended_date (Union[None, Unset, datetime.datetime]):
+        description (Union[None, Unset, str]):
+        value (Union[None, Unset, float, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -180,6 +249,10 @@ async def asyncio_detailed(
         to_account_book_id=to_account_book_id,
         page=page,
         size_per_page=size_per_page,
+        started_date=started_date,
+        ended_date=ended_date,
+        description=description,
+        value=value,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -194,6 +267,10 @@ async def asyncio(
     to_account_book_id: Union[None, str],
     page: Union[None, Unset, int] = 1,
     size_per_page: Union[None, Unset, int] = 50,
+    started_date: Union[None, Unset, datetime.datetime] = UNSET,
+    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
+    description: Union[None, Unset, str] = UNSET,
+    value: Union[None, Unset, float, str] = UNSET,
 ) -> Optional[Union[HTTPValidationError, TransactionList]]:
     """Get All
 
@@ -202,6 +279,10 @@ async def asyncio(
         to_account_book_id (Union[None, str]):
         page (Union[None, Unset, int]):  Default: 1.
         size_per_page (Union[None, Unset, int]):  Default: 50.
+        started_date (Union[None, Unset, datetime.datetime]):
+        ended_date (Union[None, Unset, datetime.datetime]):
+        description (Union[None, Unset, str]):
+        value (Union[None, Unset, float, str]):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -218,5 +299,9 @@ async def asyncio(
             to_account_book_id=to_account_book_id,
             page=page,
             size_per_page=size_per_page,
+            started_date=started_date,
+            ended_date=ended_date,
+            description=description,
+            value=value,
         )
     ).parsed

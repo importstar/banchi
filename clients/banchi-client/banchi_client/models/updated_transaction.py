@@ -21,7 +21,7 @@ class UpdatedTransaction:
         currency (CurrencyEnum):
         from_account_book_id (str):  Example: 0.
         to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2025-06-03T20:40:37.462191').
+        date (Union[Unset, datetime.datetime]):  Default: isoparse('2025-07-28T15:16:31.718383').
         tags (Union[Unset, list[str]]):
         remarks (Union[None, Unset, str]):  Default: ''. Example: Text Remark.
     """
@@ -31,7 +31,7 @@ class UpdatedTransaction:
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2025-06-03T20:40:37.462191")
+    date: Union[Unset, datetime.datetime] = isoparse("2025-07-28T15:16:31.718383")
     tags: Union[Unset, list[str]] = UNSET
     remarks: Union[None, Unset, str] = ""
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
