@@ -15,7 +15,7 @@ def main():
         host=options.host,
         port=int(options.port),
         restart_delay=2,
-        # open_url_delay=5,
+        open_url_delay=7,
     )
 
     # app.run(debug=options.debug, host=options.host, port=int(options.port))
