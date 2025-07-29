@@ -163,8 +163,6 @@ def view(account_book_id):
         client=client, account_book_id=account_book_id
     )
 
-    page = int(request.args.get("page", "1"))
-    size_per_page = int(request.args.get("size_per_page", "50"))
     args = request.args.to_dict().copy()
     try:
         started_date = datetime.datetime.fromisoformat(args["started_date"])
@@ -187,12 +185,13 @@ def view(account_book_id):
     except Exception:
         args.pop("value", None)
 
+    args["page"] = int(request.args.get("page", "1"))
+    args["size_per_page"] = int(request.args.get("size_per_page", "50"))
+
     response = get_all_v1_transactions_get.sync(
         client=client,
         from_account_book_id=account_book.id,
         to_account_book_id=account_book.id,
-        page=page,
-        size_per_page=size_per_page,
         **args,
     )
     transaction_chunk = response

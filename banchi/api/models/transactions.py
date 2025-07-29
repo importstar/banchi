@@ -47,7 +47,7 @@ class Transaction(schemas.transactions.Transaction, Document):
     creator: Link[users.User]
     updated_by: Link[users.User]
 
-    files: list[Link[TransactionDocument]]
+    # files: list[Link[TransactionDocument]]
 
     class Settings:
         name = "transactions"
