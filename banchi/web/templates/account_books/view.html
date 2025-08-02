@@ -238,8 +238,8 @@ Account Book: {{ account_book.name }}
 
     {% if transaction_chunk.page_size > 1 %}
     <div style="padding-top: 1vh;">
-      {{ pagination.render_pagination(transaction_chunk.page, transaction_chunk.page_size,
-      transaction_chunk.size_per_page, request.path) }}
+      {{ pagination.render_pagination(request.path, transaction_chunk.page, transaction_chunk.page_size,
+      transaction_chunk.size_per_page, request.args) }}
     </div>
     {% endif %}
   </div>

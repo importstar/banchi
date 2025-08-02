@@ -1,28 +1,31 @@
-
-{% macro render_pagination(page, page_size, size_per_page, url) -%}
-  <div class="ui centered pagination menu">
-    {%- for i in range(1, page_size+1) %}
-      {% if i == page %}
-        <a class="active item">
-          {{ i }}
-        </a>
-      {% else %}
-        {% set delimitor = '?' %}
-        {%- if '?' in url %}
-          {% set delimitor = '&' %}
-        {% endif -%}
-
-        <a class="item" href="{{ url }}{{ delimitor }}page={{ i }}&size_per_page={{ size_per_page }}">
-          {{ i }}
-        </a>
-      {% endif %}
-    {% endfor -%}
-  </div>
-  {#
-  <div class="disabled item">
-    ...
-  </div>
-  #}
+{% macro render_pagination(url, page, page_size, size_per_page, kwargs) -%}
+<div class="ui centered pagination menu">
+  {% set ns = namespace(page_url=url) %}
+  {%- for i in range(1, page_size+1) %}
+  {% if i == page %}
+  <a class="active item">
+    {{ i }}
+  </a>
+  {% else %}
+  {% set delimitor = '?' %}
+  {%- if '?' in url %}
+  {% set delimitor = '&' %}
+  {% endif -%}
+  {%- set ns.page_url = ns.page_url + delimitor + "page=" + i|string + "&size_per_page=" + size_per_page|string %}
+  {%- if kwargs %}
+  {% for key, value in kwargs.items() if value %}
+  {% set ns.page_url = ns.page_url + "&" + key + "=" + value|string %}
+  {% endfor -%}
+  {% endif -%}
+  <a class="item" href="{{ page_url }}">
+    {{ i }}
+  </a>
+  {% endif %}
+  {% endfor -%}
+</div>
+{#
+<div class="disabled item">
+  ...
+</div>
+#}
 {%- endmacro %}
-
-
