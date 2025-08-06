@@ -7,17 +7,17 @@
     {{ i }}
   </a>
   {% else %}
-  {% set delimitor = '?' %}
+  {% set ns.delimitor = '?' %}
   {%- if '?' in url %}
-  {% set delimitor = '&' %}
+  {% set ns.delimitor = '&' %}
   {% endif -%}
-  {%- set ns.page_url = ns.page_url + delimitor + "page=" + i|string + "&size_per_page=" + size_per_page|string %}
+  {%- set ns.page_url = url + ns.delimitor + "page=" + i|string + "&size_per_page=" + size_per_page|string %}
   {%- if kwargs %}
   {% for key, value in kwargs.items() if value %}
   {% set ns.page_url = ns.page_url + "&" + key + "=" + value|string %}
   {% endfor -%}
   {% endif -%}
-  <a class="item" href="{{ page_url }}">
+  <a class="item" href="{{ ns.page_url }}">
     {{ i }}
   </a>
   {% endif %}
