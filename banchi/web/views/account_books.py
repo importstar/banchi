@@ -310,6 +310,15 @@ def view_recursive_transactions(account_book_id):
 
 
 @module.route(
+    "/<account_book_id>/transactions/add-bulk",
+    methods=["GET", "POST"],
+    defaults=dict(transaction_id=None),
+)
+def add_bulk_transactions(account_book_id):
+    return "Not implemented yet"
+
+
+@module.route(
     "/transactions/add",
     methods=["GET", "POST"],
     defaults=dict(account_book_id=None, transaction_id=None),
