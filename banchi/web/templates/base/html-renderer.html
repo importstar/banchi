@@ -6,8 +6,9 @@
 {%- set style = '%s %s' | format(class_, eh.get_validate_class(field.errors)) -%}
 {%- endif -%}
 <div class="field">
-{{ field.label }}
-{{ field(class_=style) }}
+  {{ field.label }}
+  {{ field }}
+  {# { field(class_=style) } #}
 </div>
 {{ eh.get_error_messages(field.errors) }}
 {%- endmacro %}

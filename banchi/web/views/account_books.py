@@ -230,18 +230,6 @@ def view(account_book_id):
 
     display_names = utils.account_books.get_display_names(account_books)
 
-    # account_book_children = [
-    #     ab for ab in account_books if ab.parent and ab.parent.id == account_book.id
-    # ]
-
-    # def get_balance_sub_balance(account_book, balance):
-    #     for b in balance:
-    #         if b.id == account_book.id:
-    #             return b
-    #     return None
-
-    # print(">>>", account_book_children_balance)
-
     form = forms.account_books.TransactionFilterForm(data=args)
     return render_template(
         "/account_books/view.html",
@@ -312,10 +300,72 @@ def view_recursive_transactions(account_book_id):
 @module.route(
     "/<account_book_id>/transactions/add-bulk",
     methods=["GET", "POST"],
-    defaults=dict(transaction_id=None),
 )
 def add_bulk_transactions(account_book_id):
-    return "Not implemented yet"
+
+    client = banchi_api_clients.client.get_current_client()
+    account_book = None
+
+    if account_book_id:
+        account_book = get_v1_account_books_account_book_id_get.sync(
+            client=client, account_book_id=account_book_id
+        )
+
+    account_id = request.args.get("account_id", None)
+    if account_book:
+        account_id = account_book.account.id
+
+    response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
+
+    account_books = response.account_books
+
+    form = forms.transactions.TransactionListForm()
+
+    display_names = utils.account_books.get_display_names(
+        account_books, excluse_none_parent=True
+    )
+    account_book_choices = [
+        (str(ab.id), display_names[ab.id])
+        for ab in account_books
+        if ab.id in display_names
+    ]
+    to_account_book_choices = account_book_choices
+
+    account_book_choices = sorted(
+        account_book_choices,
+        key=lambda abn: abn[1],
+    )
+
+    if request.method == "GET":
+        [form.transactions.append_entry() for _ in range(4)]
+
+    for sub_form in form.transactions:
+        sub_form.to_account_book_id.choices = account_book_choices
+        sub_form.from_account_book_id.choices = account_book_choices
+
+        if request.method == "GET" and account_book:
+            sub_form.from_account_book_id.data = str(account_book.id)
+            sub_form.to_account_book_id.data = str(account_book.id)
+
+    if not form.validate_on_submit():
+
+        return render_template(
+            "/account_books/add-or-edit-transaction.html",
+            account_book=account_book,
+            form=form,
+        )
+
+    data = form.data.copy()
+    data.pop("csrf_token")
+
+    data["date"] = data["date"].isoformat()
+    data["value"] = float(data["value"])
+    transaction = models.CreatedTransaction.from_dict(data)
+    response = create_v1_transactions_post.sync(client=client, body=transaction)
+    if not account_book:
+        account_book = response.from_account_book
+
+    return redirect(url_for("account_books.view", account_book_id=account_book.id))
 
 
 @module.route(

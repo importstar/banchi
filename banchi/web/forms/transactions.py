@@ -34,3 +34,12 @@ class TransactionForm(FlaskForm):
 
     tags = fields.SelectMultipleField("Tags", choices=[], validate_choice=False)
     remarks = fields.TextAreaField("Remarks")
+
+
+class TransactionListForm(FlaskForm):
+    transactions = fields.FieldList(
+        fields.FormField(TransactionForm),
+        min_entries=1,
+        max_entries=5,
+        validators=[validators.Optional()],
+    )
