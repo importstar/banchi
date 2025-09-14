@@ -7,8 +7,7 @@
 {%- endif -%}
 <div class="field">
   {{ field.label }}
-  {{ field }}
-  {# { field(class_=style) } #}
+  {{ field(class_=style) }}
 </div>
 {{ eh.get_error_messages(field.errors) }}
 {%- endmacro %}

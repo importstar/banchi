@@ -18,9 +18,7 @@ class TransactionForm(FlaskForm):
     )
     from_account_book_id = fields.SelectField("From Account Book")
     to_account_book_id = fields.SelectField("To Account Book")
-    description = fields.StringField(
-        "Description", validators=[validators.InputRequired()]
-    )
+    description_ = fields.StringField("Description")
 
     value = fields.DecimalField(
         "Value", validators=[validators.InputRequired()], default=0, places=2
@@ -40,6 +38,6 @@ class TransactionListForm(FlaskForm):
     transactions = fields.FieldList(
         fields.FormField(TransactionForm),
         min_entries=1,
-        max_entries=5,
+        max_entries=10,
         validators=[validators.Optional()],
     )

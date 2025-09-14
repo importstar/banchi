@@ -13,8 +13,10 @@
 {% endblock %}
 
 {% macro render_transaction(form) %}
-{{ renderer.render_calendar(form.date, calendar_id='date_calendar') }}
-{{ renderer.render_field(form.description) }}
+<div class="two fields">
+  {{ renderer.render_calendar(form.date, calendar_id='date_calendar') }}
+  {{ renderer.render_field(form.description_) }}
+</div>
 <div class="two fields">
   {{ renderer.render_field(form.value) }}
   {{ renderer.render_select(form.currency) }}
@@ -36,7 +38,7 @@
 
     {% if form.transactions is defined %}
     {% for sub_form in form.transactions %}
-    <div class="ui vertical segment">
+    <div class="ui vertical {{ 'red' if loop.index % 2 == 1 else 'blue' }} segment">
       <h3 class="ui header">Transaction #{{ loop.index }}</h3>
       {{ render_transaction(sub_form) }}
       {{ sub_form.csrf_token }}

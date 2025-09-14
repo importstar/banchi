@@ -329,7 +329,6 @@ def add_bulk_transactions(account_book_id):
         for ab in account_books
         if ab.id in display_names
     ]
-    to_account_book_choices = account_book_choices
 
     account_book_choices = sorted(
         account_book_choices,
@@ -337,7 +336,7 @@ def add_bulk_transactions(account_book_id):
     )
 
     if request.method == "GET":
-        [form.transactions.append_entry() for _ in range(4)]
+        [form.transactions.append_entry() for _ in range(9)]
 
     for sub_form in form.transactions:
         sub_form.to_account_book_id.choices = account_book_choices
@@ -355,15 +354,21 @@ def add_bulk_transactions(account_book_id):
             form=form,
         )
 
-    data = form.data.copy()
-    data.pop("csrf_token")
+    for idx, sub_form in enumerate(form.transactions):
+        if not sub_form.data or (
+            not sub_form.data.get("description_", "").strip()
+            or not sub_form.data.get("value", 0)
+        ):
+            continue
 
-    data["date"] = data["date"].isoformat()
-    data["value"] = float(data["value"])
-    transaction = models.CreatedTransaction.from_dict(data)
-    response = create_v1_transactions_post.sync(client=client, body=transaction)
-    if not account_book:
-        account_book = response.from_account_book
+        entry_data = sub_form.data.copy()
+        entry_data.pop("csrf_token")
+        entry_data["date"] = entry_data["date"].isoformat()
+        entry_data["value"] = float(entry_data["value"])
+        entry_data["description"] = entry_data["description_"]
+
+        transaction = models.CreatedTransaction.from_dict(entry_data)
+        response = create_v1_transactions_post.sync(client=client, body=transaction)
 
     return redirect(url_for("account_books.view", account_book_id=account_book.id))
 
@@ -463,6 +468,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
     data["date"] = data["date"].isoformat()
     data["value"] = float(data["value"])
+    data["description"] = data["description_"]
     if not transaction:
         transaction = models.CreatedTransaction.from_dict(data)
         response = create_v1_transactions_post.sync(client=client, body=transaction)
