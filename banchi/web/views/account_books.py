@@ -453,6 +453,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
             form.to_account_book_id.data = str(transaction.to_account_book.id)
             form.from_account_book_id.data = str(transaction.from_account_book.id)
             form.value.data = decimal.Decimal(form.value.data)
+            form.description_.data = transaction.description
 
         # if not transaction:
         #     form.from_account_book_id.render_kw = {"disabled": ""}
