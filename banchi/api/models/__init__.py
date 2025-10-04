@@ -1,8 +1,8 @@
 import sys
 from typing import Sequence, Type, TypeVar
 from inspect import getmembers, isclass
-import motor
 import beanie
+import pymongo
 
 
 from . import users
@@ -38,9 +38,7 @@ async def gather_documents() -> Sequence[Type[DocumentType]]:
 class BeanieClient:
     async def init_beanie(self, settings):
         self.settings = settings
-        self.client = motor.motor_asyncio.AsyncIOMotorClient(
-            settings.MONGODB_URI, connect=True
-        )
+        self.client = pymongo.AsyncMongoClient(settings.MONGODB_URI, connect=True)
 
         documents = await gather_documents()
         print("Documents >>>")
