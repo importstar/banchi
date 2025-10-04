@@ -48,3 +48,22 @@ class CreatedTransaction(BaseTransaction):
 
 class UpdatedTransaction(CreatedTransaction):
     pass
+
+
+class TransactionTemplate(bases.BaseSchema):
+    transactions: list[Transaction] = []
+
+
+class TransactionTemplateList(BaseModel):
+    transactions: list[TransactionTemplate]
+    page: int = 1
+    size_per_page: int = 50
+    page_size: int = 1
+
+
+class CreatedTransactionTemplate(TransactionTemplate):
+    pass
+
+
+class UpdatedTransactionTemplate(CreatedTransactionTemplate):
+    pass

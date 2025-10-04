@@ -51,3 +51,13 @@ class Transaction(schemas.transactions.Transaction, Document):
 
     class Settings:
         name = "transactions"
+
+
+class TransactionTemplate(schemas.transactions.TransactionTemplate, Document):
+    id: PydanticObjectId = Field(
+        default_factory=PydanticObjectId,
+        alias="_id",
+    )
+
+    class Settings:
+        name = "transaction_templates"
