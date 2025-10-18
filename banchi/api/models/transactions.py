@@ -58,6 +58,13 @@ class TransactionTemplate(schemas.transactions.TransactionTemplate, Document):
         default_factory=PydanticObjectId,
         alias="_id",
     )
+    transactions: Transaction
+
+    creator: Link[users.User]
+    updated_by: Link[users.User]
+
+    created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
+    updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
 
     class Settings:
         name = "transaction_templates"

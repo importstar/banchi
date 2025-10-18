@@ -29,15 +29,6 @@ async def get_all() -> schemas.transactions.TransactionTemplateList:
     return dict()
 
 
-@router.get("/get_recursive")
-async def get_recursive(
-    from_account_book_id: PydanticObjectId | None,
-    to_account_book_id: PydanticObjectId | None,
-    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
-) -> schemas.transactions.TransactionTemplateList:
-    return ""
-
-
 @router.post("")
 async def create(
     transaction: schemas.transactions.CreatedTransactionTemplate,
