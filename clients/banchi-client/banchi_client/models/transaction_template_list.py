@@ -6,67 +6,61 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="ReferenceUser")
+from ..types import UNSET, Unset
+
+T = TypeVar("T", bound="TransactionTemplateList")
 
 
 @_attrs_define
-class ReferenceUser:
+class TransactionTemplateList:
     """
     Attributes:
-        id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        username (str):  Example: admin.
-        first_name (str):  Example: Firstname.
-        last_name (str):  Example: Lastname.
+        page (int | Unset):  Default: 1.
+        size_per_page (int | Unset):  Default: 50.
+        page_size (int | Unset):  Default: 1.
     """
 
-    id: str
-    username: str
-    first_name: str
-    last_name: str
+    page: int | Unset = 1
+    size_per_page: int | Unset = 50
+    page_size: int | Unset = 1
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        id = self.id
+        page = self.page
 
-        username = self.username
+        size_per_page = self.size_per_page
 
-        first_name = self.first_name
-
-        last_name = self.last_name
+        page_size = self.page_size
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
-        field_dict.update(
-            {
-                "id": id,
-                "username": username,
-                "first_name": first_name,
-                "last_name": last_name,
-            }
-        )
+        field_dict.update({})
+        if page is not UNSET:
+            field_dict["page"] = page
+        if size_per_page is not UNSET:
+            field_dict["size_per_page"] = size_per_page
+        if page_size is not UNSET:
+            field_dict["page_size"] = page_size
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        id = d.pop("id")
+        page = d.pop("page", UNSET)
 
-        username = d.pop("username")
+        size_per_page = d.pop("size_per_page", UNSET)
 
-        first_name = d.pop("first_name")
+        page_size = d.pop("page_size", UNSET)
 
-        last_name = d.pop("last_name")
-
-        reference_user = cls(
-            id=id,
-            username=username,
-            first_name=first_name,
-            last_name=last_name,
+        transaction_template_list = cls(
+            page=page,
+            size_per_page=size_per_page,
+            page_size=page_size,
         )
 
-        reference_user.additional_properties = d
-        return reference_user
+        transaction_template_list.additional_properties = d
+        return transaction_template_list
 
     @property
     def additional_keys(self) -> list[str]:

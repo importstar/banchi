@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Any, Optional, Union
+from typing import Any
 
 import httpx
 
@@ -14,7 +14,7 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     *,
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = "auth:login",
+    name: Any | Unset = "auth:login",
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
 
@@ -30,9 +30,8 @@ def _get_kwargs(
         "params": params,
     }
 
-    _body = body.to_dict()
+    _kwargs["data"] = body.to_dict()
 
-    _kwargs["data"] = _body
     headers["Content-Type"] = "application/x-www-form-urlencoded"
 
     _kwargs["headers"] = headers
@@ -40,16 +39,18 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[HTTPValidationError, Token]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> HTTPValidationError | Token | None:
     if response.status_code == 200:
         response_200 = Token.from_dict(response.json())
 
         return response_200
+
     if response.status_code == 422:
         response_422 = HTTPValidationError.from_dict(response.json())
 
         return response_422
+
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -57,8 +58,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[HTTPValidationError, Token]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[HTTPValidationError | Token]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -69,14 +70,14 @@ def _build_response(
 
 def sync_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = "auth:login",
-) -> Response[Union[HTTPValidationError, Token]]:
+    name: Any | Unset = "auth:login",
+) -> Response[HTTPValidationError | Token]:
     """Authentication
 
     Args:
-        name (Union[Unset, Any]):  Default: 'auth:login'.
+        name (Any | Unset):  Default: 'auth:login'.
         body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
@@ -84,7 +85,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, Token]]
+        Response[HTTPValidationError | Token]
     """
 
     kwargs = _get_kwargs(
@@ -101,14 +102,14 @@ def sync_detailed(
 
 def sync(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = "auth:login",
-) -> Optional[Union[HTTPValidationError, Token]]:
+    name: Any | Unset = "auth:login",
+) -> HTTPValidationError | Token | None:
     """Authentication
 
     Args:
-        name (Union[Unset, Any]):  Default: 'auth:login'.
+        name (Any | Unset):  Default: 'auth:login'.
         body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
@@ -116,7 +117,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, Token]
+        HTTPValidationError | Token
     """
 
     return sync_detailed(
@@ -128,14 +129,14 @@ def sync(
 
 async def asyncio_detailed(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = "auth:login",
-) -> Response[Union[HTTPValidationError, Token]]:
+    name: Any | Unset = "auth:login",
+) -> Response[HTTPValidationError | Token]:
     """Authentication
 
     Args:
-        name (Union[Unset, Any]):  Default: 'auth:login'.
+        name (Any | Unset):  Default: 'auth:login'.
         body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
@@ -143,7 +144,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, Token]]
+        Response[HTTPValidationError | Token]
     """
 
     kwargs = _get_kwargs(
@@ -158,14 +159,14 @@ async def asyncio_detailed(
 
 async def asyncio(
     *,
-    client: Union[AuthenticatedClient, Client],
+    client: AuthenticatedClient | Client,
     body: BodyAuthenticationV1AuthLoginPost,
-    name: Union[Unset, Any] = "auth:login",
-) -> Optional[Union[HTTPValidationError, Token]]:
+    name: Any | Unset = "auth:login",
+) -> HTTPValidationError | Token | None:
     """Authentication
 
     Args:
-        name (Union[Unset, Any]):  Default: 'auth:login'.
+        name (Any | Unset):  Default: 'auth:login'.
         body (BodyAuthenticationV1AuthLoginPost):
 
     Raises:
@@ -173,7 +174,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, Token]
+        HTTPValidationError | Token
     """
 
     return (

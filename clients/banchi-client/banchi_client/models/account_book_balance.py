@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -15,25 +17,25 @@ class AccountBookBalance:
     """
     Attributes:
         id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        balance (Union[Unset, str]):  Default: '0'.
-        increase (Union[Unset, str]):  Default: '0'.
-        decrease (Union[Unset, str]):  Default: '0'.
-        net_balance (Union[Unset, str]):  Default: '0'.
-        net_increase (Union[Unset, str]):  Default: '0'.
-        net_decrease (Union[Unset, str]):  Default: '0'.
-        children (Union[Unset, int]):  Default: 0.
-        type_ (Union[Unset, AccountTypeEnum]):
+        balance (str | Unset):  Default: '0'.
+        increase (str | Unset):  Default: '0'.
+        decrease (str | Unset):  Default: '0'.
+        net_balance (str | Unset):  Default: '0'.
+        net_increase (str | Unset):  Default: '0'.
+        net_decrease (str | Unset):  Default: '0'.
+        children (int | Unset):  Default: 0.
+        type_ (AccountTypeEnum | Unset):
     """
 
     id: str
-    balance: Union[Unset, str] = "0"
-    increase: Union[Unset, str] = "0"
-    decrease: Union[Unset, str] = "0"
-    net_balance: Union[Unset, str] = "0"
-    net_increase: Union[Unset, str] = "0"
-    net_decrease: Union[Unset, str] = "0"
-    children: Union[Unset, int] = 0
-    type_: Union[Unset, AccountTypeEnum] = UNSET
+    balance: str | Unset = "0"
+    increase: str | Unset = "0"
+    decrease: str | Unset = "0"
+    net_balance: str | Unset = "0"
+    net_increase: str | Unset = "0"
+    net_decrease: str | Unset = "0"
+    children: int | Unset = 0
+    type_: AccountTypeEnum | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -53,7 +55,7 @@ class AccountBookBalance:
 
         children = self.children
 
-        type_: Union[Unset, str] = UNSET
+        type_: str | Unset = UNSET
         if not isinstance(self.type_, Unset):
             type_ = self.type_.value
 
@@ -103,7 +105,7 @@ class AccountBookBalance:
         children = d.pop("children", UNSET)
 
         _type_ = d.pop("type", UNSET)
-        type_: Union[Unset, AccountTypeEnum]
+        type_: AccountTypeEnum | Unset
         if isinstance(_type_, Unset):
             type_ = UNSET
         else:

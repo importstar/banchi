@@ -1,6 +1,6 @@
 import datetime
 from http import HTTPStatus
-from typing import Any, Optional, Union
+from typing import Any
 
 import httpx
 
@@ -13,40 +13,40 @@ from ...types import UNSET, Response, Unset
 
 def _get_kwargs(
     *,
-    from_account_book_id: Union[None, str],
-    to_account_book_id: Union[None, str],
-    page: Union[None, Unset, int] = 1,
-    size_per_page: Union[None, Unset, int] = 50,
-    started_date: Union[None, Unset, datetime.datetime] = UNSET,
-    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
-    description: Union[None, Unset, str] = UNSET,
-    value: Union[None, Unset, float, str] = UNSET,
+    from_account_book_id: None | str,
+    to_account_book_id: None | str,
+    page: int | None | Unset = 1,
+    size_per_page: int | None | Unset = 50,
+    started_date: datetime.datetime | None | Unset = UNSET,
+    ended_date: datetime.datetime | None | Unset = UNSET,
+    description: None | str | Unset = UNSET,
+    value: float | None | str | Unset = UNSET,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {}
 
-    json_from_account_book_id: Union[None, str]
+    json_from_account_book_id: None | str
     json_from_account_book_id = from_account_book_id
     params["from_account_book_id"] = json_from_account_book_id
 
-    json_to_account_book_id: Union[None, str]
+    json_to_account_book_id: None | str
     json_to_account_book_id = to_account_book_id
     params["to_account_book_id"] = json_to_account_book_id
 
-    json_page: Union[None, Unset, int]
+    json_page: int | None | Unset
     if isinstance(page, Unset):
         json_page = UNSET
     else:
         json_page = page
     params["page"] = json_page
 
-    json_size_per_page: Union[None, Unset, int]
+    json_size_per_page: int | None | Unset
     if isinstance(size_per_page, Unset):
         json_size_per_page = UNSET
     else:
         json_size_per_page = size_per_page
     params["size_per_page"] = json_size_per_page
 
-    json_started_date: Union[None, Unset, str]
+    json_started_date: None | str | Unset
     if isinstance(started_date, Unset):
         json_started_date = UNSET
     elif isinstance(started_date, datetime.datetime):
@@ -55,7 +55,7 @@ def _get_kwargs(
         json_started_date = started_date
     params["started_date"] = json_started_date
 
-    json_ended_date: Union[None, Unset, str]
+    json_ended_date: None | str | Unset
     if isinstance(ended_date, Unset):
         json_ended_date = UNSET
     elif isinstance(ended_date, datetime.datetime):
@@ -64,14 +64,14 @@ def _get_kwargs(
         json_ended_date = ended_date
     params["ended_date"] = json_ended_date
 
-    json_description: Union[None, Unset, str]
+    json_description: None | str | Unset
     if isinstance(description, Unset):
         json_description = UNSET
     else:
         json_description = description
     params["description"] = json_description
 
-    json_value: Union[None, Unset, float, str]
+    json_value: float | None | str | Unset
     if isinstance(value, Unset):
         json_value = UNSET
     else:
@@ -90,16 +90,18 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[HTTPValidationError, TransactionList]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> HTTPValidationError | TransactionList | None:
     if response.status_code == 200:
         response_200 = TransactionList.from_dict(response.json())
 
         return response_200
+
     if response.status_code == 422:
         response_422 = HTTPValidationError.from_dict(response.json())
 
         return response_422
+
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -107,8 +109,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[HTTPValidationError, TransactionList]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[HTTPValidationError | TransactionList]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -120,33 +122,33 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    from_account_book_id: Union[None, str],
-    to_account_book_id: Union[None, str],
-    page: Union[None, Unset, int] = 1,
-    size_per_page: Union[None, Unset, int] = 50,
-    started_date: Union[None, Unset, datetime.datetime] = UNSET,
-    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
-    description: Union[None, Unset, str] = UNSET,
-    value: Union[None, Unset, float, str] = UNSET,
-) -> Response[Union[HTTPValidationError, TransactionList]]:
+    from_account_book_id: None | str,
+    to_account_book_id: None | str,
+    page: int | None | Unset = 1,
+    size_per_page: int | None | Unset = 50,
+    started_date: datetime.datetime | None | Unset = UNSET,
+    ended_date: datetime.datetime | None | Unset = UNSET,
+    description: None | str | Unset = UNSET,
+    value: float | None | str | Unset = UNSET,
+) -> Response[HTTPValidationError | TransactionList]:
     """Get All
 
     Args:
-        from_account_book_id (Union[None, str]):
-        to_account_book_id (Union[None, str]):
-        page (Union[None, Unset, int]):  Default: 1.
-        size_per_page (Union[None, Unset, int]):  Default: 50.
-        started_date (Union[None, Unset, datetime.datetime]):
-        ended_date (Union[None, Unset, datetime.datetime]):
-        description (Union[None, Unset, str]):
-        value (Union[None, Unset, float, str]):
+        from_account_book_id (None | str):
+        to_account_book_id (None | str):
+        page (int | None | Unset):  Default: 1.
+        size_per_page (int | None | Unset):  Default: 50.
+        started_date (datetime.datetime | None | Unset):
+        ended_date (datetime.datetime | None | Unset):
+        description (None | str | Unset):
+        value (float | None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, TransactionList]]
+        Response[HTTPValidationError | TransactionList]
     """
 
     kwargs = _get_kwargs(
@@ -170,33 +172,33 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    from_account_book_id: Union[None, str],
-    to_account_book_id: Union[None, str],
-    page: Union[None, Unset, int] = 1,
-    size_per_page: Union[None, Unset, int] = 50,
-    started_date: Union[None, Unset, datetime.datetime] = UNSET,
-    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
-    description: Union[None, Unset, str] = UNSET,
-    value: Union[None, Unset, float, str] = UNSET,
-) -> Optional[Union[HTTPValidationError, TransactionList]]:
+    from_account_book_id: None | str,
+    to_account_book_id: None | str,
+    page: int | None | Unset = 1,
+    size_per_page: int | None | Unset = 50,
+    started_date: datetime.datetime | None | Unset = UNSET,
+    ended_date: datetime.datetime | None | Unset = UNSET,
+    description: None | str | Unset = UNSET,
+    value: float | None | str | Unset = UNSET,
+) -> HTTPValidationError | TransactionList | None:
     """Get All
 
     Args:
-        from_account_book_id (Union[None, str]):
-        to_account_book_id (Union[None, str]):
-        page (Union[None, Unset, int]):  Default: 1.
-        size_per_page (Union[None, Unset, int]):  Default: 50.
-        started_date (Union[None, Unset, datetime.datetime]):
-        ended_date (Union[None, Unset, datetime.datetime]):
-        description (Union[None, Unset, str]):
-        value (Union[None, Unset, float, str]):
+        from_account_book_id (None | str):
+        to_account_book_id (None | str):
+        page (int | None | Unset):  Default: 1.
+        size_per_page (int | None | Unset):  Default: 50.
+        started_date (datetime.datetime | None | Unset):
+        ended_date (datetime.datetime | None | Unset):
+        description (None | str | Unset):
+        value (float | None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, TransactionList]
+        HTTPValidationError | TransactionList
     """
 
     return sync_detailed(
@@ -215,33 +217,33 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    from_account_book_id: Union[None, str],
-    to_account_book_id: Union[None, str],
-    page: Union[None, Unset, int] = 1,
-    size_per_page: Union[None, Unset, int] = 50,
-    started_date: Union[None, Unset, datetime.datetime] = UNSET,
-    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
-    description: Union[None, Unset, str] = UNSET,
-    value: Union[None, Unset, float, str] = UNSET,
-) -> Response[Union[HTTPValidationError, TransactionList]]:
+    from_account_book_id: None | str,
+    to_account_book_id: None | str,
+    page: int | None | Unset = 1,
+    size_per_page: int | None | Unset = 50,
+    started_date: datetime.datetime | None | Unset = UNSET,
+    ended_date: datetime.datetime | None | Unset = UNSET,
+    description: None | str | Unset = UNSET,
+    value: float | None | str | Unset = UNSET,
+) -> Response[HTTPValidationError | TransactionList]:
     """Get All
 
     Args:
-        from_account_book_id (Union[None, str]):
-        to_account_book_id (Union[None, str]):
-        page (Union[None, Unset, int]):  Default: 1.
-        size_per_page (Union[None, Unset, int]):  Default: 50.
-        started_date (Union[None, Unset, datetime.datetime]):
-        ended_date (Union[None, Unset, datetime.datetime]):
-        description (Union[None, Unset, str]):
-        value (Union[None, Unset, float, str]):
+        from_account_book_id (None | str):
+        to_account_book_id (None | str):
+        page (int | None | Unset):  Default: 1.
+        size_per_page (int | None | Unset):  Default: 50.
+        started_date (datetime.datetime | None | Unset):
+        ended_date (datetime.datetime | None | Unset):
+        description (None | str | Unset):
+        value (float | None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, TransactionList]]
+        Response[HTTPValidationError | TransactionList]
     """
 
     kwargs = _get_kwargs(
@@ -263,33 +265,33 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    from_account_book_id: Union[None, str],
-    to_account_book_id: Union[None, str],
-    page: Union[None, Unset, int] = 1,
-    size_per_page: Union[None, Unset, int] = 50,
-    started_date: Union[None, Unset, datetime.datetime] = UNSET,
-    ended_date: Union[None, Unset, datetime.datetime] = UNSET,
-    description: Union[None, Unset, str] = UNSET,
-    value: Union[None, Unset, float, str] = UNSET,
-) -> Optional[Union[HTTPValidationError, TransactionList]]:
+    from_account_book_id: None | str,
+    to_account_book_id: None | str,
+    page: int | None | Unset = 1,
+    size_per_page: int | None | Unset = 50,
+    started_date: datetime.datetime | None | Unset = UNSET,
+    ended_date: datetime.datetime | None | Unset = UNSET,
+    description: None | str | Unset = UNSET,
+    value: float | None | str | Unset = UNSET,
+) -> HTTPValidationError | TransactionList | None:
     """Get All
 
     Args:
-        from_account_book_id (Union[None, str]):
-        to_account_book_id (Union[None, str]):
-        page (Union[None, Unset, int]):  Default: 1.
-        size_per_page (Union[None, Unset, int]):  Default: 50.
-        started_date (Union[None, Unset, datetime.datetime]):
-        ended_date (Union[None, Unset, datetime.datetime]):
-        description (Union[None, Unset, str]):
-        value (Union[None, Unset, float, str]):
+        from_account_book_id (None | str):
+        to_account_book_id (None | str):
+        page (int | None | Unset):  Default: 1.
+        size_per_page (int | None | Unset):  Default: 50.
+        started_date (datetime.datetime | None | Unset):
+        ended_date (datetime.datetime | None | Unset):
+        description (None | str | Unset):
+        value (float | None | str | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, TransactionList]
+        HTTPValidationError | TransactionList
     """
 
     return (

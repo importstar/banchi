@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, Union
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -22,19 +24,19 @@ class Account:
         name (str):  Example: Account Name.
         description (str):  Example: Description.
         currency (CurrencyEnum):
-        id (str):  Example: 0.
+        id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         space (ReferenceSpace):
         creator (ReferenceUser):
-        status (Union[Unset, str]):  Default: 'active'. Example: active.
+        status (str | Unset):  Default: 'active'. Example: active.
     """
 
     name: str
     description: str
     currency: CurrencyEnum
     id: str
-    space: "ReferenceSpace"
-    creator: "ReferenceUser"
-    status: Union[Unset, str] = "active"
+    space: ReferenceSpace
+    creator: ReferenceUser
+    status: str | Unset = "active"
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

@@ -51,14 +51,13 @@ class UpdatedTransaction(CreatedTransaction):
 
 
 class TransactionTemplate(bases.BaseSchema):
-    transactions: list[Transaction] = []
+    # transactions: list[Transaction] = []
+    pass
 
 
-class TransactionTemplateList(BaseModel):
-    transactions: list[TransactionTemplate]
-    page: int = 1
-    size_per_page: int = 50
-    page_size: int = 1
+class TransactionTemplateList(bases.BaseSchemaList):
+    # transaction_templates: list[TransactionTemplate]
+    pass
 
 
 class CreatedTransactionTemplate(TransactionTemplate):

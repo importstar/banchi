@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -17,29 +19,29 @@ class CreatedTransaction:
     """
     Attributes:
         description (str):  Example: Desctription.
-        value (Union[float, str]):
+        value (float | str):
         currency (CurrencyEnum):
-        from_account_book_id (str):  Example: 0.
-        to_account_book_id (str):  Example: 0.
-        date (Union[Unset, datetime.datetime]):  Default: isoparse('2025-07-28T15:16:31.718383').
-        tags (Union[Unset, list[str]]):
-        remarks (Union[None, Unset, str]):  Default: ''. Example: Text Remark.
+        from_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        to_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        date (datetime.datetime | Unset):  Default: isoparse('2025-11-08T10:55:36.050348').
+        tags (list[str] | Unset):
+        remarks (None | str | Unset):  Default: ''. Example: Text Remark.
     """
 
     description: str
-    value: Union[float, str]
+    value: float | str
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
-    date: Union[Unset, datetime.datetime] = isoparse("2025-07-28T15:16:31.718383")
-    tags: Union[Unset, list[str]] = UNSET
-    remarks: Union[None, Unset, str] = ""
+    date: datetime.datetime | Unset = isoparse("2025-11-08T10:55:36.050348")
+    tags: list[str] | Unset = UNSET
+    remarks: None | str | Unset = ""
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         description = self.description
 
-        value: Union[float, str]
+        value: float | str
         value = self.value
 
         currency = self.currency.value
@@ -48,15 +50,15 @@ class CreatedTransaction:
 
         to_account_book_id = self.to_account_book_id
 
-        date: Union[Unset, str] = UNSET
+        date: str | Unset = UNSET
         if not isinstance(self.date, Unset):
             date = self.date.isoformat()
 
-        tags: Union[Unset, list[str]] = UNSET
+        tags: list[str] | Unset = UNSET
         if not isinstance(self.tags, Unset):
             tags = self.tags
 
-        remarks: Union[None, Unset, str]
+        remarks: None | str | Unset
         if isinstance(self.remarks, Unset):
             remarks = UNSET
         else:
@@ -87,8 +89,8 @@ class CreatedTransaction:
         d = dict(src_dict)
         description = d.pop("description")
 
-        def _parse_value(data: object) -> Union[float, str]:
-            return cast(Union[float, str], data)
+        def _parse_value(data: object) -> float | str:
+            return cast(float | str, data)
 
         value = _parse_value(d.pop("value"))
 
@@ -99,7 +101,7 @@ class CreatedTransaction:
         to_account_book_id = d.pop("to_account_book_id")
 
         _date = d.pop("date", UNSET)
-        date: Union[Unset, datetime.datetime]
+        date: datetime.datetime | Unset
         if isinstance(_date, Unset):
             date = UNSET
         else:
@@ -107,12 +109,12 @@ class CreatedTransaction:
 
         tags = cast(list[str], d.pop("tags", UNSET))
 
-        def _parse_remarks(data: object) -> Union[None, Unset, str]:
+        def _parse_remarks(data: object) -> None | str | Unset:
             if data is None:
                 return data
             if isinstance(data, Unset):
                 return data
-            return cast(Union[None, Unset, str], data)
+            return cast(None | str | Unset, data)
 
         remarks = _parse_remarks(d.pop("remarks", UNSET))
 

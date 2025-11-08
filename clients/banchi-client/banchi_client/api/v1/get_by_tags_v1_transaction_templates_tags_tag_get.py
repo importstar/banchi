@@ -1,26 +1,38 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
+from ...models.http_validation_error import HTTPValidationError
+from ...models.transaction_template_list import TransactionTemplateList
 from ...types import Response
 
 
-def _get_kwargs() -> dict[str, Any]:
+def _get_kwargs(
+    tag: str,
+) -> dict[str, Any]:
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/v1/users/me/check_password",
+        "url": f"/v1/transaction-templates/tags/{tag}",
     }
 
     return _kwargs
 
 
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> bool | None:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> HTTPValidationError | TransactionTemplateList | None:
     if response.status_code == 200:
-        response_200 = cast(bool, response.json())
+        response_200 = TransactionTemplateList.from_dict(response.json())
+
         return response_200
+
+    if response.status_code == 422:
+        response_422 = HTTPValidationError.from_dict(response.json())
+
+        return response_422
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -28,7 +40,9 @@ def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Res
         return None
 
 
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[bool]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[HTTPValidationError | TransactionTemplateList]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -38,20 +52,26 @@ def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Res
 
 
 def sync_detailed(
+    tag: str,
     *,
     client: AuthenticatedClient,
-) -> Response[bool]:
-    """Get Me Check Password
+) -> Response[HTTPValidationError | TransactionTemplateList]:
+    """Get By Tags
+
+    Args:
+        tag (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[bool]
+        Response[HTTPValidationError | TransactionTemplateList]
     """
 
-    kwargs = _get_kwargs()
+    kwargs = _get_kwargs(
+        tag=tag,
+    )
 
     response = client.get_httpx_client().request(
         **kwargs,
@@ -61,39 +81,50 @@ def sync_detailed(
 
 
 def sync(
+    tag: str,
     *,
     client: AuthenticatedClient,
-) -> bool | None:
-    """Get Me Check Password
+) -> HTTPValidationError | TransactionTemplateList | None:
+    """Get By Tags
+
+    Args:
+        tag (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        bool
+        HTTPValidationError | TransactionTemplateList
     """
 
     return sync_detailed(
+        tag=tag,
         client=client,
     ).parsed
 
 
 async def asyncio_detailed(
+    tag: str,
     *,
     client: AuthenticatedClient,
-) -> Response[bool]:
-    """Get Me Check Password
+) -> Response[HTTPValidationError | TransactionTemplateList]:
+    """Get By Tags
+
+    Args:
+        tag (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[bool]
+        Response[HTTPValidationError | TransactionTemplateList]
     """
 
-    kwargs = _get_kwargs()
+    kwargs = _get_kwargs(
+        tag=tag,
+    )
 
     response = await client.get_async_httpx_client().request(**kwargs)
 
@@ -101,21 +132,26 @@ async def asyncio_detailed(
 
 
 async def asyncio(
+    tag: str,
     *,
     client: AuthenticatedClient,
-) -> bool | None:
-    """Get Me Check Password
+) -> HTTPValidationError | TransactionTemplateList | None:
+    """Get By Tags
+
+    Args:
+        tag (str):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        bool
+        HTTPValidationError | TransactionTemplateList
     """
 
     return (
         await asyncio_detailed(
+            tag=tag,
             client=client,
         )
     ).parsed

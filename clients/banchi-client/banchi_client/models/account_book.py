@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -23,29 +25,29 @@ class AccountBook:
     """
     Attributes:
         name (str):  Example: Account Book Name.
-        id (str):  Example: 0.
+        id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         account (ReferenceAccount):
-        parent (Union['ReferenceAccountBook', None]):
+        parent (None | ReferenceAccountBook):
         creator (ReferenceUser):
         balance (str):
-        description (Union[Unset, str]):  Default: ''. Example: Description.
-        type_ (Union[Unset, AccountTypeEnum]):
-        smallest_fraction (Union[Unset, SmallestFractionEnum]):
-        currency (Union[Unset, CurrencyEnum]):
-        status (Union[Unset, str]):  Default: 'active'. Example: active.
+        description (str | Unset):  Default: ''. Example: Description.
+        type_ (AccountTypeEnum | Unset):
+        smallest_fraction (SmallestFractionEnum | Unset):
+        currency (CurrencyEnum | Unset):
+        status (str | Unset):  Default: 'active'. Example: active.
     """
 
     name: str
     id: str
-    account: "ReferenceAccount"
-    parent: Union["ReferenceAccountBook", None]
-    creator: "ReferenceUser"
+    account: ReferenceAccount
+    parent: None | ReferenceAccountBook
+    creator: ReferenceUser
     balance: str
-    description: Union[Unset, str] = ""
-    type_: Union[Unset, AccountTypeEnum] = UNSET
-    smallest_fraction: Union[Unset, SmallestFractionEnum] = UNSET
-    currency: Union[Unset, CurrencyEnum] = UNSET
-    status: Union[Unset, str] = "active"
+    description: str | Unset = ""
+    type_: AccountTypeEnum | Unset = UNSET
+    smallest_fraction: SmallestFractionEnum | Unset = UNSET
+    currency: CurrencyEnum | Unset = UNSET
+    status: str | Unset = "active"
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -57,7 +59,7 @@ class AccountBook:
 
         account = self.account.to_dict()
 
-        parent: Union[None, dict[str, Any]]
+        parent: dict[str, Any] | None
         if isinstance(self.parent, ReferenceAccountBook):
             parent = self.parent.to_dict()
         else:
@@ -69,15 +71,15 @@ class AccountBook:
 
         description = self.description
 
-        type_: Union[Unset, str] = UNSET
+        type_: str | Unset = UNSET
         if not isinstance(self.type_, Unset):
             type_ = self.type_.value
 
-        smallest_fraction: Union[Unset, int] = UNSET
+        smallest_fraction: int | Unset = UNSET
         if not isinstance(self.smallest_fraction, Unset):
             smallest_fraction = self.smallest_fraction.value
 
-        currency: Union[Unset, str] = UNSET
+        currency: str | Unset = UNSET
         if not isinstance(self.currency, Unset):
             currency = self.currency.value
 
@@ -121,7 +123,7 @@ class AccountBook:
 
         account = ReferenceAccount.from_dict(d.pop("account"))
 
-        def _parse_parent(data: object) -> Union["ReferenceAccountBook", None]:
+        def _parse_parent(data: object) -> None | ReferenceAccountBook:
             if data is None:
                 return data
             try:
@@ -130,9 +132,9 @@ class AccountBook:
                 parent_type_0 = ReferenceAccountBook.from_dict(data)
 
                 return parent_type_0
-            except:  # noqa: E722
+            except (TypeError, ValueError, AttributeError, KeyError):
                 pass
-            return cast(Union["ReferenceAccountBook", None], data)
+            return cast(None | ReferenceAccountBook, data)
 
         parent = _parse_parent(d.pop("parent"))
 
@@ -143,21 +145,21 @@ class AccountBook:
         description = d.pop("description", UNSET)
 
         _type_ = d.pop("type", UNSET)
-        type_: Union[Unset, AccountTypeEnum]
+        type_: AccountTypeEnum | Unset
         if isinstance(_type_, Unset):
             type_ = UNSET
         else:
             type_ = AccountTypeEnum(_type_)
 
         _smallest_fraction = d.pop("smallest_fraction", UNSET)
-        smallest_fraction: Union[Unset, SmallestFractionEnum]
+        smallest_fraction: SmallestFractionEnum | Unset
         if isinstance(_smallest_fraction, Unset):
             smallest_fraction = UNSET
         else:
             smallest_fraction = SmallestFractionEnum(_smallest_fraction)
 
         _currency = d.pop("currency", UNSET)
-        currency: Union[Unset, CurrencyEnum]
+        currency: CurrencyEnum | Unset
         if isinstance(_currency, Unset):
             currency = UNSET
         else:

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -13,12 +15,12 @@ T = TypeVar("T", bound="AccountBookLabel")
 class AccountBookLabel:
     """
     Attributes:
-        positive (Union[Unset, str]):  Default: 'increase'. Example: increase.
-        negative (Union[Unset, str]):  Default: 'decrease'. Example: decrease.
+        positive (str | Unset):  Default: 'increase'. Example: increase.
+        negative (str | Unset):  Default: 'decrease'. Example: decrease.
     """
 
-    positive: Union[Unset, str] = "increase"
-    negative: Union[Unset, str] = "decrease"
+    positive: str | Unset = "increase"
+    negative: str | Unset = "decrease"
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

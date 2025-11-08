@@ -6,44 +6,27 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-from ..models.currency_enum import CurrencyEnum
-
-T = TypeVar("T", bound="CreatedAccount")
+T = TypeVar("T", bound="UpdatedTransactionTemplate")
 
 
 @_attrs_define
-class CreatedAccount:
+class UpdatedTransactionTemplate:
     """
     Attributes:
-        name (str):  Example: Account Name.
-        description (str):  Example: Description.
-        currency (CurrencyEnum):
-        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        field_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
     """
 
-    name: str
-    description: str
-    currency: CurrencyEnum
-    space_id: str
+    field_id: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        name = self.name
-
-        description = self.description
-
-        currency = self.currency.value
-
-        space_id = self.space_id
+        field_id = self.field_id
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "name": name,
-                "description": description,
-                "currency": currency,
-                "space_id": space_id,
+                "_id": field_id,
             }
         )
 
@@ -52,23 +35,14 @@ class CreatedAccount:
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        name = d.pop("name")
+        field_id = d.pop("_id")
 
-        description = d.pop("description")
-
-        currency = CurrencyEnum(d.pop("currency"))
-
-        space_id = d.pop("space_id")
-
-        created_account = cls(
-            name=name,
-            description=description,
-            currency=currency,
-            space_id=space_id,
+        updated_transaction_template = cls(
+            field_id=field_id,
         )
 
-        created_account.additional_properties = d
-        return created_account
+        updated_transaction_template.additional_properties = d
+        return updated_transaction_template
 
     @property
     def additional_keys(self) -> list[str]:

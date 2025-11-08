@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import datetime
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, Union
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -23,25 +25,25 @@ class SpaceRole:
     """
     Attributes:
         role (SpaceRoleRole):
-        id (str):  Example: 0.
+        id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         added_by (ReferenceUser):
         updated_by (ReferenceUser):
         member (ReferenceUser):
         space (ReferenceSpace):
         created_date (datetime.datetime):
         updated_date (datetime.datetime):
-        status (Union[Unset, SpaceRoleStatus]):  Default: SpaceRoleStatus.ACTIVE.
+        status (SpaceRoleStatus | Unset):  Default: SpaceRoleStatus.ACTIVE.
     """
 
     role: SpaceRoleRole
     id: str
-    added_by: "ReferenceUser"
-    updated_by: "ReferenceUser"
-    member: "ReferenceUser"
-    space: "ReferenceSpace"
+    added_by: ReferenceUser
+    updated_by: ReferenceUser
+    member: ReferenceUser
+    space: ReferenceSpace
     created_date: datetime.datetime
     updated_date: datetime.datetime
-    status: Union[Unset, SpaceRoleStatus] = SpaceRoleStatus.ACTIVE
+    status: SpaceRoleStatus | Unset = SpaceRoleStatus.ACTIVE
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -61,7 +63,7 @@ class SpaceRole:
 
         updated_date = self.updated_date.isoformat()
 
-        status: Union[Unset, str] = UNSET
+        status: str | Unset = UNSET
         if not isinstance(self.status, Unset):
             status = self.status.value
 
@@ -107,7 +109,7 @@ class SpaceRole:
         updated_date = isoparse(d.pop("updated_date"))
 
         _status = d.pop("status", UNSET)
-        status: Union[Unset, SpaceRoleStatus]
+        status: SpaceRoleStatus | Unset
         if isinstance(_status, Unset):
             status = UNSET
         else:

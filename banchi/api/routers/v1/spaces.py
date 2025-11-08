@@ -25,7 +25,7 @@ async def get_all(
         models.spaces.Space, Depends(deps.get_current_user_spaces)
     ],
 ) -> schemas.spaces.SpaceList:
-    return dict(spaces=spaces)
+    return model_dump(spaces=spaces)
 
 
 @router.post("")
@@ -55,7 +55,7 @@ async def create(
             detail="There are already space code",
         )
 
-    data = space.dict()
+    data = space.model_dump()
     data["owner"] = current_user
     data["updated_by"] = current_user
     db_space = models.spaces.Space.parse_obj(data)
@@ -102,7 +102,7 @@ async def update(
     ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
-    data = space.dict()
+    data = space.model_dump()
     await db_space.update(Set(data))
 
     db_space.updated_date = datetime.datetime.now()
@@ -122,7 +122,7 @@ async def copy(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.spaces.Space:
 
-    data = space.dict()
+    data = space.model_dump()
     data["owner"] = current_user
     data["updated_by"] = current_user
 
@@ -145,7 +145,7 @@ async def copy(
     if not db_account:
         return new_db_space
 
-    data = db_account.dict()
+    data = db_account.model_dump()
     data.pop("id")
 
     db_new_account = models.Account.parse_obj(data)
@@ -173,7 +173,7 @@ async def copy(
         ).to_list()
         for db_children_account_book in db_children_account_books:
 
-            data = db_children_account_book.dict()
+            data = db_children_account_book.model_dump()
             data.pop("id")
             db_new_children_account_book = models.AccountBook.parse_obj(data)
             db_new_children_account_book.created_date = datetime.datetime.now()
@@ -191,7 +191,7 @@ async def copy(
             )
 
     for db_account_book in db_account_books:
-        data = db_account_book.dict()
+        data = db_account_book.model_dump()
         data.pop("id")
         db_new_account_book = models.AccountBook.parse_obj(data)
         db_new_account_book.created_date = datetime.datetime.now()

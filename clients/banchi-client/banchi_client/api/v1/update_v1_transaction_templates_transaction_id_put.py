@@ -5,27 +5,37 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.account import Account
 from ...models.http_validation_error import HTTPValidationError
+from ...models.transaction_template import TransactionTemplate
+from ...models.updated_transaction_template import UpdatedTransactionTemplate
 from ...types import Response
 
 
 def _get_kwargs(
-    account_id: str,
+    transaction_id: str,
+    *,
+    body: UpdatedTransactionTemplate,
 ) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
+
     _kwargs: dict[str, Any] = {
-        "method": "get",
-        "url": f"/v1/accounts/{account_id}",
+        "method": "put",
+        "url": f"/v1/transaction-templates/{transaction_id}",
     }
 
+    _kwargs["json"] = body.to_dict()
+
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
     return _kwargs
 
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Account | HTTPValidationError | None:
+) -> HTTPValidationError | TransactionTemplate | None:
     if response.status_code == 200:
-        response_200 = Account.from_dict(response.json())
+        response_200 = TransactionTemplate.from_dict(response.json())
 
         return response_200
 
@@ -42,7 +52,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[Account | HTTPValidationError]:
+) -> Response[HTTPValidationError | TransactionTemplate]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -52,25 +62,28 @@ def _build_response(
 
 
 def sync_detailed(
-    account_id: str,
+    transaction_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Account | HTTPValidationError]:
-    """Get
+    body: UpdatedTransactionTemplate,
+) -> Response[HTTPValidationError | TransactionTemplate]:
+    """Update
 
     Args:
-        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        body (UpdatedTransactionTemplate):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Account | HTTPValidationError]
+        Response[HTTPValidationError | TransactionTemplate]
     """
 
     kwargs = _get_kwargs(
-        account_id=account_id,
+        transaction_id=transaction_id,
+        body=body,
     )
 
     response = client.get_httpx_client().request(
@@ -81,49 +94,55 @@ def sync_detailed(
 
 
 def sync(
-    account_id: str,
+    transaction_id: str,
     *,
     client: AuthenticatedClient,
-) -> Account | HTTPValidationError | None:
-    """Get
+    body: UpdatedTransactionTemplate,
+) -> HTTPValidationError | TransactionTemplate | None:
+    """Update
 
     Args:
-        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        body (UpdatedTransactionTemplate):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Account | HTTPValidationError
+        HTTPValidationError | TransactionTemplate
     """
 
     return sync_detailed(
-        account_id=account_id,
+        transaction_id=transaction_id,
         client=client,
+        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
-    account_id: str,
+    transaction_id: str,
     *,
     client: AuthenticatedClient,
-) -> Response[Account | HTTPValidationError]:
-    """Get
+    body: UpdatedTransactionTemplate,
+) -> Response[HTTPValidationError | TransactionTemplate]:
+    """Update
 
     Args:
-        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        body (UpdatedTransactionTemplate):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Account | HTTPValidationError]
+        Response[HTTPValidationError | TransactionTemplate]
     """
 
     kwargs = _get_kwargs(
-        account_id=account_id,
+        transaction_id=transaction_id,
+        body=body,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -132,26 +151,29 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    account_id: str,
+    transaction_id: str,
     *,
     client: AuthenticatedClient,
-) -> Account | HTTPValidationError | None:
-    """Get
+    body: UpdatedTransactionTemplate,
+) -> HTTPValidationError | TransactionTemplate | None:
+    """Update
 
     Args:
-        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        body (UpdatedTransactionTemplate):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Account | HTTPValidationError
+        HTTPValidationError | TransactionTemplate
     """
 
     return (
         await asyncio_detailed(
-            account_id=account_id,
+            transaction_id=transaction_id,
             client=client,
+            body=body,
         )
     ).parsed

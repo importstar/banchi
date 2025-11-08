@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -21,9 +23,9 @@ class AccountBookSummary:
         date (datetime.datetime):
         created_date (datetime.datetime):
         updated_date (datetime.datetime):
-        increase (Union[Unset, str]):  Default: '0'.
-        decrease (Union[Unset, str]):  Default: '0'.
-        balance (Union[Unset, str]):  Default: '0'.
+        increase (str | Unset):  Default: '0'.
+        decrease (str | Unset):  Default: '0'.
+        balance (str | Unset):  Default: '0'.
     """
 
     id: str
@@ -32,9 +34,9 @@ class AccountBookSummary:
     date: datetime.datetime
     created_date: datetime.datetime
     updated_date: datetime.datetime
-    increase: Union[Unset, str] = "0"
-    decrease: Union[Unset, str] = "0"
-    balance: Union[Unset, str] = "0"
+    increase: str | Unset = "0"
+    decrease: str | Unset = "0"
+    balance: str | Unset = "0"
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

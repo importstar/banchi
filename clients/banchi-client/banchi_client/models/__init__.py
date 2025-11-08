@@ -17,6 +17,7 @@ from .created_space import CreatedSpace
 from .created_space_role import CreatedSpaceRole
 from .created_space_role_role import CreatedSpaceRoleRole
 from .created_transaction import CreatedTransaction
+from .created_transaction_template import CreatedTransactionTemplate
 from .currency_enum import CurrencyEnum
 from .http_validation_error import HTTPValidationError
 from .reference_account import ReferenceAccount
@@ -36,12 +37,15 @@ from .system_setting_in_response import SystemSettingInResponse
 from .token import Token
 from .transaction import Transaction
 from .transaction_list import TransactionList
+from .transaction_template import TransactionTemplate
+from .transaction_template_list import TransactionTemplateList
 from .updated_account import UpdatedAccount
 from .updated_account_book import UpdatedAccountBook
 from .updated_space import UpdatedSpace
 from .updated_space_role import UpdatedSpaceRole
 from .updated_space_role_role import UpdatedSpaceRoleRole
 from .updated_transaction import UpdatedTransaction
+from .updated_transaction_template import UpdatedTransactionTemplate
 from .updated_user import UpdatedUser
 from .user import User
 from .user_list import UserList
@@ -65,6 +69,7 @@ __all__ = (
     "CreatedSpaceRole",
     "CreatedSpaceRoleRole",
     "CreatedTransaction",
+    "CreatedTransactionTemplate",
     "CurrencyEnum",
     "HTTPValidationError",
     "ReferenceAccount",
@@ -84,12 +89,15 @@ __all__ = (
     "Token",
     "Transaction",
     "TransactionList",
+    "TransactionTemplate",
+    "TransactionTemplateList",
     "UpdatedAccount",
     "UpdatedAccountBook",
     "UpdatedSpace",
     "UpdatedSpaceRole",
     "UpdatedSpaceRoleRole",
     "UpdatedTransaction",
+    "UpdatedTransactionTemplate",
     "UpdatedUser",
     "User",
     "UserList",
