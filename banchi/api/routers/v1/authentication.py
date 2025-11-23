@@ -18,7 +18,6 @@ import datetime
 router = APIRouter(prefix="/auth", tags=["authentication"])
 
 
-
 @router.post(
     "/login",
 )
@@ -73,7 +72,7 @@ async def authentication(
 @router.get("/refresh")
 async def refresh_token(
     credentials: typing.Annotated[HTTPAuthorizationCredentials, Security(HTTPBearer())],
-)-> schemas.users.AccessToken:
+) -> schemas.users.AccessToken:
     refresh_token = credentials.credentials
 
     data = security.verify_refresh_token(refresh_token)
@@ -82,11 +81,10 @@ async def refresh_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid refresh token",
         )
-    
+
     user_id = data.get("sub")
     user = await models.User.find_one(
-        models.User.id == bson.ObjectId(user_id),
-         models.User.status== "active"
+        models.User.id == bson.ObjectId(user_id), models.User.status == "active"
     )
     if not user:
         raise HTTPException(
@@ -98,14 +96,15 @@ async def refresh_token(
     token = schemas.users.AccessToken(
         access_token=security.create_access_token(
             data={"sub": str(user.id)},
-            expires_delta=datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+            expires_delta=datetime.timedelta(
+                minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES
+            ),
         ),
         token_type="Bearer",
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        expires_at=now + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+        expires_at=now
+        + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
         issued_at=now,
-        scope=""
+        scope="",
     )
     return token
-
-

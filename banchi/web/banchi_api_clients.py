@@ -36,7 +36,6 @@ class BanchiClient:
 
         now = datetime.datetime.now()
 
-
         if now + datetime.timedelta(minutes=2) > expires_at:
             refreash_token = tokens.get("refresh_token")
             client = AuthenticatedClient(
@@ -54,10 +53,8 @@ class BanchiClient:
             except Exception as e:
                 print("Error refreshing token:", e)
                 raise Unauthorized()
-            
-            session["tokens"].update(tokens)
-            
 
+            session["tokens"].update(tokens)
 
         token = tokens.get("access_token")
         return AuthenticatedClient(
@@ -66,7 +63,6 @@ class BanchiClient:
             verify_ssl=self.verify_ssl,
             timeout=timeout,
         )
-
 
 
 def init_client(app):

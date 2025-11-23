@@ -304,6 +304,40 @@ async def get_summary(
     return db_account_book_summary
 
 
+@router.get(
+    "/{account_book_id}/list-years-months",
+)
+async def get_years_months(
+    account_book_id: PydanticObjectId,
+    db_account_book: typing.Annotated[
+        models.AccountBook, Depends(deps.get_account_book)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> dict:
+
+    pipeline = [
+        {"$group": {"_id": {"year": {"$year": "$date"}, "month": {"$month": "$date"}}}},
+        {"$group": {"_id": "$_id.year", "months": {"$push": "$_id.month"}}},
+        {
+            "$group": {
+                "_id": None,
+                "years": {"$push": {"k": {"$toString": "$_id"}, "v": "$months"}},
+            }
+        },
+        {"$replaceRoot": {"newRoot": {"$arrayToObject": "$years"}}},
+    ]
+    db_account_book_summary = (
+        await models.account_books.AccountBookSummary.find(
+            models.account_books.AccountBookSummary.account_book.id
+            == db_account_book.id,
+        )
+        .aggregate(pipeline)
+        .to_list()
+    )
+
+    return db_account_book_summary[0] if db_account_book_summary else {}
+
+
 @router.put("/{account_book_id}")
 async def update(
     account_book_id: str,

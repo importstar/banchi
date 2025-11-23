@@ -34,11 +34,12 @@ def create_refresh_token(data: dict, expires_delta: timedelta | None = None) -> 
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
+
 def verify_refresh_token(token: str):
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[ALGORITHM])
         return payload
-        
+
     except jwt.JWTError:
         print("Invalid refresh token")
         return None

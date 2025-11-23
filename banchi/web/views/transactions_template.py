@@ -7,18 +7,18 @@ from collections import OrderedDict
 from banchi_client import models
 from banchi_client.api.v1 import (
     create_v1_account_books_post,
-    create_v1_transction_templates_post,
+    # create_v1_transction_templates_post,
     update_v1_account_books_account_book_id_put,
-    update_v1_transction_templates_transaction_id_put,
+    # update_v1_transction_templates_transaction_id_put,
     get_all_v1_account_books_get,
-    get_all_v1_transction_templates_get,
+    # get_all_v1_transction_templates_get,
     get_v1_account_books_account_book_id_get,
-    get_v1_transction_templates_transaction_id_get,
-    get_by_tags_v1_transction_templates_tags_tag_get,
+    # get_v1_transction_templates_transaction_id_get,
+    # get_by_tags_v1_transction_templates_tags_tag_get,
     get_label_v1_account_books_account_book_id_label_get,
     delete_v1_account_books_account_book_id_delete,
     get_balance_v1_account_books_account_book_id_balance_get,
-    delete_v1_transction_templates_transaction_id_delete,
+    # delete_v1_transction_templates_transaction_id_delete,
 )
 
 from .. import banchi_api_clients

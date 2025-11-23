@@ -11,7 +11,6 @@ class BaseUser(BaseModel):
     username: str = Field(example="admin")
     first_name: str = Field(example="Firstname")
     last_name: str = Field(example="Lastname")
-    
 
 
 class User(bases.BaseSchema, BaseUser):
@@ -66,8 +65,9 @@ class AccessToken(BaseModel):
     scope: str
     issued_at: datetime.datetime
 
+
 class Token(AccessToken):
-    refresh_token: str 
+    refresh_token: str
 
 
 class TokenData(BaseModel):
