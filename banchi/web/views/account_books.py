@@ -16,7 +16,8 @@ from banchi_client.api.v1 import (
     get_v1_transactions_transaction_id_get,
     get_label_v1_account_books_account_book_id_label_get,
     get_children_v1_account_books_account_book_id_children_get,
-    get_summary_v1_account_books_account_book_id_summary_get,
+    get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get,
+    get_summaries_v1_account_books_account_book_id_summaries_get,
     get_balance_v1_account_books_account_book_id_balance_get,
     delete_v1_account_books_account_book_id_delete,
     delete_v1_transactions_transaction_id_delete,
@@ -205,7 +206,7 @@ def view(account_book_id):
 
     now = datetime.datetime.now()
 
-    month_summary = get_summary_v1_account_books_account_book_id_summary_get.sync(
+    month_summary =get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
         client=client, account_book_id=account_book.id, year=now.year, month=now.month
     )
 
@@ -507,14 +508,19 @@ def delete(account_book_id):
 @module.route("/<account_book_id>/summary")
 def summary(account_book_id):
     client = banchi_api_clients.client.get_current_client()
-    # account_book = delete_v1_account_books_account_book_id_delete.sync(
-    #     client=client, account_book_id=account_book_id
-    # )
-
-    # return redirect(url_for("account_books.index", account_id=account_book.account.id)
-
+    account_book = get_v1_account_books_account_book_id_get.sync(
+        client=client, account_book_id=account_book_id
+    )
     account_book_summaries = get_summaries_v1_account_books_account_book_id_summaries_get.sync(
         client=client, account_book_id=account_book_id
     )
-    [print(">>>", account_book_summary) for account_book_summary in account_book_summaries.account_book_summaries]
-    return "xxx"
+
+    years = list(set([summary.year for summary in account_book_summaries.account_book_summaries]))
+    years.sort(reverse=True)
+    print("YEARS:", years)
+    return render_template(
+        "/account_books/summary.html",
+        account_book_summaries=account_book_summaries.account_book_summaries,
+        account_book=account_book,
+        years=years,
+    )   
