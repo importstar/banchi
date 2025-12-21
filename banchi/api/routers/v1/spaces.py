@@ -25,7 +25,7 @@ async def get_all(
         models.spaces.Space, Depends(deps.get_current_user_spaces)
     ],
 ) -> schemas.spaces.SpaceList:
-    return model_dump(spaces=spaces)
+    return dict(spaces=spaces)
 
 
 @router.post("")

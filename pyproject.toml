@@ -23,7 +23,7 @@ python-jose = "^3.3.0"
 python-multipart = "^0.0.20"
 flask-login = "^0.6.3"
 openapi-python-client = "^0.27.1"
-fastapi = "^0.121.0"
+fastapi = "^0.126.0"
 requests = "^2.32.3"
 banchi-client = {path = "clients/banchi-client", develop = true}
 bcrypt = "^4.2.1"

@@ -27,11 +27,12 @@ from .. import forms
 module = Blueprint("spaces", __name__, url_prefix="/spaces")
 
 
-@module.route("")
+@module.route("/")
 @login_required
 def index():
     client = banchi_api_clients.client.get_current_client()
     response = get_all_v1_spaces_get.sync(client=client)
+    print(response.spaces)
 
     return render_template("/spaces/index.html", spaces=response.spaces)
 
