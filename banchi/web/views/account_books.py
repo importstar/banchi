@@ -506,11 +506,15 @@ def delete(account_book_id):
 
 @module.route("/<account_book_id>/summary")
 def summary(account_book_id):
-    # client = banchi_api_clients.client.get_current_client()
+    client = banchi_api_clients.client.get_current_client()
     # account_book = delete_v1_account_books_account_book_id_delete.sync(
     #     client=client, account_book_id=account_book_id
     # )
 
     # return redirect(url_for("account_books.index", account_id=account_book.account.id)
 
+    account_book_summaries = get_summaries_v1_account_books_account_book_id_summaries_get.sync(
+        client=client, account_book_id=account_book_id
+    )
+    [print(">>>", account_book_summary) for account_book_summary in account_book_summaries.account_book_summaries]
     return "xxx"

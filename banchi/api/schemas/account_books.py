@@ -102,6 +102,9 @@ class AccountBookSummary(BaseModel):
     created_date: datetime.datetime
     updated_date: datetime.datetime
 
+class AccountBookSummaryList(BaseModel):
+    account_book_summaries: list[AccountBookSummary]
+
 
 class BaseAccountBook(BaseModel):
     name: str = Field(..., example="Account Book Name")

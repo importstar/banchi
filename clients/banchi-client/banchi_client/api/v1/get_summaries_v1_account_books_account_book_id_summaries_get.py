@@ -5,29 +5,17 @@ import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.account_book_summary import AccountBookSummary
+from ...models.account_book_summary_list import AccountBookSummaryList
 from ...models.http_validation_error import HTTPValidationError
-from ...types import UNSET, Response
+from ...types import Response
 
 
 def _get_kwargs(
     account_book_id: str,
-    *,
-    year: int,
-    month: int,
 ) -> dict[str, Any]:
-    params: dict[str, Any] = {}
-
-    params["year"] = year
-
-    params["month"] = month
-
-    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
-
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": f"/v1/account-books/{account_book_id}/summary",
-        "params": params,
+        "url": f"/v1/account-books/{account_book_id}/summaries",
     }
 
     return _kwargs
@@ -35,9 +23,9 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> AccountBookSummary | HTTPValidationError | None:
+) -> AccountBookSummaryList | HTTPValidationError | None:
     if response.status_code == 200:
-        response_200 = AccountBookSummary.from_dict(response.json())
+        response_200 = AccountBookSummaryList.from_dict(response.json())
 
         return response_200
 
@@ -54,7 +42,7 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[AccountBookSummary | HTTPValidationError]:
+) -> Response[AccountBookSummaryList | HTTPValidationError]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -67,28 +55,22 @@ def sync_detailed(
     account_book_id: str,
     *,
     client: AuthenticatedClient,
-    year: int,
-    month: int,
-) -> Response[AccountBookSummary | HTTPValidationError]:
-    """Get Summary
+) -> Response[AccountBookSummaryList | HTTPValidationError]:
+    """Get Summaries
 
     Args:
         account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        year (int):
-        month (int):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AccountBookSummary | HTTPValidationError]
+        Response[AccountBookSummaryList | HTTPValidationError]
     """
 
     kwargs = _get_kwargs(
         account_book_id=account_book_id,
-        year=year,
-        month=month,
     )
 
     response = client.get_httpx_client().request(
@@ -102,29 +84,23 @@ def sync(
     account_book_id: str,
     *,
     client: AuthenticatedClient,
-    year: int,
-    month: int,
-) -> AccountBookSummary | HTTPValidationError | None:
-    """Get Summary
+) -> AccountBookSummaryList | HTTPValidationError | None:
+    """Get Summaries
 
     Args:
         account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        year (int):
-        month (int):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AccountBookSummary | HTTPValidationError
+        AccountBookSummaryList | HTTPValidationError
     """
 
     return sync_detailed(
         account_book_id=account_book_id,
         client=client,
-        year=year,
-        month=month,
     ).parsed
 
 
@@ -132,28 +108,22 @@ async def asyncio_detailed(
     account_book_id: str,
     *,
     client: AuthenticatedClient,
-    year: int,
-    month: int,
-) -> Response[AccountBookSummary | HTTPValidationError]:
-    """Get Summary
+) -> Response[AccountBookSummaryList | HTTPValidationError]:
+    """Get Summaries
 
     Args:
         account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        year (int):
-        month (int):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[AccountBookSummary | HTTPValidationError]
+        Response[AccountBookSummaryList | HTTPValidationError]
     """
 
     kwargs = _get_kwargs(
         account_book_id=account_book_id,
-        year=year,
-        month=month,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -165,29 +135,23 @@ async def asyncio(
     account_book_id: str,
     *,
     client: AuthenticatedClient,
-    year: int,
-    month: int,
-) -> AccountBookSummary | HTTPValidationError | None:
-    """Get Summary
+) -> AccountBookSummaryList | HTTPValidationError | None:
+    """Get Summaries
 
     Args:
         account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        year (int):
-        month (int):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        AccountBookSummary | HTTPValidationError
+        AccountBookSummaryList | HTTPValidationError
     """
 
     return (
         await asyncio_detailed(
             account_book_id=account_book_id,
             client=client,
-            year=year,
-            month=month,
         )
     ).parsed

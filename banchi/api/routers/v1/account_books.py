@@ -276,10 +276,9 @@ async def get_balance(
 
 
 @router.get(
-    "/{account_book_id}/summary",
-    response_model_by_alias=False,
+    "/{account_book_id}/summary/{year}/{month}",
 )
-async def get_summary(
+async def get_summary_by_year_month(
     account_book_id: PydanticObjectId,
     year: int,
     month: int,
@@ -293,6 +292,7 @@ async def get_summary(
         models.account_books.AccountBookSummary.year == year,
         models.account_books.AccountBookSummary.month == month,
     )
+
     if not db_account_book_summary:
         db_account_book_summary = models.account_books.AccountBookSummary(
             account_book=db_account_book,
@@ -305,37 +305,27 @@ async def get_summary(
 
 
 @router.get(
-    "/{account_book_id}/list-years-months",
+    "/{account_book_id}/summaries",
 )
-async def get_years_months(
+async def get_summaries(
     account_book_id: PydanticObjectId,
     db_account_book: typing.Annotated[
         models.AccountBook, Depends(deps.get_account_book)
     ],
     current_user: models.users.User = Depends(deps.get_current_user),
-) -> dict:
+) -> schemas.account_books.AccountBookSummaryList:
 
-    pipeline = [
-        {"$group": {"_id": {"year": {"$year": "$date"}, "month": {"$month": "$date"}}}},
-        {"$group": {"_id": "$_id.year", "months": {"$push": "$_id.month"}}},
-        {
-            "$group": {
-                "_id": None,
-                "years": {"$push": {"k": {"$toString": "$_id"}, "v": "$months"}},
-            }
-        },
-        {"$replaceRoot": {"newRoot": {"$arrayToObject": "$years"}}},
-    ]
     db_account_book_summary = (
         await models.account_books.AccountBookSummary.find(
             models.account_books.AccountBookSummary.account_book.id
             == db_account_book.id,
         )
-        .aggregate(pipeline)
         .to_list()
     )
 
-    return db_account_book_summary[0] if db_account_book_summary else {}
+    return schemas.account_books.AccountBookSummaryList(
+        account_book_summaries=db_account_book_summary
+    )
 
 
 @router.put("/{account_book_id}")

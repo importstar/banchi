@@ -36,6 +36,11 @@ Account Book: {{ account_book.name }}
     href="{{ url_for('account_books.add_bulk_transactions', account_book_id=account_book.id) }}">
     <i class="money icon"></i> Add Bulk Transaction
   </a>
+  <a class="ui primary icon button"
+    href="{{ url_for('account_books.summary', account_book_id=account_book.id) }}">
+    <i class="dollar sign icon"></i> Summary Account Book
+  </a>
+
 
   {% if account_book.parent %}
   <a class="ui primary icon button" href="{{ url_for('account_books.view', account_book_id=account_book.parent.id ) }}">
