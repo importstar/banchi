@@ -54,7 +54,7 @@ def index():
             account_balance=get_balance_v1_account_books_account_book_id_balance_get.sync(
                 client=client, account_book_id=account_book.id
             ),
-            month_summary=get_summary_v1_account_books_account_book_id_summary_get.sync(
+            month_summary=get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
                 client=client,
                 account_book_id=account_book.id,
                 year=now.year,
