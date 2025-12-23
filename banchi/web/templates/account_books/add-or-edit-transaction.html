@@ -14,7 +14,7 @@
 
 {% macro render_transaction(form) %}
 <div class="two fields">
-  {{ renderer.render_calendar(form.date, calendar_id='date_calendar') }}
+  {{ renderer.render_calendar(form.date, calendar_id=form.date.id+'_date_calendar') }}
   {{ renderer.render_field(form.description_) }}
 </div>
 <div class="two fields">
@@ -65,7 +65,7 @@
     date: "YYYY-MM-DD",
   };
 
-  $('#date_calendar').calendar({
+  $('div[id$="date_calendar"]').calendar({
     type: 'datetime',
     today: true,
     monthFirst: false,
