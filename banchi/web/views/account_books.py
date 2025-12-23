@@ -356,7 +356,7 @@ def add_bulk_transactions(account_book_id):
         )
 
     for idx, sub_form in enumerate(form.transactions):
-        if not sub_form.data or (
+        if not sub_form.data or not sub_form.date.data or (
             not sub_form.data.get("description_", "").strip()
             or not sub_form.data.get("value", 0)
         ):
@@ -369,6 +369,7 @@ def add_bulk_transactions(account_book_id):
         entry_data["description"] = entry_data["description_"]
 
         transaction = models.CreatedTransaction.from_dict(entry_data)
+
         response = create_v1_transactions_post.sync(client=client, body=transaction)
 
     return redirect(url_for("account_books.view", account_book_id=account_book.id))
