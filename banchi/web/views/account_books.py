@@ -295,17 +295,17 @@ def view_by_year_month(account_book_id, year, month):
         client=client, account_book_id=account_book.id
     )
 
-    response = get_children_v1_account_books_account_book_id_children_get.sync(
-        client=client, account_book_id=account_book.id
-    )
+    # response = get_children_v1_account_books_account_book_id_children_get.sync(
+    #     client=client, account_book_id=account_book.id
+    # )
 
-    account_book_children = response.account_books
-    account_book_children_balance = dict()
-    for abc in account_book_children:
-        abc_balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
-            client=client, account_book_id=abc.id
-        )
-        account_book_children_balance[abc.id] = abc_balance
+    # account_book_children = response.account_books
+    # account_book_children_balance = dict()
+    # for abc in account_book_children:
+    #     abc_balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
+    #         client=client, account_book_id=abc.id
+    #     )
+    #     account_book_children_balance[abc.id] = abc_balance
 
     response = get_all_v1_account_books_get.sync(
         client=client, account_id=account_book.account.id
@@ -328,8 +328,8 @@ def view_by_year_month(account_book_id, year, month):
         transaction_chunk=transaction_chunk,
         label=label,
         balance=balance,
-        account_book_children=account_book_children,
-        account_book_children_balance=account_book_children_balance,
+        # account_book_children=account_book_children,
+        # account_book_children_balance=account_book_children_balance,
         month_summary=month_account_book_summary,
         last_month_account_book_summary=last_month_account_book_summary,
         last_month_balance=last_month_balance,

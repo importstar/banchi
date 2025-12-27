@@ -61,6 +61,7 @@ Account Book: {{ account_book.name }}
 </div>
 
 {% block account_content %}
+{% if account_book_children %}
 <div style="padding-top:1vh;">
   <div class="ui cards">
     {% for c_account_book in account_book_children %}
@@ -115,6 +116,7 @@ Account Book: {{ account_book.name }}
     {% endfor %}
   </div>
 </div>
+{% endif %}
 
 <div style="padding-top:1vh;">
   <h2 class="ui header">Account Book Summary</h2>

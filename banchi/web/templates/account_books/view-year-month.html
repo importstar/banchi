@@ -142,7 +142,7 @@ Account Book: {{ account_book.name }} ({{ month_summary['year'] }}-{{ month_summ
           </td>
         </tr>
 
-        {% for transaction in transaction_chunk.transactions %}
+        {% for transaction in transaction_chunk.transactions|sort(attribute='date') %}
         {% set ns.increase = ns.increase + (transaction.value|float) if transaction.to_account_book.id == account_book.id else ns.increase %}
         {% set ns.decrease = ns.decrease + (transaction.value|float) if transaction.from_account_book.id == account_book.id else ns.decrease %}
         {% set ns.balance = (last_month_balance.balance|float) + ns.increase - ns.decrease %}
