@@ -1,4 +1,5 @@
 import datetime
+import calendar
 import io
 import bson
 import decimal
@@ -315,12 +316,15 @@ async def get_balance_by_year_month(
     ],
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> dict:
+
+    first_day_of_next_month = datetime.datetime(
+        year, month, calendar.monthrange(year, month)[1]
+    ) + datetime.timedelta(days=1)
     db_account_book_balance = (
         await models.account_books.AccountBookSummary.find(
             models.account_books.AccountBookSummary.account_book.id
             == db_account_book.id,
-            models.account_books.AccountBookSummary.date
-            <= datetime.datetime(year, month, 1),
+            models.account_books.AccountBookSummary.date < first_day_of_next_month,
         )
         .aggregate(
             [
@@ -337,11 +341,13 @@ async def get_balance_by_year_month(
         .to_list()
     )
 
-    result = dict(
-        balance=db_account_book_balance[0]
-        .get("balance", bson.Decimal128("0"))
-        .to_decimal()
-    )
+    result = dict(balance=decimal.Decimal("0"))
+    if len(db_account_book_balance) > 0:
+        result = dict(
+            balance=db_account_book_balance[0]
+            .get("balance", bson.Decimal128("0"))
+            .to_decimal()
+        )
     return result
 
 
