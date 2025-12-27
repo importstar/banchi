@@ -1,23 +1,16 @@
-{% extends '/account_books/index.html' %}
+{% extends '/account_books/view.html' %}
 {% import '/base/pagination.html' as pagination %}
 {% import '/base/html-renderer.html' as html_renderer %}
 
-
-
 {% block dashboard_title %}
-Account Book: {{ account_book.name }}
+Account Book: {{ account_book.name }} ({{ month_summary['year'] }}-{{ month_summary['month'] }})
 {% endblock %}
 
 {% block breadcrumbs %}
 {{ super() }}
 {% if account_book %}
 <i class="right angle icon divider"></i>
-{% if request.endpoint == 'account_books.view' %}
-<div class="active section">Account Book: {{ account_book.name }} </div>
-{% elif account_book %}
-<a class="section" href="{{ url_for('account_books.view', account_book_id=account_book.id ) }}">Account Book:
-  {{ account_book.name }} </a>
-{% endif %}
+<div class="active section">{{ month_summary['year'] }}-{{ month_summary['month'] }} </div>
 {% endif %}
 
 {% endblock %}
@@ -26,39 +19,7 @@ Account Book: {{ account_book.name }}
 {{ self.dashboard_title() }}
 {% endblock %}
 
-{% block content %}
-<div>
-  <a class="ui primary icon button"
-    href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id) }}">
-    <i class="money icon"></i> Add Transaction
-  </a>
-  <a class="ui primary icon button"
-    href="{{ url_for('account_books.add_bulk_transactions', account_book_id=account_book.id) }}">
-    <i class="money icon"></i> Add Bulk Transaction
-  </a>
-  <a class="ui primary icon button"
-    href="{{ url_for('account_books.summary', account_book_id=account_book.id) }}">
-    <i class="dollar sign icon"></i> Summary Account Book
-  </a>
 
-
-  {% if account_book.parent %}
-  <a class="ui primary icon button" href="{{ url_for('account_books.view', account_book_id=account_book.parent.id ) }}">
-    <i class="caret square up icon"></i> Parent: {{ account_book.parent.name }}
-  </a>
-  {% endif %}
-  <a class="ui primary icon button"
-    href="{{ url_for('account_books.create_or_edit', account_id=account_book.account.id, parent_id=account_book.id ) }}">
-    <i class="add icon"></i> Add Sub Account Book
-  </a>
-  <a class="ui yellow icon button"
-    href="{{ url_for('account_books.create_or_edit', account_book_id=account_book.id) }}">
-    <i class="edit icon"></i> Edit Account Book
-  </a>
-  <a class="ui red icon button" id="delete-account-book-{{ account_book.id }}">
-    <i class="trash icon"></i> Delete Account Book
-  </a>
-</div>
 
 {% block account_content %}
 <div style="padding-top:1vh;">
@@ -148,31 +109,7 @@ Account Book: {{ account_book.name }}
     </div>
   </div>
 
-  <div class="">
-    <form method="GET" class="ui form">
-      <div class="five fields">
-        <div class="field">
-          {{ html_renderer.render_calendar(form.started_date, calendar_id='started_date_calendar') }}
-        </div>
-        <div class="field">
-          {{ html_renderer.render_calendar(form.ended_date, calendar_id='ended_date_calendar') }}
-        </div>
-        <div class="field">
-          {{ html_renderer.render_field(form.description) }}
-        </div>
-        <div class="field">
-          {{ html_renderer.render_field(form.value) }}
-        </div>
-        <div class="field">
-          <label for="type"></label>
-          <button type="submit" class="ui primary button">Search</button>
-        </div>
-      </div>
-    </form>
-  </div>
-
-
-
+  {% set ns = namespace(increase=0, decrease=0, balance=0) %}
   <div style="padding-top:1vh;">
     <table class="ui Large table">
       <thead>
@@ -182,12 +119,33 @@ Account Book: {{ account_book.name }}
           <th>Transfer</th>
           <th class="right aligned">{{ label.positive.title() }}</th>
           <th class="right aligned">{{ label.negative.title() }}</th>
+          <th>Blance</th>
           <th>User</th>
           <th>Operation</th>
         </tr>
       </thead>
       <tbody>
+        <tr class="top aligned">
+          <td></td>
+          <td>
+            ยอดยกมา {{ last_month_account_book_summary.year }}-{{ last_month_account_book_summary.month }}
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td>
+          </td>
+          <td> {{ "{:,.2f}".format(last_month_balance.balance|float) }}
+          </td>
+          <td>
+          </td>
+        </tr>
+
         {% for transaction in transaction_chunk.transactions %}
+        {% set ns.increase = ns.increase + (transaction.value|float) if transaction.to_account_book.id == account_book.id else ns.increase %}
+        {% set ns.decrease = ns.decrease + (transaction.value|float) if transaction.from_account_book.id == account_book.id else ns.decrease %}
+        {% set ns.balance = (last_month_balance.balance|float) + ns.increase - ns.decrease %}
         <tr class="top aligned">
           <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
           <td>
@@ -216,6 +174,7 @@ Account Book: {{ account_book.name }}
           <td></td>
           <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
           {% endif %}
+          <td class="right aligned">{{ "{:,.2f}".format(ns.balance|float) }}</td>
           <td>
             {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
           </td>
@@ -228,23 +187,24 @@ Account Book: {{ account_book.name }}
         </tr>
         {% endfor %}
       </tbody>
-      {#
       <tfoot>
         <tr>
           <th></th>
           <th></th>
           <th></th>
           <th class="right aligned">
-            {{ "{:,.2f}".format(balance['increase']|float) }}
+            {{ "{:,.2f}".format(ns.increase|float) }}
           </th>
           <th class="right aligned">
-            {{ "{:,.2f}".format(balance['decrease']|float) }}
+            {{ "{:,.2f}".format(ns.decrease|float) }}
+          </th>
+          <th class="right aligned">
+            {{ "{:,.2f}".format((ns.increase-ns.decrease)|float) }}
           </th>
           <th></th>
           <th></th>
         </tr>
       </tfoot>
-      #}
     </table>
 
     {% if transaction_chunk.page_size > 1 %}
@@ -281,35 +241,3 @@ Account Book: {{ account_book.name }}
 </div>
 {% endblock account_content %}
 
-{% endblock %}
-
-{% block additional_js %}
-<script type="text/javascript">
-  $('#delete-modal').modal('attach events', '#delete-account-book-{{ account_book.id }}', 'show');
-
-  datetime_formatter = {
-    datetime: "YYYY-MM-DD HH:mm:ss",
-    date: "YYYY-MM-DD",
-  };
-
-  $('#started_date_calendar').calendar({
-    type: 'date',
-    today: true,
-    monthFirst: false,
-    formatter: datetime_formatter,
-  });
-
-  $('#ended_date_calendar').calendar({
-    type: 'date',
-    today: true,
-    monthFirst: false,
-    formatter: datetime_formatter,
-  });
-
-  $('.ui.search.dropdown').dropdown({
-    allowAdditions: true,
-  });
-
-</script>
-
-{% endblock additional_js %}

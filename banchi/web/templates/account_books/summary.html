@@ -88,6 +88,7 @@ Account Book: {{ account_book.name }}
         <th class="right aligned">Income</th>
         <th class="right aligned">Expense</th>
         <th class="right aligned">Balance</th>
+        <th class="right aligned"></th>
       </tr>
     </thead>
     <tbody>
@@ -101,6 +102,12 @@ Account Book: {{ account_book.name }}
         <td class="right aligned"> {{ "{:,.2f}".format(account_book_summary.increase|float) }} </td>
         <td class="right aligned"> {{ "{:,.2f}".format(account_book_summary.decrease|float) }} </td>
         <td class="right aligned"> {{ "{:,.2f}".format(account_book_summary.balance|float) }} </td>
+        <td class="right aligned">
+          <a class="ui circular primary icon button"
+            href="{{ url_for('account_books.view_by_year_month', account_book_id=account_book.id, year=account_book_summary.year, month=account_book_summary.month) }}">
+            <i class="eye icon"></i>
+          </a> 
+        </td>
       </tr>
       {% endif %}
       {% endfor %}
@@ -111,6 +118,7 @@ Account Book: {{ account_book.name }}
         <th class="right aligned"> {{ "{:,.2f}".format(ns.increase|float) }} </th>
         <th class="right aligned"> {{ "{:,.2f}".format(ns.decrease|float) }} </th>
         <th class="right aligned"> {{ "{:,.2f}".format(ns.balance|float) }} </th>
+        <th class="right aligned"> </th>
       </tr>
     </tfoot>
   </table>

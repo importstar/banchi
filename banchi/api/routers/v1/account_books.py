@@ -262,7 +262,6 @@ async def get_account_book_balance_by_summary(
 
 @router.get(
     "/{account_book_id}/balance",
-    response_model_by_alias=False,
 )
 async def get_balance(
     account_book_id: PydanticObjectId,
@@ -305,6 +304,48 @@ async def get_summary_by_year_month(
 
 
 @router.get(
+    "/{account_book_id}/balance/{year}/{month}",
+)
+async def get_balance_by_year_month(
+    account_book_id: PydanticObjectId,
+    year: int,
+    month: int,
+    db_account_book: typing.Annotated[
+        models.AccountBook, Depends(deps.get_account_book)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> dict:
+    db_account_book_balance = (
+        await models.account_books.AccountBookSummary.find(
+            models.account_books.AccountBookSummary.account_book.id
+            == db_account_book.id,
+            models.account_books.AccountBookSummary.year <= year,
+            models.account_books.AccountBookSummary.month <= month,
+        )
+        .aggregate(
+            [
+                {
+                    "$group": {
+                        "_id": None,
+                        # "increase": {"$sum": "$increase"},
+                        # "decrease": {"$sum": "$decrease"},
+                        "balance": {"$sum": "$balance"},
+                    }
+                }
+            ]
+        )
+        .to_list()
+    )
+
+    result = dict(
+        balance=db_account_book_balance[0]
+        .get("balance", bson.Decimal128("0"))
+        .to_decimal()
+    )
+    return result
+
+
+@router.get(
     "/{account_book_id}/summaries",
 )
 async def get_summaries(
@@ -315,13 +356,9 @@ async def get_summaries(
     current_user: models.users.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBookSummaryList:
 
-    db_account_book_summary = (
-        await models.account_books.AccountBookSummary.find(
-            models.account_books.AccountBookSummary.account_book.id
-            == db_account_book.id,
-        )
-        .to_list()
-    )
+    db_account_book_summary = await models.account_books.AccountBookSummary.find(
+        models.account_books.AccountBookSummary.account_book.id == db_account_book.id,
+    ).to_list()
 
     return schemas.account_books.AccountBookSummaryList(
         account_book_summaries=db_account_book_summary

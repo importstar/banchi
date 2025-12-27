@@ -19,6 +19,8 @@ def _get_kwargs(
     size_per_page: int | None | Unset = 50,
     started_date: datetime.datetime | None | Unset = UNSET,
     ended_date: datetime.datetime | None | Unset = UNSET,
+    year: int | None | Unset = UNSET,
+    month: int | None | Unset = UNSET,
     description: None | str | Unset = UNSET,
     value: float | None | str | Unset = UNSET,
 ) -> dict[str, Any]:
@@ -63,6 +65,20 @@ def _get_kwargs(
     else:
         json_ended_date = ended_date
     params["ended_date"] = json_ended_date
+
+    json_year: int | None | Unset
+    if isinstance(year, Unset):
+        json_year = UNSET
+    else:
+        json_year = year
+    params["year"] = json_year
+
+    json_month: int | None | Unset
+    if isinstance(month, Unset):
+        json_month = UNSET
+    else:
+        json_month = month
+    params["month"] = json_month
 
     json_description: None | str | Unset
     if isinstance(description, Unset):
@@ -128,6 +144,8 @@ def sync_detailed(
     size_per_page: int | None | Unset = 50,
     started_date: datetime.datetime | None | Unset = UNSET,
     ended_date: datetime.datetime | None | Unset = UNSET,
+    year: int | None | Unset = UNSET,
+    month: int | None | Unset = UNSET,
     description: None | str | Unset = UNSET,
     value: float | None | str | Unset = UNSET,
 ) -> Response[HTTPValidationError | TransactionList]:
@@ -140,6 +158,8 @@ def sync_detailed(
         size_per_page (int | None | Unset):  Default: 50.
         started_date (datetime.datetime | None | Unset):
         ended_date (datetime.datetime | None | Unset):
+        year (int | None | Unset):
+        month (int | None | Unset):
         description (None | str | Unset):
         value (float | None | str | Unset):
 
@@ -158,6 +178,8 @@ def sync_detailed(
         size_per_page=size_per_page,
         started_date=started_date,
         ended_date=ended_date,
+        year=year,
+        month=month,
         description=description,
         value=value,
     )
@@ -178,6 +200,8 @@ def sync(
     size_per_page: int | None | Unset = 50,
     started_date: datetime.datetime | None | Unset = UNSET,
     ended_date: datetime.datetime | None | Unset = UNSET,
+    year: int | None | Unset = UNSET,
+    month: int | None | Unset = UNSET,
     description: None | str | Unset = UNSET,
     value: float | None | str | Unset = UNSET,
 ) -> HTTPValidationError | TransactionList | None:
@@ -190,6 +214,8 @@ def sync(
         size_per_page (int | None | Unset):  Default: 50.
         started_date (datetime.datetime | None | Unset):
         ended_date (datetime.datetime | None | Unset):
+        year (int | None | Unset):
+        month (int | None | Unset):
         description (None | str | Unset):
         value (float | None | str | Unset):
 
@@ -209,6 +235,8 @@ def sync(
         size_per_page=size_per_page,
         started_date=started_date,
         ended_date=ended_date,
+        year=year,
+        month=month,
         description=description,
         value=value,
     ).parsed
@@ -223,6 +251,8 @@ async def asyncio_detailed(
     size_per_page: int | None | Unset = 50,
     started_date: datetime.datetime | None | Unset = UNSET,
     ended_date: datetime.datetime | None | Unset = UNSET,
+    year: int | None | Unset = UNSET,
+    month: int | None | Unset = UNSET,
     description: None | str | Unset = UNSET,
     value: float | None | str | Unset = UNSET,
 ) -> Response[HTTPValidationError | TransactionList]:
@@ -235,6 +265,8 @@ async def asyncio_detailed(
         size_per_page (int | None | Unset):  Default: 50.
         started_date (datetime.datetime | None | Unset):
         ended_date (datetime.datetime | None | Unset):
+        year (int | None | Unset):
+        month (int | None | Unset):
         description (None | str | Unset):
         value (float | None | str | Unset):
 
@@ -253,6 +285,8 @@ async def asyncio_detailed(
         size_per_page=size_per_page,
         started_date=started_date,
         ended_date=ended_date,
+        year=year,
+        month=month,
         description=description,
         value=value,
     )
@@ -271,6 +305,8 @@ async def asyncio(
     size_per_page: int | None | Unset = 50,
     started_date: datetime.datetime | None | Unset = UNSET,
     ended_date: datetime.datetime | None | Unset = UNSET,
+    year: int | None | Unset = UNSET,
+    month: int | None | Unset = UNSET,
     description: None | str | Unset = UNSET,
     value: float | None | str | Unset = UNSET,
 ) -> HTTPValidationError | TransactionList | None:
@@ -283,6 +319,8 @@ async def asyncio(
         size_per_page (int | None | Unset):  Default: 50.
         started_date (datetime.datetime | None | Unset):
         ended_date (datetime.datetime | None | Unset):
+        year (int | None | Unset):
+        month (int | None | Unset):
         description (None | str | Unset):
         value (float | None | str | Unset):
 
@@ -303,6 +341,8 @@ async def asyncio(
             size_per_page=size_per_page,
             started_date=started_date,
             ended_date=ended_date,
+            year=year,
+            month=month,
             description=description,
             value=value,
         )

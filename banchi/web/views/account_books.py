@@ -1,4 +1,6 @@
+from xmlrpc import client
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 import datetime
 import decimal
 from collections import OrderedDict
@@ -19,6 +21,7 @@ from banchi_client.api.v1 import (
     get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get,
     get_summaries_v1_account_books_account_book_id_summaries_get,
     get_balance_v1_account_books_account_book_id_balance_get,
+    get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get,
     delete_v1_account_books_account_book_id_delete,
     delete_v1_transactions_transaction_id_delete,
 )
@@ -31,6 +34,7 @@ module = Blueprint("account_books", __name__, url_prefix="/account-books")
 
 
 @module.route("")
+@login_required
 def index():
     account_id = request.args.get("account_id")
     account_books = []
@@ -77,6 +81,7 @@ def index():
 
 @module.route("/create", defaults=dict(account_book_id=None), methods=["GET", "POST"])
 @module.route("/<account_book_id>/edit", methods=["GET", "POST"])
+@login_required
 def create_or_edit(account_book_id):
     form = forms.account_books.AccountBookForm()
     client = banchi_api_clients.client.get_current_client()
@@ -158,6 +163,7 @@ def create_or_edit(account_book_id):
 
 
 @module.route("/<account_book_id>")
+@login_required
 def view(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = get_v1_account_books_account_book_id_get.sync(
@@ -206,7 +212,7 @@ def view(account_book_id):
 
     now = datetime.datetime.now()
 
-    month_summary =get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
+    month_summary = get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
         client=client, account_book_id=account_book.id, year=now.year, month=now.month
     )
 
@@ -248,7 +254,90 @@ def view(account_book_id):
     )
 
 
+@module.route("/<account_book_id>/<int:year>/<int:month>")
+@login_required
+def view_by_year_month(account_book_id, year, month):
+    client = banchi_api_clients.client.get_current_client()
+    account_book = get_v1_account_books_account_book_id_get.sync(
+        client=client, account_book_id=account_book_id
+    )
+
+    month_account_book_summary = get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
+        client=client, account_book_id=account_book_id, year=year, month=month
+    )
+
+    last_mounth = month - 1
+    last_year = year
+    if last_mounth == 0:
+        last_mounth = 12
+        last_year = year - 1
+
+    last_month_account_book_summary = get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
+        client=client,
+        account_book_id=account_book_id,
+        year=last_year,
+        month=last_mounth,
+    )
+
+    response = get_all_v1_transactions_get.sync(
+        client=client,
+        from_account_book_id=account_book.id,
+        to_account_book_id=account_book.id,
+        year=year,
+        month=month,
+    )
+    transaction_chunk = response
+
+    label = get_label_v1_account_books_account_book_id_label_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+    balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+
+    response = get_children_v1_account_books_account_book_id_children_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+
+    account_book_children = response.account_books
+    account_book_children_balance = dict()
+    for abc in account_book_children:
+        abc_balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
+            client=client, account_book_id=abc.id
+        )
+        account_book_children_balance[abc.id] = abc_balance
+
+    response = get_all_v1_account_books_get.sync(
+        client=client, account_id=account_book.account.id
+    )
+    account_books = response.account_books
+
+    display_names = utils.account_books.get_display_names(account_books)
+
+    last_month_balance = get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get.sync(
+        client=client,
+        account_book_id=account_book.id,
+        year=last_year,
+        month=last_mounth,
+    )
+
+    return render_template(
+        "/account_books/view-year-month.html",
+        account_book=account_book,
+        account_book_display_names=display_names,
+        transaction_chunk=transaction_chunk,
+        label=label,
+        balance=balance,
+        account_book_children=account_book_children,
+        account_book_children_balance=account_book_children_balance,
+        month_summary=month_account_book_summary,
+        last_month_account_book_summary=last_month_account_book_summary,
+        last_month_balance=last_month_balance,
+    )
+
+
 @module.route("/<account_book_id>/all-transactions")
+@login_required
 def view_recursive_transactions(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = get_v1_account_books_account_book_id_get.sync(
@@ -302,6 +391,7 @@ def view_recursive_transactions(account_book_id):
     "/<account_book_id>/transactions/add-bulk",
     methods=["GET", "POST"],
 )
+@login_required
 def add_bulk_transactions(account_book_id):
 
     client = banchi_api_clients.client.get_current_client()
@@ -356,9 +446,13 @@ def add_bulk_transactions(account_book_id):
         )
 
     for idx, sub_form in enumerate(form.transactions):
-        if not sub_form.data or not sub_form.date.data or (
-            not sub_form.data.get("description_", "").strip()
-            or not sub_form.data.get("value", 0)
+        if (
+            not sub_form.data
+            or not sub_form.date.data
+            or (
+                not sub_form.data.get("description_", "").strip()
+                or not sub_form.data.get("value", 0)
+            )
         ):
             continue
 
@@ -388,6 +482,7 @@ def add_bulk_transactions(account_book_id):
 @module.route(
     "/<account_book_id>/transactions/<transaction_id>/edit", methods=["GET", "POST"]
 )
+@login_required
 def add_or_edit_transaction(account_book_id, transaction_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = None
@@ -487,6 +582,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
 
 @module.route("/<account_book_id>/transactions/<transaction_id>/delete")
+@login_required
 def delete_transaction(account_book_id, transaction_id):
     client = banchi_api_clients.client.get_current_client()
     transaction = delete_v1_transactions_transaction_id_delete.sync(
@@ -497,6 +593,7 @@ def delete_transaction(account_book_id, transaction_id):
 
 
 @module.route("/<account_book_id>/delete")
+@login_required
 def delete(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = delete_v1_account_books_account_book_id_delete.sync(
@@ -507,21 +604,25 @@ def delete(account_book_id):
 
 
 @module.route("/<account_book_id>/summary")
+@login_required
 def summary(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = get_v1_account_books_account_book_id_get.sync(
         client=client, account_book_id=account_book_id
     )
-    account_book_summaries = get_summaries_v1_account_books_account_book_id_summaries_get.sync(
-        client=client, account_book_id=account_book_id
+    account_book_summaries = (
+        get_summaries_v1_account_books_account_book_id_summaries_get.sync(
+            client=client, account_book_id=account_book_id
+        )
     )
 
-    years = list(set([summary.year for summary in account_book_summaries.account_book_summaries]))
+    years = list(
+        set([summary.year for summary in account_book_summaries.account_book_summaries])
+    )
     years.sort(reverse=True)
-    print("YEARS:", years)
     return render_template(
         "/account_books/summary.html",
         account_book_summaries=account_book_summaries.account_book_summaries,
         account_book=account_book,
         years=years,
-    )   
+    )

@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 import datetime
 from collections import OrderedDict
 
@@ -30,6 +31,7 @@ def index():
 
 @module.route("/create", defaults=dict(account_id=None), methods=["GET", "POST"])
 @module.route("/<account_id>/edit", methods=["GET", "POST"])
+@login_required
 def create_or_edit(account_id):
     form = forms.accounts.AccountForm()
     client = banchi_api_clients.client.get_current_client()
@@ -62,6 +64,7 @@ def create_or_edit(account_id):
 
 
 @module.route("/<account_id>")
+@login_required
 def view(account_id):
     client = banchi_api_clients.client.get_current_client()
     account = get_v1_accounts_account_id_get.sync(client=client, account_id=account_id)

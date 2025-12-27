@@ -192,6 +192,8 @@ async def get_all(
     size_per_page: typing.Annotated[int | None, Query()] = 50,
     started_date: typing.Annotated[datetime.datetime | None, Query()] = None,
     ended_date: typing.Annotated[datetime.datetime | None, Query()] = None,
+    year: typing.Annotated[int | None, Query()] = None,
+    month: typing.Annotated[int | None, Query()] = None,
     description: typing.Annotated[str | None, Query()] = None,
     value: typing.Annotated[decimal.Decimal | None, Query()] = None,
 ) -> schemas.transactions.TransactionList:
@@ -228,6 +230,19 @@ async def get_all(
         query_args.append(models.transactions.Transaction.date >= started_date)
     if ended_date:
         query_args.append(models.transactions.Transaction.date <= ended_date)
+
+    # print("----->", year, month)
+    if year and month:
+        started_date = datetime.datetime(year=year, month=month, day=1)
+        ended_date = datetime.datetime(
+            year=year,
+            month=month,
+            day=calendar.monthrange(year, month)[1],
+        ) + datetime.timedelta(days=1)
+
+        # print(started_date, ended_date)
+        query_args.append(models.transactions.Transaction.date >= started_date)
+        query_args.append(models.transactions.Transaction.date < ended_date)
 
     if description:
         pattern_text = [f"(?=.*{t})" for t in description.split(" ")]

@@ -26,6 +26,9 @@ from .reference_account_book import ReferenceAccountBook
 from .reference_space import ReferenceSpace
 from .reference_user import ReferenceUser
 from .registered_user import RegisteredUser
+from .response_get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get import (
+    ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet,
+)
 from .smallest_fraction_enum import SmallestFractionEnum
 from .space import Space
 from .space_list import SpaceList
@@ -79,6 +82,7 @@ __all__ = (
     "ReferenceSpace",
     "ReferenceUser",
     "RegisteredUser",
+    "ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet",
     "SmallestFractionEnum",
     "Space",
     "SpaceList",
