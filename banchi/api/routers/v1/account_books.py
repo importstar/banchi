@@ -319,8 +319,8 @@ async def get_balance_by_year_month(
         await models.account_books.AccountBookSummary.find(
             models.account_books.AccountBookSummary.account_book.id
             == db_account_book.id,
-            models.account_books.AccountBookSummary.year <= year,
-            models.account_books.AccountBookSummary.month <= month,
+            models.account_books.AccountBookSummary.date
+            <= datetime.datetime(year, month, 1),
         )
         .aggregate(
             [
