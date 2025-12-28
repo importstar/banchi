@@ -1,0 +1,58 @@
+{% extends '/base/default-dashboard.html' %}
+
+{% block dashboard_title %}
+transection
+{% endblock %}
+
+{% block breadcrumbs %}
+{% if request.endpoint == 'transaction_templates.index' %}
+<div class="section active">Transaction Templates</div>
+{% else %}
+<a href="{{ url_for('transaction_templates.index', account_id=request.args.get('account_id')) }}" class="section">Transaction
+  Templates</a>
+{% endif %}
+{% endblock %}
+
+{% block title %}
+{% endblock %}
+
+{% block content %}
+  <div class="ui segment">
+      <a class="ui button primary" href="{{ url_for('transaction_templates.add_or_edit') }}">Create</a>
+  </div>
+  <div class="ui segment">
+    <table class="ui table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th class="right aligned">Amount</th>
+          <th>Tool</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        {% for template in transaction_templates %}
+        <tr>
+          <td>{{ template.name }}</td>
+          <td>{{ template.type_.title() }}</td>
+          <td class="right aligned">{{ "{:,.2f}".format(template.amount|float) }}</td>
+          <td>
+            <a class="ui primary circular icon button"
+              href="{{ url_for('transaction_templates.view', transaction_template_id=template.id) }}">
+              <i class="eye icon"></i>
+            </a>
+            <a class="ui yellow circular icon button"
+              href="{{ url_for('transaction_templates.add_or_edit', transaction_template_id=template.id) }}">
+              <i class="edit icon"></i>
+            </a>
+            <a class="ui red circular icon button" id="delete-transaction-template-{{ template.id }}">
+              <i class="trash icon"></i>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>  
+  </div>
+{% endblock %}

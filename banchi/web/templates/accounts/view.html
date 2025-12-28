@@ -25,6 +25,8 @@ Account {{ account.name }}
     Transaction</a>
   <a class="ui primary icon button" href="{{ url_for('account_books.create_or_edit', account_id=account.id) }}"><i
       class="file icon"></i> Create Account Book</a>
+  <a class="ui primary icon button" href="{{ url_for('transaction_templates.index', account_id=account.id) }}"><i
+      class="file icon"></i> Transaction Templates</a>
 </div>
 <div>
   <table class="ui large table">

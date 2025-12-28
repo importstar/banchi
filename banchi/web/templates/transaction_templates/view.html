@@ -1,0 +1,47 @@
+{% extends '/spaces/index.html' %}
+
+{% block dashboard_title %}
+Space
+{% endblock %}
+
+{% block breadcrumbs %}
+  {{ super() }}
+  <i class="right angle icon divider"></i>
+  {% if request.endpoint == 'spaces.view' %}
+      <div class="active section">{{ space.name }} </div>
+  {% elif space %}
+    <a class="section" href="{{ url_for('spaces.view', space_id=space.id ) }}">{{ space.name }} </a>
+  {% endif %}
+
+{% endblock %}
+
+{% block title %}
+{% endblock %}
+
+{% block content %}
+  <div class="ui segment">
+    <a class="ui button primary" href="{{ url_for('spaces.index') }}">Space</a>
+    <a class="ui button primary" href="{{ url_for('spaces.list_roles', space_id=space.id) }}">Roles</a>
+  </div>
+  <div>
+    {% if not account %}
+      <a class="ui icon button primary" href="{{ url_for('accounts.create_or_edit', space_id=space.id) }}"><i class="add icon"></i> Create Account</a>
+    {% endif %}
+  </div>
+  <div>
+    {% if account %}
+    <div class="ui card">
+      <div class="content">
+        <div class="header">Account: {{ account.name }}</div>
+        <div class="meta">{{ account.description }}</div>
+        <div class="description">
+          <p>Currentcy {{ account.currency }}</p>
+        </div>
+      </div>
+        <a class="ui primary icon button" href="{{ url_for('accounts.view', account_id=account.id) }}"><i class="eye icon"></i> View</a>
+    </div> 
+
+    {% endif %}
+  </div>
+  
+{% endblock %}
