@@ -364,7 +364,7 @@ async def get_summaries(
 
     db_account_book_summary = await models.account_books.AccountBookSummary.find(
         models.account_books.AccountBookSummary.account_book.id == db_account_book.id,
-    ).to_list()
+    ).sort([(models.account_books.AccountBookSummary.year, -1), (models.account_books.AccountBookSummary.month, -1)]).to_list()
 
     return schemas.account_books.AccountBookSummaryList(
         account_book_summaries=db_account_book_summary
