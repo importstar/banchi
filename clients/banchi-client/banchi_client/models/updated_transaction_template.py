@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
+
+if TYPE_CHECKING:
+    from ..models.updated_transaction import UpdatedTransaction
+
 
 T = TypeVar("T", bound="UpdatedTransactionTemplate")
 
@@ -13,20 +17,23 @@ T = TypeVar("T", bound="UpdatedTransactionTemplate")
 class UpdatedTransactionTemplate:
     """
     Attributes:
-        field_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transactions (list[UpdatedTransaction]):
     """
 
-    field_id: str
+    transactions: list[UpdatedTransaction]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        field_id = self.field_id
+        transactions = []
+        for transactions_item_data in self.transactions:
+            transactions_item = transactions_item_data.to_dict()
+            transactions.append(transactions_item)
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
-                "_id": field_id,
+                "transactions": transactions,
             }
         )
 
@@ -34,11 +41,18 @@ class UpdatedTransactionTemplate:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        from ..models.updated_transaction import UpdatedTransaction
+
         d = dict(src_dict)
-        field_id = d.pop("_id")
+        transactions = []
+        _transactions = d.pop("transactions")
+        for transactions_item_data in _transactions:
+            transactions_item = UpdatedTransaction.from_dict(transactions_item_data)
+
+            transactions.append(transactions_item)
 
         updated_transaction_template = cls(
-            field_id=field_id,
+            transactions=transactions,
         )
 
         updated_transaction_template.additional_properties = d

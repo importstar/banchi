@@ -26,20 +26,39 @@ router = APIRouter(prefix="/transaction-templates", tags=["transaction-templates
 @router.get("")
 async def get_all(
     account_id: PydanticObjectId | None,
+    db_transaction_templates: typing.Annotated[list[models.transactions.TransactionTemplate], Depends(deps.get_transaction_templates)],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
     page: typing.Annotated[int | None, Query()] = 1,
     size_per_page: typing.Annotated[int | None, Query()] = 50,
 ) -> schemas.transactions.TransactionTemplateList:
     # print(">>>", page, size_per_page)
-    return dict()
+    transaction_templates = schemas.transactions.TransactionTemplateList(
+        transaction_templates=db_transaction_templates,
+        page=page,
+        size_per_page=size_per_page,
+    )
+
+    return transaction_templates
 
 
 @router.post("")
 async def create(
-    transaction: schemas.transactions.CreatedTransactionTemplate,
+    transaction_template: schemas.transactions.CreatedTransactionTemplate,
+    account_id: PydanticObjectId,
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.TransactionTemplate:
-    return ""
+    data = transaction_template.model_dump()
+    print('data', data)
+    print('account_id', account_id)
+    data["owner"] = current_user
+    data["updated_by"] = current_user
+    data["account"] = await deps.get_account(account_id, current_user)
+    db_transaction_template = models.transactions.TransactionTemplate.parse_obj(data)
+    await db_transaction_template.save()
+
+    return db_transaction_template
+
+
 
 
 @router.get("/{transaction_template_id}")
@@ -57,6 +76,7 @@ async def get(
 @router.put("/{transaction_template_id}")
 async def update(
     transaction_template_id: PydanticObjectId,
+    account_id: PydanticObjectId,
     transaction_template: schemas.transactions.UpdatedTransactionTemplate,
     db_transaction_template: typing.Annotated[
         models.transactions.TransactionTemplate, Depends(deps.get_transaction_template)

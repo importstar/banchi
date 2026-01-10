@@ -31,7 +31,7 @@ class Transaction:
         to_account_book (ReferenceAccountBook):
         creator (ReferenceUser):
         updated_by (ReferenceUser):
-        date (datetime.datetime | Unset):  Default: isoparse('2026-01-10T19:47:11.154228').
+        date (datetime.datetime | Unset):  Default: isoparse('2026-01-11T00:02:03.921192').
         tags (list[str] | Unset):
         remarks (None | str | Unset):  Default: ''. Example: Text Remark.
         status (str | Unset):  Default: 'active'. Example: active.
@@ -45,7 +45,7 @@ class Transaction:
     to_account_book: ReferenceAccountBook
     creator: ReferenceUser
     updated_by: ReferenceUser
-    date: datetime.datetime | Unset = isoparse("2026-01-10T19:47:11.154228")
+    date: datetime.datetime | Unset = isoparse("2026-01-11T00:02:03.921192")
     tags: list[str] | Unset = UNSET
     remarks: None | str | Unset = ""
     status: str | Unset = "active"

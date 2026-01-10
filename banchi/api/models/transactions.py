@@ -33,15 +33,18 @@ class TransactionDocument(Document):
         name = "transaction_documents"
 
 
+class TransactionItem(schemas.transactions.Transaction):
+    from_account_book: Link[account_books.AccountBook]
+    to_account_book: Link[account_books.AccountBook]
+    value: DecimalAnnotation
+
+
+
 class Transaction(schemas.transactions.Transaction, Document):
     id: PydanticObjectId = Field(
         default_factory=PydanticObjectId,
         alias="_id",
     )
-    from_account_book: Link[account_books.AccountBook]
-    to_account_book: Link[account_books.AccountBook]
-    value: DecimalAnnotation
-
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     updated_date: datetime.datetime = Field(default_factory=datetime.datetime.now)
     creator: Link[users.User]
@@ -58,7 +61,8 @@ class TransactionTemplate(schemas.transactions.TransactionTemplate, Document):
         default_factory=PydanticObjectId,
         alias="_id",
     )
-    transactions: Transaction
+    transactions: list[TransactionItem]
+    account: Link[accounts.Account]
 
     creator: Link[users.User]
     updated_by: Link[users.User]

@@ -8,19 +8,27 @@ from ...client import AuthenticatedClient, Client
 from ...models.http_validation_error import HTTPValidationError
 from ...models.transaction_template import TransactionTemplate
 from ...models.updated_transaction_template import UpdatedTransactionTemplate
-from ...types import Response
+from ...types import UNSET, Response
 
 
 def _get_kwargs(
     transaction_template_id: str,
     *,
     body: UpdatedTransactionTemplate,
+    account_id: str,
 ) -> dict[str, Any]:
     headers: dict[str, Any] = {}
+
+    params: dict[str, Any] = {}
+
+    params["account_id"] = account_id
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
     _kwargs: dict[str, Any] = {
         "method": "put",
         "url": f"/v1/transaction-templates/{transaction_template_id}",
+        "params": params,
     }
 
     _kwargs["json"] = body.to_dict()
@@ -66,11 +74,13 @@ def sync_detailed(
     *,
     client: AuthenticatedClient,
     body: UpdatedTransactionTemplate,
+    account_id: str,
 ) -> Response[HTTPValidationError | TransactionTemplate]:
     """Update
 
     Args:
         transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         body (UpdatedTransactionTemplate):
 
     Raises:
@@ -84,6 +94,7 @@ def sync_detailed(
     kwargs = _get_kwargs(
         transaction_template_id=transaction_template_id,
         body=body,
+        account_id=account_id,
     )
 
     response = client.get_httpx_client().request(
@@ -98,11 +109,13 @@ def sync(
     *,
     client: AuthenticatedClient,
     body: UpdatedTransactionTemplate,
+    account_id: str,
 ) -> HTTPValidationError | TransactionTemplate | None:
     """Update
 
     Args:
         transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         body (UpdatedTransactionTemplate):
 
     Raises:
@@ -117,6 +130,7 @@ def sync(
         transaction_template_id=transaction_template_id,
         client=client,
         body=body,
+        account_id=account_id,
     ).parsed
 
 
@@ -125,11 +139,13 @@ async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
     body: UpdatedTransactionTemplate,
+    account_id: str,
 ) -> Response[HTTPValidationError | TransactionTemplate]:
     """Update
 
     Args:
         transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         body (UpdatedTransactionTemplate):
 
     Raises:
@@ -143,6 +159,7 @@ async def asyncio_detailed(
     kwargs = _get_kwargs(
         transaction_template_id=transaction_template_id,
         body=body,
+        account_id=account_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -155,11 +172,13 @@ async def asyncio(
     *,
     client: AuthenticatedClient,
     body: UpdatedTransactionTemplate,
+    account_id: str,
 ) -> HTTPValidationError | TransactionTemplate | None:
     """Update
 
     Args:
         transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         body (UpdatedTransactionTemplate):
 
     Raises:
@@ -175,5 +194,6 @@ async def asyncio(
             transaction_template_id=transaction_template_id,
             client=client,
             body=body,
+            account_id=account_id,
         )
     ).parsed

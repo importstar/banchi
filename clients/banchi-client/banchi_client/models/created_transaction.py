@@ -23,7 +23,7 @@ class CreatedTransaction:
         currency (CurrencyEnum):
         from_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         to_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        date (datetime.datetime | Unset):  Default: isoparse('2026-01-10T19:47:11.154228').
+        date (datetime.datetime | Unset):  Default: isoparse('2026-01-11T00:02:03.921192').
         tags (list[str] | Unset):
         remarks (None | str | Unset):  Default: ''. Example: Text Remark.
     """
@@ -33,7 +33,7 @@ class CreatedTransaction:
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
-    date: datetime.datetime | Unset = isoparse("2026-01-10T19:47:11.154228")
+    date: datetime.datetime | Unset = isoparse("2026-01-11T00:02:03.921192")
     tags: list[str] | Unset = UNSET
     remarks: None | str | Unset = ""
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)

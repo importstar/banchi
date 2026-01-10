@@ -50,19 +50,30 @@ class UpdatedTransaction(CreatedTransaction):
     pass
 
 
-class TransactionTemplate(bases.BaseSchema):
-    # transactions: list[Transaction] = []
-    pass
+class TransactionTemplate(BaseModel):
+    transactions: list[Transaction]
+    name: str = Field(..., example="Transaction Template Name")
+    account: accounts.ReferenceAccount
+    creator: users.ReferenceUser
+    updated_by: users.ReferenceUser
+
+    status: str = Field(
+        default="active",
+        example="active",
+    )
 
 
 class TransactionTemplateList(bases.BaseSchemaList):
-    # transaction_templates: list[TransactionTemplate]
-    pass
+    transaction_templates: list[TransactionTemplate]
 
 
-class CreatedTransactionTemplate(TransactionTemplate):
-    pass
+class CreatedTransactionTemplate(BaseModel):
+    transactions: list[CreatedTransaction]
+
+
 
 
 class UpdatedTransactionTemplate(CreatedTransactionTemplate):
-    pass
+    transactions: list[UpdatedTransaction]
+
+

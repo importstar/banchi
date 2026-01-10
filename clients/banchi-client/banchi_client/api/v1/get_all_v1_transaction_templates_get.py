@@ -12,15 +12,13 @@ from ...types import UNSET, Response, Unset
 
 def _get_kwargs(
     *,
-    account_id: None | str,
+    account_id: str,
     page: int | None | Unset = 1,
     size_per_page: int | None | Unset = 50,
 ) -> dict[str, Any]:
     params: dict[str, Any] = {}
 
-    json_account_id: None | str
-    json_account_id = account_id
-    params["account_id"] = json_account_id
+    params["account_id"] = account_id
 
     json_page: int | None | Unset
     if isinstance(page, Unset):
@@ -80,14 +78,14 @@ def _build_response(
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-    account_id: None | str,
+    account_id: str,
     page: int | None | Unset = 1,
     size_per_page: int | None | Unset = 50,
 ) -> Response[HTTPValidationError | TransactionTemplateList]:
     """Get All
 
     Args:
-        account_id (None | str):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         page (int | None | Unset):  Default: 1.
         size_per_page (int | None | Unset):  Default: 50.
 
@@ -115,14 +113,14 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-    account_id: None | str,
+    account_id: str,
     page: int | None | Unset = 1,
     size_per_page: int | None | Unset = 50,
 ) -> HTTPValidationError | TransactionTemplateList | None:
     """Get All
 
     Args:
-        account_id (None | str):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         page (int | None | Unset):  Default: 1.
         size_per_page (int | None | Unset):  Default: 50.
 
@@ -145,14 +143,14 @@ def sync(
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-    account_id: None | str,
+    account_id: str,
     page: int | None | Unset = 1,
     size_per_page: int | None | Unset = 50,
 ) -> Response[HTTPValidationError | TransactionTemplateList]:
     """Get All
 
     Args:
-        account_id (None | str):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         page (int | None | Unset):  Default: 1.
         size_per_page (int | None | Unset):  Default: 50.
 
@@ -178,14 +176,14 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-    account_id: None | str,
+    account_id: str,
     page: int | None | Unset = 1,
     size_per_page: int | None | Unset = 50,
 ) -> HTTPValidationError | TransactionTemplateList | None:
     """Get All
 
     Args:
-        account_id (None | str):
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         page (int | None | Unset):  Default: 1.
         size_per_page (int | None | Unset):  Default: 50.
 

@@ -254,7 +254,7 @@ async def get_transactions_by_tag(
 async def get_transaction_template(
     transaction_template_id: typing.Annotated[PydanticObjectId, Path()],
     user: typing.Annotated[models.users.User, Depends(get_current_user)],
-) -> models.account_books.AccountBook:
+) -> models.transactions.TransactionTemplate:
     db_transaction_template = await models.transaction_templates.transaction_template.find_one(
         models.transaction_templates.transaction_template.id == transaction_template_id,
         models.transaction_templates.transaction_template.status == "active",
@@ -279,6 +279,20 @@ async def get_transaction_template(
     return db_transaction_template
 
 
+async def get_transaction_templates(
+    account_id: typing.Annotated[PydanticObjectId, Query()],
+) -> list[models.transactions.TransactionTemplate]:
+    db_transaction_templates = await models.transactions.TransactionTemplate.find(
+        models.transactions.TransactionTemplate.account.id == account_id,
+        models.transactions.TransactionTemplate.status == "active",
+        fetch_links=True,
+        nesting_depth=1,
+    ).to_list()
+
+
+
+
+    return db_transaction_templates
 
 
 

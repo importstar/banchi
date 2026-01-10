@@ -97,29 +97,40 @@ def add_or_edit(transaction_template_id):
             account_book=account_book,
             form=form,
         )
+    
+    print(form.data)
+    data = []
+    for sub_form in form.transactions:
+        sub_data = sub_form.data.copy()
+        sub_data.pop("csrf_token")
+        sub_data["value"] = float(sub_data["value"])
+        sub_data["date"] = sub_data["date"].isoformat()
+        sub_data["description"] = sub_data['description_']
 
-    for idx, sub_form in enumerate(form.transaction_templates):
-        if (
-            not sub_form.data
-            or not sub_form.date.data
-            or (
-                not sub_form.data.get("description_", "").strip()
-                or not sub_form.data.get("value", 0)
+        data.append(sub_data)
+
+
+    
+
+    if transaction_template_id:
+        updated_transaction_template = models.UpdatedTransactionTemplate.from_dict(data)
+        response = update_v1_transaction_templates_transaction_template_id_put.sync(
+            client=client,
+            transaction_template_id=transaction_template_id,
+            transaction_template=updated_transaction_template)
+    else:
+        created_transaction_template = models.CreatedTransactionTemplate.from_dict(dict(transactions=data))
+        print(created_transaction_template)
+        response = create_v1_transaction_templates_post.sync(
+            client=client,
+            body=created_transaction_template,
+            account_id=account_id,
             )
-        ):
-            continue
 
-        entry_data = sub_form.data.copy()
-        entry_data.pop("csrf_token")
-        entry_data["date"] = entry_data["date"].isoformat()
-        entry_data["value"] = float(entry_data["value"])
-        entry_data["description"] = entry_data["description_"]
 
-        transaction_template = models.CreatedTransactionTemplate.from_dict(entry_data)
 
-        response = create_v1_transaction_templates_post.sync(client=client, body=transaction_template)
 
-    return redirect(url_for("account_books.view", account_book_id=account_book.id))
+    return redirect(url_for("transaction_templates.index", account_id=account_id))
 
 
 
