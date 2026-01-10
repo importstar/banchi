@@ -1,0 +1,84 @@
+{% extends '/transaction_templates/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+
+{% block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+{% if 'edit' not in request.path %}
+<div class="active section">Add Transaction Template</div>
+{% else %}
+<div class="active section">Edit Transaction Template</div>
+{% endif %}
+{% endblock %}
+
+{% macro render_transaction(form) %}
+<div class="two fields">
+  {#
+    {{ renderer.render_calendar(form.date, calendar_id=form.date.id+'_date_calendar') }}
+  #}
+  {{ renderer.render_field(form.description_) }}
+</div>
+<div class="two fields">
+  {{ renderer.render_field(form.value) }}
+  {{ renderer.render_select(form.currency) }}
+</div>
+<div class="two fields">
+  {{ renderer.render_select(form.from_account_book_id) }}
+  {{ renderer.render_select(form.to_account_book_id) }}
+</div>
+
+{{ renderer.render_multiple_select(form.tags) }}
+{{ renderer.render_field(form.remarks) }}
+{% endmacro %}
+
+{% block content %}
+<div class="ui segment">
+  <h2>Transaction</h2>
+  <form method="POST" class="ui form" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+
+    {% if form.transactions is defined %}
+    {% for sub_form in form.transactions %}
+    <div class="ui vertical {{ 'red' if loop.index % 2 == 1 else 'blue' }} segment">
+      <h3 class="ui header">Transaction #{{ loop.index }}</h3>
+      {{ render_transaction(sub_form) }}
+      {{ sub_form.csrf_token }}
+    </div>
+    {% endfor %}
+    {% else %}
+    {{ render_transaction(form) }}
+    {% endif %}
+    <button name="submit" type="submit" class="ui primary button">
+      {% if 'edit' not in request.path %}
+      Add
+      {% else %}
+      Edit
+      {% endif %}
+    </button>
+  </form>
+</div>
+{% endblock content %}
+
+{% block additional_js %}
+<script type="text/javascript">
+  datetime_formatter = {
+    datetime: "YYYY-MM-DD HH:mm:ss",
+    date: "YYYY-MM-DD",
+  };
+
+  $('div[id$="date_calendar"]').calendar({
+    type: 'datetime',
+    today: true,
+    monthFirst: false,
+    formatter: datetime_formatter,
+  });
+
+  $('.ui.search.dropdown').dropdown({
+    allowAdditions: true,
+  });
+
+
+</script>
+
+{% endblock additional_js %}

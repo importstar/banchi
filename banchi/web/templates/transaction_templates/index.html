@@ -18,7 +18,7 @@ transection
 
 {% block content %}
   <div class="ui segment">
-      <a class="ui button primary" href="{{ url_for('transaction_templates.add_or_edit') }}">Create</a>
+      <a class="ui button primary" href="{{ url_for('transaction_templates.add_or_edit', account_id=request.args.get('account_id')) }}">Create</a>
   </div>
   <div class="ui segment">
     <table class="ui table">

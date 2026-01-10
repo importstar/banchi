@@ -11,11 +11,11 @@ from ...types import Response
 
 
 def _get_kwargs(
-    transaction_id: str,
+    transaction_template_id: str,
 ) -> dict[str, Any]:
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": f"/v1/transaction-templates/{transaction_id}",
+        "url": f"/v1/transaction-templates/{transaction_template_id}",
     }
 
     return _kwargs
@@ -52,14 +52,14 @@ def _build_response(
 
 
 def sync_detailed(
-    transaction_id: str,
+    transaction_template_id: str,
     *,
     client: AuthenticatedClient,
 ) -> Response[HTTPValidationError | TransactionTemplate]:
     """Get
 
     Args:
-        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -70,7 +70,7 @@ def sync_detailed(
     """
 
     kwargs = _get_kwargs(
-        transaction_id=transaction_id,
+        transaction_template_id=transaction_template_id,
     )
 
     response = client.get_httpx_client().request(
@@ -81,14 +81,14 @@ def sync_detailed(
 
 
 def sync(
-    transaction_id: str,
+    transaction_template_id: str,
     *,
     client: AuthenticatedClient,
 ) -> HTTPValidationError | TransactionTemplate | None:
     """Get
 
     Args:
-        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -99,20 +99,20 @@ def sync(
     """
 
     return sync_detailed(
-        transaction_id=transaction_id,
+        transaction_template_id=transaction_template_id,
         client=client,
     ).parsed
 
 
 async def asyncio_detailed(
-    transaction_id: str,
+    transaction_template_id: str,
     *,
     client: AuthenticatedClient,
 ) -> Response[HTTPValidationError | TransactionTemplate]:
     """Get
 
     Args:
-        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -123,7 +123,7 @@ async def asyncio_detailed(
     """
 
     kwargs = _get_kwargs(
-        transaction_id=transaction_id,
+        transaction_template_id=transaction_template_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -132,14 +132,14 @@ async def asyncio_detailed(
 
 
 async def asyncio(
-    transaction_id: str,
+    transaction_template_id: str,
     *,
     client: AuthenticatedClient,
 ) -> HTTPValidationError | TransactionTemplate | None:
     """Get
 
     Args:
-        transaction_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -151,7 +151,7 @@ async def asyncio(
 
     return (
         await asyncio_detailed(
-            transaction_id=transaction_id,
+            transaction_template_id=transaction_template_id,
             client=client,
         )
     ).parsed

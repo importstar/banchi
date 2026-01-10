@@ -251,6 +251,38 @@ async def get_transactions_by_tag(
 
     return db_transactions
 
+async def get_transaction_template(
+    transaction_template_id: typing.Annotated[PydanticObjectId, Path()],
+    user: typing.Annotated[models.users.User, Depends(get_current_user)],
+) -> models.account_books.AccountBook:
+    db_transaction_template = await models.transaction_templates.transaction_template.find_one(
+        models.transaction_templates.transaction_template.id == transaction_template_id,
+        models.transaction_templates.transaction_template.status == "active",
+        fetch_links=True,
+        nesting_depth=1,
+    )
+
+    if not db_transaction_template:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found transaction_template",
+        )
+
+    db_account_book = await get_account_book(db_transaction_template.from_account_book.id, user)
+
+    if not db_account_book:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found account book",
+        )
+
+    return db_transaction_template
+
+
+
+
+
+
 
 async def create_logs(action, request, current_user):
     request_log = models.RequestLog(
