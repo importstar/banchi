@@ -256,13 +256,12 @@ async def get_transaction_template(
     transaction_template_id: typing.Annotated[PydanticObjectId, Path()],
     user: typing.Annotated[models.users.User, Depends(get_current_user)],
 ) -> models.transactions.TransactionTemplate:
-    db_transaction_template = await models.transactions.transaction_template.find_one(
-        models.transaction_templates.transaction_template.id == transaction_template_id,
-        models.transaction_templates.transaction_template.status == "active",
+    db_transaction_template = await models.transactions.TransactionTemplate.find_one(
+        models.transactions.TransactionTemplate.id == transaction_template_id,
+        models.transactions.TransactionTemplate.status == "active",
         fetch_links=True,
         nesting_depth=1,
     )
-    print("----<", db_transaction_template)
 
     if not db_transaction_template:
         raise HTTPException(

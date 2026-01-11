@@ -74,7 +74,6 @@ async def get(
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.TransactionTemplate:
-    print("xxx", db_transaction_template)
 
     return db_transaction_template
 
@@ -89,6 +88,9 @@ async def update(
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.TransactionTemplate:
+
+    await db_transaction_template.update(Set(transaction_template.dict()))
+    await db_transaction_template.save()
 
     return db_transaction_template
 

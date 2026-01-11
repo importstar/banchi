@@ -80,18 +80,21 @@ def add_or_edit(transaction_template_id):
                 client=client, transaction_template_id=transaction_template_id
             )
         )
-        print("---->", transaction_template)
-        form = forms.transactions.TransactionListForm(obj=transaction_template)
-    elif request.method == "GET":
+
+        data = transaction_template.to_dict()
+        for transaction in data["transactions"]:
+            transaction["value"] = decimal.Decimal(transaction["value"])
+            transaction["description_"] = transaction["description"]
+
+        form = forms.transactions.TransactionListForm(data=data)
+        print(form.data)
+
+    elif request.method == "GET" and not transaction_template_id:
         [form.transactions.append_entry() for _ in range(9)]
 
     for sub_form in form.transactions:
         sub_form.to_account_book_id.choices = account_book_choices
         sub_form.from_account_book_id.choices = account_book_choices
-
-        # if request.method == "GET":
-        #     sub_form.from_account_book_id.data = str(account_book.id)
-        #     sub_form.to_account_book_id.data = str(account_book.id)
 
     if not form.validate_on_submit():
 
@@ -117,8 +120,9 @@ def add_or_edit(transaction_template_id):
         updated_transaction_template = models.UpdatedTransactionTemplate.from_dict(data)
         response = update_v1_transaction_templates_transaction_template_id_put.sync(
             client=client,
+            account_id=account_id,
             transaction_template_id=transaction_template_id,
-            transaction_template=updated_transaction_template,
+            body=updated_transaction_template,
         )
     else:
         created_transaction_template = models.CreatedTransactionTemplate.from_dict(data)

@@ -33,7 +33,7 @@ class Transaction:
         updated_by (ReferenceUser):
         created_date (datetime.datetime):
         updated_date (datetime.datetime):
-        date (datetime.datetime | Unset):  Default: isoparse('2026-01-11T22:16:02.903809').
+        date (datetime.datetime | Unset):  Default: isoparse('2026-01-11T22:48:44.262147').
         tags (list[str] | Unset):
         remarks (None | str | Unset):  Default: ''. Example: Text Remark.
         status (str | Unset):  Default: 'active'. Example: active.
@@ -49,7 +49,7 @@ class Transaction:
     updated_by: ReferenceUser
     created_date: datetime.datetime
     updated_date: datetime.datetime
-    date: datetime.datetime | Unset = isoparse("2026-01-11T22:16:02.903809")
+    date: datetime.datetime | Unset = isoparse("2026-01-11T22:48:44.262147")
     tags: list[str] | Unset = UNSET
     remarks: None | str | Unset = ""
     status: str | Unset = "active"

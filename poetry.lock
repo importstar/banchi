@@ -1170,14 +1170,14 @@ files = [
 
 [[package]]
 name = "openapi-python-client"
-version = "0.27.1"
+version = "0.28.1"
 description = "Generate modern Python clients from OpenAPI"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "openapi_python_client-0.27.1-py3-none-any.whl", hash = "sha256:00afef4be940fa1693624cbce818afac63e95639bb8f7675d4a6c2a29b038ea4"},
-    {file = "openapi_python_client-0.27.1.tar.gz", hash = "sha256:8c0d8806f96992b17ca9463cc980610d8da34fa82c07e9cedc6712ce43b17786"},
+    {file = "openapi_python_client-0.28.1-py3-none-any.whl", hash = "sha256:9cf2f139f3c718f376f6a6981ed8ae37671f0fb2dd0f1d9504b2f583af1f82f9"},
+    {file = "openapi_python_client-0.28.1.tar.gz", hash = "sha256:f11afc63c33c0e0b19beff9a1424026f0738815063c2c8e773e1f71dc10d692c"},
 ]
 
 [package.dependencies]
@@ -1187,10 +1187,10 @@ httpx = ">=0.23.0,<0.29.0"
 jinja2 = ">=3.0.0,<4.0.0"
 pydantic = ">=2.10,<3.0.0"
 python-dateutil = ">=2.8.1,<3.0.0"
-ruamel-yaml = ">=0.18.6,<0.19.0"
+ruamel-yaml = ">=0.18.6,<0.20.0"
 ruff = ">=0.2"
 shellingham = ">=1.3.2,<2.0.0"
-typer = ">0.16,<0.21"
+typer = ">0.16,<0.22"
 
 [[package]]
 name = "packaging"
@@ -2448,4 +2448,4 @@ email = ["email-validator"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<3.14"
-content-hash = "8b85ab635b9d5f9b8a7981eba7555f002581eeba4d9a2910a0bc83bd5d667053"
+content-hash = "d76c1d2e77a6e75cd979bf15873fafbc500591ad53b17bb2b765888f2bf597c5"
