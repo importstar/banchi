@@ -14,6 +14,7 @@ from banchi_client.api.v1 import (
     delete_v1_transaction_templates_transaction_template_id_delete,
     get_all_v1_account_books_get,
     get_v1_account_books_account_book_id_get,
+    create_v1_transactions_post,
 )
 
 from .. import banchi_api_clients
@@ -57,7 +58,7 @@ def add_or_edit(transaction_template_id):
 
     account_books = response.account_books
 
-    form = forms.transactions.TransactionListForm()
+    form = forms.transactions.TransactionTemplateForm()
 
     display_names = utils.account_books.get_display_names(
         account_books, excluse_none_parent=True
@@ -86,8 +87,7 @@ def add_or_edit(transaction_template_id):
             transaction["value"] = decimal.Decimal(transaction["value"])
             transaction["description_"] = transaction["description"]
 
-        form = forms.transactions.TransactionListForm(data=data)
-        print(form.data)
+        form = forms.transactions.TransactionTemplateForm(data=data)
 
     elif request.method == "GET" and not transaction_template_id:
         [form.transactions.append_entry() for _ in range(9)]
@@ -136,14 +136,120 @@ def add_or_edit(transaction_template_id):
     return redirect(url_for("transaction_templates.index", account_id=account_id))
 
 
+@module.route("/<transaction_template_id>/select-apply-date", methods=["GET", "POST"])
+@login_required
+def select_apply_date(transaction_template_id):
+    account_id = request.args.get("account_id", None)
+
+    form = forms.transactions.ApplyTransactionTemplateForm()
+    if not form.validate_on_submit():
+        return render_template(
+            "/transaction_templates/select-apply-date.html",
+            form=form,
+        )
+
+    return redirect(
+        url_for(
+            "transaction_templates.apply",
+            transaction_template_id=transaction_template_id,
+            account_id=account_id,
+            date=form.date.data.isoformat(),
+        )
+    )
+
+
+@module.route("/<transaction_template_id>/apply", methods=["GET", "POST"])
+@login_required
+def apply(transaction_template_id):
+
+    client = banchi_api_clients.client.get_current_client()
+    account_id = request.args.get("account_id", None)
+
+    date_str = request.args.get("date", None)
+    date = datetime.datetime.now()
+    if date_str:
+        date = datetime.datetime.fromisoformat(date_str)
+
+    response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
+    account_books = response.account_books
+
+    form = forms.transactions.TransactionListForm()
+
+    display_names = utils.account_books.get_display_names(
+        account_books, excluse_none_parent=True
+    )
+    account_book_choices = [
+        (str(ab.id), display_names[ab.id])
+        for ab in account_books
+        if ab.id in display_names
+    ]
+
+    account_book_choices = sorted(
+        account_book_choices,
+        key=lambda abn: abn[1],
+    )
+
+    transaction_template = None
+    if transaction_template_id and request.method == "GET":
+        transaction_template = (
+            get_v1_transaction_templates_transaction_template_id_get.sync(
+                client=client, transaction_template_id=transaction_template_id
+            )
+        )
+
+        data = transaction_template.to_dict()
+        for transaction in data["transactions"]:
+            transaction["value"] = decimal.Decimal(transaction["value"])
+            transaction["description_"] = transaction["description"]
+            transaction["date"] = date
+
+        form = forms.transactions.TransactionListForm(data=data)
+
+    for sub_form in form.transactions:
+        sub_form.to_account_book_id.choices = account_book_choices
+        sub_form.from_account_book_id.choices = account_book_choices
+
+    if not form.validate_on_submit():
+
+        return render_template(
+            "/transaction_templates/apply-transaction.html",
+            form=form,
+        )
+
+    for idx, sub_form in enumerate(form.transactions):
+        if (
+            not sub_form.data
+            or not sub_form.date.data
+            or (
+                not sub_form.data.get("description_", "").strip()
+                or not sub_form.data.get("value", 0)
+            )
+        ):
+            continue
+
+        entry_data = sub_form.data.copy()
+        entry_data.pop("csrf_token")
+        entry_data["date"] = entry_data["date"].isoformat()
+        entry_data["value"] = float(entry_data["value"])
+        entry_data["description"] = entry_data["description_"]
+
+        transaction = models.CreatedTransaction.from_dict(entry_data)
+
+        response = create_v1_transactions_post.sync(client=client, body=transaction)
+
+    account_book_id = sub_form.from_account_book_id.data
+
+    return redirect(url_for("account_books.view", account_book_id=account_book_id))
+
+
 @module.route("/<transaction_template_id>/delete")
 @login_required
 def delete(transaction_template_id):
     client = banchi_api_clients.client.get_current_client()
-    transaction = delete_v1_transaction_templates_transaction_id_delete.sync(
-        client=client, transaction_id=transaction_id
+    transaction = delete_v1_transaction_templates_transaction_template_id_delete.sync(
+        client=client, transaction_id=transaction_template_id
     )
 
-    account_book_id = transaction.from_account_book.id
+    account_id = request.args.get("account_id", None)
 
-    return redirect(url_for("account_books.view", account_book_id=account_book_id))
+    return redirect(url_for("transaction_templates.index", account_id=account_id))

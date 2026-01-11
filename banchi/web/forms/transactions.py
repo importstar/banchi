@@ -35,10 +35,22 @@ class TransactionForm(FlaskForm):
 
 
 class TransactionListForm(FlaskForm):
-    name = fields.StringField("Name", validators=[validators.InputRequired()])
     transactions = fields.FieldList(
         fields.FormField(TransactionForm),
         min_entries=1,
         max_entries=10,
         validators=[validators.Optional()],
+    )
+
+
+class TransactionTemplateForm(TransactionListForm):
+    name = fields.StringField("Name", validators=[validators.InputRequired()])
+
+
+class ApplyTransactionTemplateForm(FlaskForm):
+    date = fields.DateTimeField(
+        "Date",
+        format="%Y-%m-%d %H:%M:%S",
+        widget=widgets.TextInput(),
+        default=datetime.datetime.now,
     )

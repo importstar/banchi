@@ -1,7 +1,7 @@
 {% extends '/base/default-dashboard.html' %}
 
 {% block dashboard_title %}
-transection
+Transaction Template
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -38,10 +38,16 @@ transection
           <td>{{ template.updated_by.first_name }} {{ template.updated_by.last_name }}</td>
           <td>{{ template.updated_date }}</td>
           <td>
+            <a class="ui primary circular icon button"
+              href="{{ url_for('transaction_templates.select_apply_date', transaction_template_id=template.id, account_id=template.account.id) }}">
+              <i class="cog icon"></i>
+            </a>
             <a class="ui yellow circular icon button"
               href="{{ url_for('transaction_templates.add_or_edit', transaction_template_id=template.id, account_id=template.account.id) }}">
               <i class="edit icon"></i>
             </a>
+
+
             <a class="ui red circular icon button" id="delete-transaction-template-{{ template.id }}">
               <i class="trash icon"></i>
             </a>
