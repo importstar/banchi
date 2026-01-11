@@ -18,6 +18,7 @@ from .created_space import CreatedSpace
 from .created_space_role import CreatedSpaceRole
 from .created_space_role_role import CreatedSpaceRoleRole
 from .created_transaction import CreatedTransaction
+from .created_transaction_info import CreatedTransactionInfo
 from .created_transaction_template import CreatedTransactionTemplate
 from .currency_enum import CurrencyEnum
 from .http_validation_error import HTTPValidationError
@@ -40,6 +41,7 @@ from .system_setting_in_create import SystemSettingInCreate
 from .system_setting_in_response import SystemSettingInResponse
 from .token import Token
 from .transaction import Transaction
+from .transaction_info import TransactionInfo
 from .transaction_list import TransactionList
 from .transaction_template import TransactionTemplate
 from .transaction_template_list import TransactionTemplateList
@@ -74,6 +76,7 @@ __all__ = (
     "CreatedSpaceRole",
     "CreatedSpaceRoleRole",
     "CreatedTransaction",
+    "CreatedTransactionInfo",
     "CreatedTransactionTemplate",
     "CurrencyEnum",
     "HTTPValidationError",
@@ -94,6 +97,7 @@ __all__ = (
     "SystemSettingInResponse",
     "Token",
     "Transaction",
+    "TransactionInfo",
     "TransactionList",
     "TransactionTemplate",
     "TransactionTemplateList",

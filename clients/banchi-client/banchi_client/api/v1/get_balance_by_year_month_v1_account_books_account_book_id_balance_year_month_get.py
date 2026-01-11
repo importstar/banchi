@@ -27,7 +27,11 @@ def _get_kwargs(
 
 def _parse_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> HTTPValidationError | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet | None:
+) -> (
+    HTTPValidationError
+    | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet
+    | None
+):
     if response.status_code == 200:
         response_200 = ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet.from_dict(
             response.json()
@@ -48,7 +52,10 @@ def _parse_response(
 
 def _build_response(
     *, client: AuthenticatedClient | Client, response: httpx.Response
-) -> Response[HTTPValidationError | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet]:
+) -> Response[
+    HTTPValidationError
+    | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet
+]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -63,7 +70,10 @@ def sync_detailed(
     month: int,
     *,
     client: AuthenticatedClient,
-) -> Response[HTTPValidationError | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet]:
+) -> Response[
+    HTTPValidationError
+    | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet
+]:
     """Get Balance By Year Month
 
     Args:
@@ -98,7 +108,11 @@ def sync(
     month: int,
     *,
     client: AuthenticatedClient,
-) -> HTTPValidationError | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet | None:
+) -> (
+    HTTPValidationError
+    | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet
+    | None
+):
     """Get Balance By Year Month
 
     Args:
@@ -128,7 +142,10 @@ async def asyncio_detailed(
     month: int,
     *,
     client: AuthenticatedClient,
-) -> Response[HTTPValidationError | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet]:
+) -> Response[
+    HTTPValidationError
+    | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet
+]:
     """Get Balance By Year Month
 
     Args:
@@ -161,7 +178,11 @@ async def asyncio(
     month: int,
     *,
     client: AuthenticatedClient,
-) -> HTTPValidationError | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet | None:
+) -> (
+    HTTPValidationError
+    | ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet
+    | None
+):
     """Get Balance By Year Month
 
     Args:

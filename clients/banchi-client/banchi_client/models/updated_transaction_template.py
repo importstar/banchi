@@ -7,7 +7,7 @@ from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
 if TYPE_CHECKING:
-    from ..models.updated_transaction import UpdatedTransaction
+    from ..models.created_transaction_info import CreatedTransactionInfo
 
 
 T = TypeVar("T", bound="UpdatedTransactionTemplate")
@@ -17,13 +17,17 @@ T = TypeVar("T", bound="UpdatedTransactionTemplate")
 class UpdatedTransactionTemplate:
     """
     Attributes:
-        transactions (list[UpdatedTransaction]):
+        name (str):  Example: Transaction Template Name.
+        transactions (list[CreatedTransactionInfo]):
     """
 
-    transactions: list[UpdatedTransaction]
+    name: str
+    transactions: list[CreatedTransactionInfo]
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
+        name = self.name
+
         transactions = []
         for transactions_item_data in self.transactions:
             transactions_item = transactions_item_data.to_dict()
@@ -33,6 +37,7 @@ class UpdatedTransactionTemplate:
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
+                "name": name,
                 "transactions": transactions,
             }
         )
@@ -41,17 +46,20 @@ class UpdatedTransactionTemplate:
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.updated_transaction import UpdatedTransaction
+        from ..models.created_transaction_info import CreatedTransactionInfo
 
         d = dict(src_dict)
+        name = d.pop("name")
+
         transactions = []
         _transactions = d.pop("transactions")
         for transactions_item_data in _transactions:
-            transactions_item = UpdatedTransaction.from_dict(transactions_item_data)
+            transactions_item = CreatedTransactionInfo.from_dict(transactions_item_data)
 
             transactions.append(transactions_item)
 
         updated_transaction_template = cls(
+            name=name,
             transactions=transactions,
         )
 

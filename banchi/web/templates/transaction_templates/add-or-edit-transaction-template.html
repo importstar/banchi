@@ -38,6 +38,8 @@
   <form method="POST" class="ui form" enctype="multipart/form-data">
     {{ form.csrf_token }}
 
+    {{ renderer.render_field(form.name) }}
+
     {% if form.transactions is defined %}
     {% for sub_form in form.transactions %}
     <div class="ui vertical {{ 'red' if loop.index % 2 == 1 else 'blue' }} segment">

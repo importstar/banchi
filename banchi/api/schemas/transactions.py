@@ -5,6 +5,8 @@ import decimal
 from pydantic import BaseModel, Field
 from beanie import PydanticObjectId
 
+import typing
+
 from . import account_books
 from . import accounts
 from . import spaces
@@ -23,8 +25,10 @@ class BaseTransaction(BaseModel):
 
 
 class Transaction(bases.BaseSchema, BaseTransaction):
+
     from_account_book: account_books.ReferenceAccountBook
     to_account_book: account_books.ReferenceAccountBook
+
     creator: users.ReferenceUser
     updated_by: users.ReferenceUser
 
@@ -32,6 +36,9 @@ class Transaction(bases.BaseSchema, BaseTransaction):
         default="active",
         example="active",
     )
+
+    created_date: datetime.datetime
+    updated_date: datetime.datetime
 
 
 class TransactionList(BaseModel):
@@ -50,9 +57,21 @@ class UpdatedTransaction(CreatedTransaction):
     pass
 
 
-class TransactionTemplate(BaseModel):
-    transactions: list[Transaction]
+class TransactionInfo(CreatedTransaction):
+    pass
+
+
+class CreatedTransactionInfo(TransactionInfo):
+    pass
+
+
+class BaseTransactionTemplate(BaseModel):
     name: str = Field(..., example="Transaction Template Name")
+    transactions: list[TransactionInfo]
+
+
+class TransactionTemplate(BaseTransactionTemplate, bases.BaseSchema):
+
     account: accounts.ReferenceAccount
     creator: users.ReferenceUser
     updated_by: users.ReferenceUser
@@ -62,18 +81,17 @@ class TransactionTemplate(BaseModel):
         example="active",
     )
 
+    created_date: datetime.datetime
+    updated_date: datetime.datetime
+
 
 class TransactionTemplateList(bases.BaseSchemaList):
     transaction_templates: list[TransactionTemplate]
 
 
-class CreatedTransactionTemplate(BaseModel):
-    transactions: list[CreatedTransaction]
-
-
+class CreatedTransactionTemplate(BaseTransactionTemplate):
+    transactions: list[CreatedTransactionInfo]
 
 
 class UpdatedTransactionTemplate(CreatedTransactionTemplate):
-    transactions: list[UpdatedTransaction]
-
-
+    pass

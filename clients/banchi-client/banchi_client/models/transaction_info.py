@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -11,48 +11,31 @@ from dateutil.parser import isoparse
 from ..models.currency_enum import CurrencyEnum
 from ..types import UNSET, Unset
 
-if TYPE_CHECKING:
-    from ..models.reference_account_book import ReferenceAccountBook
-    from ..models.reference_user import ReferenceUser
-
-
-T = TypeVar("T", bound="Transaction")
+T = TypeVar("T", bound="TransactionInfo")
 
 
 @_attrs_define
-class Transaction:
+class TransactionInfo:
     """
     Attributes:
         description (str):  Example: Desctription.
         value (str):
         currency (CurrencyEnum):
-        id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        from_account_book (ReferenceAccountBook):
-        to_account_book (ReferenceAccountBook):
-        creator (ReferenceUser):
-        updated_by (ReferenceUser):
-        created_date (datetime.datetime):
-        updated_date (datetime.datetime):
+        from_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        to_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         date (datetime.datetime | Unset):  Default: isoparse('2026-01-11T22:16:02.903809').
         tags (list[str] | Unset):
         remarks (None | str | Unset):  Default: ''. Example: Text Remark.
-        status (str | Unset):  Default: 'active'. Example: active.
     """
 
     description: str
     value: str
     currency: CurrencyEnum
-    id: str
-    from_account_book: ReferenceAccountBook
-    to_account_book: ReferenceAccountBook
-    creator: ReferenceUser
-    updated_by: ReferenceUser
-    created_date: datetime.datetime
-    updated_date: datetime.datetime
+    from_account_book_id: str
+    to_account_book_id: str
     date: datetime.datetime | Unset = isoparse("2026-01-11T22:16:02.903809")
     tags: list[str] | Unset = UNSET
     remarks: None | str | Unset = ""
-    status: str | Unset = "active"
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -62,19 +45,9 @@ class Transaction:
 
         currency = self.currency.value
 
-        id = self.id
+        from_account_book_id = self.from_account_book_id
 
-        from_account_book = self.from_account_book.to_dict()
-
-        to_account_book = self.to_account_book.to_dict()
-
-        creator = self.creator.to_dict()
-
-        updated_by = self.updated_by.to_dict()
-
-        created_date = self.created_date.isoformat()
-
-        updated_date = self.updated_date.isoformat()
+        to_account_book_id = self.to_account_book_id
 
         date: str | Unset = UNSET
         if not isinstance(self.date, Unset):
@@ -90,8 +63,6 @@ class Transaction:
         else:
             remarks = self.remarks
 
-        status = self.status
-
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -99,13 +70,8 @@ class Transaction:
                 "description": description,
                 "value": value,
                 "currency": currency,
-                "id": id,
-                "from_account_book": from_account_book,
-                "to_account_book": to_account_book,
-                "creator": creator,
-                "updated_by": updated_by,
-                "created_date": created_date,
-                "updated_date": updated_date,
+                "from_account_book_id": from_account_book_id,
+                "to_account_book_id": to_account_book_id,
             }
         )
         if date is not UNSET:
@@ -114,16 +80,11 @@ class Transaction:
             field_dict["tags"] = tags
         if remarks is not UNSET:
             field_dict["remarks"] = remarks
-        if status is not UNSET:
-            field_dict["status"] = status
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
-        from ..models.reference_account_book import ReferenceAccountBook
-        from ..models.reference_user import ReferenceUser
-
         d = dict(src_dict)
         description = d.pop("description")
 
@@ -131,19 +92,9 @@ class Transaction:
 
         currency = CurrencyEnum(d.pop("currency"))
 
-        id = d.pop("id")
+        from_account_book_id = d.pop("from_account_book_id")
 
-        from_account_book = ReferenceAccountBook.from_dict(d.pop("from_account_book"))
-
-        to_account_book = ReferenceAccountBook.from_dict(d.pop("to_account_book"))
-
-        creator = ReferenceUser.from_dict(d.pop("creator"))
-
-        updated_by = ReferenceUser.from_dict(d.pop("updated_by"))
-
-        created_date = isoparse(d.pop("created_date"))
-
-        updated_date = isoparse(d.pop("updated_date"))
+        to_account_book_id = d.pop("to_account_book_id")
 
         _date = d.pop("date", UNSET)
         date: datetime.datetime | Unset
@@ -163,27 +114,19 @@ class Transaction:
 
         remarks = _parse_remarks(d.pop("remarks", UNSET))
 
-        status = d.pop("status", UNSET)
-
-        transaction = cls(
+        transaction_info = cls(
             description=description,
             value=value,
             currency=currency,
-            id=id,
-            from_account_book=from_account_book,
-            to_account_book=to_account_book,
-            creator=creator,
-            updated_by=updated_by,
-            created_date=created_date,
-            updated_date=updated_date,
+            from_account_book_id=from_account_book_id,
+            to_account_book_id=to_account_book_id,
             date=date,
             tags=tags,
             remarks=remarks,
-            status=status,
         )
 
-        transaction.additional_properties = d
-        return transaction
+        transaction_info.additional_properties = d
+        return transaction_info
 
     @property
     def additional_keys(self) -> list[str]:

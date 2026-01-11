@@ -26,7 +26,10 @@ router = APIRouter(prefix="/transaction-templates", tags=["transaction-templates
 @router.get("")
 async def get_all(
     account_id: PydanticObjectId | None,
-    db_transaction_templates: typing.Annotated[list[models.transactions.TransactionTemplate], Depends(deps.get_transaction_templates)],
+    db_transaction_templates: typing.Annotated[
+        list[models.transactions.TransactionTemplate],
+        Depends(deps.get_transaction_templates),
+    ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
     page: typing.Annotated[int | None, Query()] = 1,
     size_per_page: typing.Annotated[int | None, Query()] = 50,
@@ -47,18 +50,20 @@ async def create(
     account_id: PydanticObjectId,
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.TransactionTemplate:
+
     data = transaction_template.model_dump()
-    print('data', data)
-    print('account_id', account_id)
-    data["owner"] = current_user
+
+    data["creator"] = current_user
     data["updated_by"] = current_user
     data["account"] = await deps.get_account(account_id, current_user)
-    db_transaction_template = models.transactions.TransactionTemplate.parse_obj(data)
+
+    db_transaction_template = models.transactions.TransactionTemplate.model_validate(
+        data, strict=False
+    )
+
     await db_transaction_template.save()
 
     return db_transaction_template
-
-
 
 
 @router.get("/{transaction_template_id}")
@@ -69,6 +74,7 @@ async def get(
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.TransactionTemplate:
+    print("xxx", db_transaction_template)
 
     return db_transaction_template
 
@@ -85,8 +91,6 @@ async def update(
 ) -> schemas.transactions.TransactionTemplate:
 
     return db_transaction_template
-
-
 
 
 @router.delete(

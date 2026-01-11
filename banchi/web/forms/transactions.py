@@ -35,6 +35,7 @@ class TransactionForm(FlaskForm):
 
 
 class TransactionListForm(FlaskForm):
+    name = fields.StringField("Name", validators=[validators.InputRequired()])
     transactions = fields.FieldList(
         fields.FormField(TransactionForm),
         min_entries=1,
