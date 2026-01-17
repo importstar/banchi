@@ -72,6 +72,16 @@ async def get_account_book_balance_by_trasaction(
 async def get_account_book_balance(
     db_account_book, receive=False
 ) -> schemas.account_books.AccountBookBalance:
+    await models.account_books.AccountBookSummary.find(
+        models.AccountBookSummary.account_book.id == db_account_book.id
+    ).set(
+        {
+            models.AccountBookSummary.balance: 0,
+            models.AccountBookSummary.increase: 0,
+            models.AccountBookSummary.decrease: 0,
+        }
+    )
+
     balance = increase = decrease = 0
 
     decrease_month_account_summary = await get_account_book_balance_by_trasaction(
@@ -111,11 +121,16 @@ async def get_account_book_balance(
         return
 
     for year_iter in range(min_year, datetime.datetime.now().year + 1):
+        yearly_increase = decimal.Decimal(0)
+        yearly_decrease = decimal.Decimal(0)
+        yearly_balance = decimal.Decimal(0)
+
         for month_iter in range(1, 13):
 
             db_account_book_summary = (
                 await models.account_books.AccountBookSummary.find_one(
                     models.AccountBookSummary.account_book.id == db_account_book.id,
+                    models.AccountBookSummary.type == "monthly",
                     models.AccountBookSummary.year == year_iter,
                     models.AccountBookSummary.month == month_iter,
                 )
@@ -151,6 +166,7 @@ async def get_account_book_balance(
             if not db_account_book_summary:
                 db_account_book_summary = models.account_books.AccountBookSummary(
                     account_book=db_account_book,
+                    type="monthly",
                     year=year_iter,
                     month=month_iter,
                     date=datetime.datetime(
@@ -180,13 +196,47 @@ async def get_account_book_balance(
             else:
                 balance = increase - decrease
 
-            print(f"{balance=}, {increase=}, {decrease=}")
+            print(f"{year_iter}-{month_iter} {balance=}, {increase=}, {decrease=}")
 
             db_account_book_summary.balance = balance
             db_account_book_summary.increase = increase
             db_account_book_summary.decrease = decrease
+            yearly_increase += increase
+            yearly_decrease += decrease
+            yearly_balance += balance
 
             await db_account_book_summary.save()
+
+        db_yearly_account_book_summary = (
+            await models.account_books.AccountBookSummary.find_one(
+                models.AccountBookSummary.account_book.id == db_account_book.id,
+                models.AccountBookSummary.type == "yearly",
+                models.AccountBookSummary.year == year_iter,
+                models.AccountBookSummary.month == 12,
+            )
+        )
+
+        if not db_yearly_account_book_summary:
+            db_yearly_account_book_summary = models.account_books.AccountBookSummary(
+                account_book=db_account_book,
+                type="yearly",
+                year=year_iter,
+                month=12,
+                date=datetime.datetime(
+                    year=year_iter,
+                    month=12,
+                    day=31,
+                ),
+            )
+
+        db_yearly_account_book_summary.balance = yearly_balance
+        db_yearly_account_book_summary.increase = yearly_increase
+        db_yearly_account_book_summary.decrease = yearly_decrease
+        print(
+            f"{db_account_book.name} {year_iter} T {yearly_balance=}, {yearly_increase=}, {yearly_decrease=}"
+        )
+
+        await db_yearly_account_book_summary.save()
 
 
 async def main():
