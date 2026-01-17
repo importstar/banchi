@@ -87,7 +87,8 @@ def add_or_edit(transaction_template_id):
             transaction["value"] = decimal.Decimal(transaction["value"])
             transaction["description_"] = transaction["description"]
             transaction["date"] = datetime.datetime.fromisoformat(
-                transaction.get("date", ""))
+                transaction.get("date", "")
+            )
 
         form = forms.transactions.TransactionTemplateForm(data=data)
 
