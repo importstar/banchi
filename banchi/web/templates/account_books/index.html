@@ -29,6 +29,8 @@ Account Book
   <a class="ui button icon primary"
     href="{{ url_for('account_books.add_or_edit_transaction', account_id=request.args.get('account_id'))  }}"><i
       class="money icon"></i> Add Transaction</a>
+    <a class="ui primary icon button" href="{{ url_for('transaction_templates.index', account_id=request.args.get('account_id')) }}"><i
+      class="file icon"></i> Transaction Templates</a>
 </div>
 
 <div>
