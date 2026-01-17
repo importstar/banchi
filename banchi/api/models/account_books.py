@@ -55,10 +55,6 @@ class AccountBookSummary(schemas.account_books.AccountBookSummary, Document):
     decrease: DecimalAnnotation = 0
     balance: DecimalAnnotation = 0
 
-    year: int
-    month: int
-    date: datetime.datetime = Field(default_factory=datetime.datetime.now)
-
     account_book: Link["AccountBook"]
 
     created_date: datetime.datetime = Field(default_factory=datetime.datetime.now)

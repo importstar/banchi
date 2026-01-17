@@ -61,42 +61,82 @@ async def calculate_summary_account_book(
     type: str = "add",
 ) -> dict:
 
-    db_from_account_book_summary = await models.AccountBookSummary.find_one(
+    # monthly summary
+    db_from_monthly_account_book_summary = await models.AccountBookSummary.find_one(
         models.AccountBookSummary.account_book.id == db_from_account_book.id,
         models.AccountBookSummary.year == year,
         models.AccountBookSummary.month == month,
+        models.AccountBookSummary.type == "monthly",
         models.AccountBookSummary.date
         == datetime.datetime(
             year=year, month=month, day=calendar.monthrange(year, month)[1]
         ),
     )
-    db_to_account_book_summary = await models.AccountBookSummary.find_one(
+    db_to_monthly_account_book_summary = await models.AccountBookSummary.find_one(
         models.AccountBookSummary.account_book.id == db_to_account_book.id,
         models.AccountBookSummary.year == year,
         models.AccountBookSummary.month == month,
+        models.AccountBookSummary.type == "monthly",
         models.AccountBookSummary.date
         == datetime.datetime(
             year=year, month=month, day=calendar.monthrange(year, month)[1]
         ),
     )
 
-    if not db_from_account_book_summary:
-        db_from_account_book_summary = models.AccountBookSummary(
+    # yearly summary
+    db_from_yearly_account_book_summary = await models.AccountBookSummary.find_one(
+        models.AccountBookSummary.account_book.id == db_from_account_book.id,
+        models.AccountBookSummary.year == year,
+        models.AccountBookSummary.month == 12,
+        models.AccountBookSummary.type == "yearly",
+        models.AccountBookSummary.date
+        == datetime.datetime(year=year, month=12, day=31),
+    )
+    db_to_yearly_account_book_summary = await models.AccountBookSummary.find_one(
+        models.AccountBookSummary.account_book.id == db_to_account_book.id,
+        models.AccountBookSummary.year == year,
+        models.AccountBookSummary.month == 12,
+        models.AccountBookSummary.type == "yearly",
+        models.AccountBookSummary.date
+        == datetime.datetime(year=year, month=12, day=31),
+    )
+
+    if not db_from_monthly_account_book_summary:
+        db_from_monthly_account_book_summary = models.AccountBookSummary(
             account_book=db_from_account_book,
+            type="monthly",
             year=year,
             month=month,
             date=datetime.datetime(
                 year=year, month=month, day=calendar.monthrange(year, month)[1]
             ),
         )
-    if not db_to_account_book_summary:
-        db_to_account_book_summary = models.AccountBookSummary(
+    if not db_to_monthly_account_book_summary:
+        db_to_monthly_account_book_summary = models.AccountBookSummary(
             account_book=db_to_account_book,
+            type="monthly",
             year=year,
             month=month,
             date=datetime.datetime(
                 year=year, month=month, day=calendar.monthrange(year, month)[1]
             ),
+        )
+
+    if not db_from_yearly_account_book_summary:
+        db_from_yearly_account_book_summary = models.AccountBookSummary(
+            account_book=db_from_account_book,
+            type="yearly",
+            year=year,
+            month=12,
+            date=datetime.datetime(year=year, month=12, day=31),
+        )
+    if not db_to_yearly_account_book_summary:
+        db_to_yearly_account_book_summary = models.AccountBookSummary(
+            account_book=db_to_account_book,
+            type="yearly",
+            year=year,
+            month=12,
+            date=datetime.datetime(year=year, month=12, day=31),
         )
 
     if type == "add":
@@ -106,17 +146,24 @@ async def calculate_summary_account_book(
             "liability",
             "credit card",
         ]:
-            db_from_account_book_summary.balance += value
+            db_from_monthly_account_book_summary.balance += value
+            db_from_yearly_account_book_summary.balance += value
         else:
-            db_from_account_book_summary.balance -= value
+            db_from_monthly_account_book_summary.balance -= value
+            db_from_yearly_account_book_summary.balance -= value
 
         if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
-            db_to_account_book_summary.balance -= value
+            db_to_monthly_account_book_summary.balance -= value
+            db_to_yearly_account_book_summary.balance -= value
         else:
-            db_to_account_book_summary.balance += value
+            db_to_monthly_account_book_summary.balance += value
+            db_to_yearly_account_book_summary.balance += value
 
-        db_from_account_book_summary.decrease += value
-        db_to_account_book_summary.increase += value
+        db_from_monthly_account_book_summary.decrease += value
+        db_to_monthly_account_book_summary.increase += value
+
+        db_from_yearly_account_book_summary.decrease += value
+        db_to_yearly_account_book_summary.increase += value
 
     elif type == "remove":
         if db_from_account_book.type in [
@@ -125,20 +172,40 @@ async def calculate_summary_account_book(
             "liability",
             "credit card",
         ]:
-            db_from_account_book_summary.balance -= value
+            db_from_monthly_account_book_summary.balance -= value
+            db_from_yearly_account_book_summary.balance -= value
         else:
-            db_from_account_book_summary.balance += value
+            db_from_monthly_account_book_summary.balance += value
+            db_from_yearly_account_book_summary.balance += value
 
         if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
-            db_to_account_book_summary.balance += value
+            db_to_monthly_account_book_summary.balance += value
+            db_from_yearly_account_book_summary.balance += value
         else:
-            db_to_account_book_summary.balance -= value
+            db_to_monthly_account_book_summary.balance -= value
+            db_to_yearly_account_book_summary.balance -= value
 
-        db_from_account_book_summary.decrease -= value
-        db_to_account_book_summary.increase -= value
+        db_from_monthly_account_book_summary.decrease -= value
+        db_to_monthly_account_book_summary.increase -= value
 
-    await db_to_account_book_summary.save()
-    await db_from_account_book_summary.save()
+        db_from_yearly_account_book_summary.decrease -= value
+        db_to_yearly_account_book_summary.increase -= value
+
+    print(
+        "save monthly summaries",
+        db_from_monthly_account_book_summary.year,
+        db_from_monthly_account_book_summary.month,
+    )
+    await db_to_monthly_account_book_summary.save()
+    await db_from_monthly_account_book_summary.save()
+
+    print(
+        "save yearly summaries",
+        db_from_yearly_account_book_summary.year,
+        db_from_yearly_account_book_summary.month,
+    )
+    await db_to_yearly_account_book_summary.save()
+    await db_from_yearly_account_book_summary.save()
 
 
 async def calculate_balance_account_book(

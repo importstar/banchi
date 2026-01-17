@@ -32,6 +32,11 @@ class AccountTypeEnum(str, enum.Enum):
     trading = "trading"
 
 
+class SummaryTypeEnum(str, enum.Enum):
+    monthly = "monthly"
+    yearly = "yearly"
+
+
 class SmallestFractionEnum(int, enum.Enum):
     f1 = 1
     f0_1 = 10
@@ -92,6 +97,8 @@ class AccountBookSummary(BaseModel):
     increase: decimal.Decimal = 0
     decrease: decimal.Decimal = 0
     balance: decimal.Decimal = 0
+
+    type: SummaryTypeEnum = Field(default=SummaryTypeEnum.monthly)
 
     year: int
     month: int
