@@ -291,6 +291,7 @@ async def get_summary_by_year_month(
         models.account_books.AccountBookSummary.account_book.id == db_account_book.id,
         models.account_books.AccountBookSummary.year == year,
         models.account_books.AccountBookSummary.month == month,
+        models.account_books.AccountBookSummary.type == "monthly",
     )
 
     if not db_account_book_summary:
@@ -298,7 +299,8 @@ async def get_summary_by_year_month(
             account_book=db_account_book,
             year=year,
             month=month,
-            date=datetime.datetime.now(),
+            type="monthly",
+            date=datetime.datetime(year, month, calendar.monthrange(year, month)[1]),
         )
 
     return db_account_book_summary
@@ -320,10 +322,37 @@ async def get_balance_by_year_month(
     first_day_of_next_month = datetime.datetime(
         year, month, calendar.monthrange(year, month)[1]
     ) + datetime.timedelta(days=1)
-    db_account_book_balance = (
+
+    first_day_of_year = datetime.datetime(year, 1, 1)
+
+    db_past_year_account_book_balance = (
         await models.account_books.AccountBookSummary.find(
             models.account_books.AccountBookSummary.account_book.id
             == db_account_book.id,
+            models.account_books.AccountBookSummary.date < first_day_of_year,
+            models.account_books.AccountBookSummary.type == "yearly",
+        )
+        .aggregate(
+            [
+                {
+                    "$group": {
+                        "_id": None,
+                        # "increase": {"$sum": "$increase"},
+                        # "decrease": {"$sum": "$decrease"},
+                        "balance": {"$sum": "$balance"},
+                    }
+                }
+            ]
+        )
+        .to_list()
+    )
+
+    db_this_year_account_book_balance = (
+        await models.account_books.AccountBookSummary.find(
+            models.account_books.AccountBookSummary.account_book.id
+            == db_account_book.id,
+            models.account_books.AccountBookSummary.type == "monthly",
+            models.account_books.AccountBookSummary.date >= first_day_of_year,
             models.account_books.AccountBookSummary.date < first_day_of_next_month,
         )
         .aggregate(
@@ -342,12 +371,14 @@ async def get_balance_by_year_month(
     )
 
     result = dict(balance=decimal.Decimal("0"))
-    if len(db_account_book_balance) > 0:
-        result = dict(
-            balance=db_account_book_balance[0]
-            .get("balance", bson.Decimal128("0"))
-            .to_decimal()
-        )
+    if len(db_past_year_account_book_balance) > 0:
+        result["balance"] = db_past_year_account_book_balance[0]["balance"].to_decimal()
+
+    if len(db_this_year_account_book_balance) > 0:
+        result["balance"] += db_this_year_account_book_balance[0][
+            "balance"
+        ].to_decimal()
+
     return result
 
 
