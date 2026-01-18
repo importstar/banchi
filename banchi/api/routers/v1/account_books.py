@@ -395,6 +395,7 @@ async def get_summaries(
 
     db_account_book_summary = (
         await models.account_books.AccountBookSummary.find(
+            models.account_books.AccountBookSummary.type == "monthly",
             models.account_books.AccountBookSummary.account_book.id
             == db_account_book.id,
         )
