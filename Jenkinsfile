@@ -93,7 +93,6 @@ pipeline {
                 java -version || exit 1
                 '''
                 dependencyCheck additionalArguments: ''' 
-                    --noupdate
                     --out './'
                     --scan './banchi/web/static/package-lock.json'
                     --format 'ALL'
