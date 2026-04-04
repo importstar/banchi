@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, Union
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -17,16 +19,16 @@ T = TypeVar("T", bound="TransactionList")
 class TransactionList:
     """
     Attributes:
-        transactions (list['Transaction']):
-        page (Union[Unset, int]):  Default: 1.
-        size_per_page (Union[Unset, int]):  Default: 50.
-        page_size (Union[Unset, int]):  Default: 1.
+        transactions (list[Transaction]):
+        page (int | Unset):  Default: 1.
+        size_per_page (int | Unset):  Default: 50.
+        page_size (int | Unset):  Default: 1.
     """
 
-    transactions: list["Transaction"]
-    page: Union[Unset, int] = 1
-    size_per_page: Union[Unset, int] = 50
-    page_size: Union[Unset, int] = 1
+    transactions: list[Transaction]
+    page: int | Unset = 1
+    size_per_page: int | Unset = 50
+    page_size: int | Unset = 1
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:

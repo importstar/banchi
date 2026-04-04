@@ -8,9 +8,12 @@ from loguru import logger
 import bson
 import typing
 import math
-from beanie.odm.operators.find.logical import Or, And
-from beanie.operators import Inc, Set
+import decimal
+import calendar
 
+from beanie.operators import Inc, Set, In, Or, And, RegEx
+
+import re
 from beanie import PydanticObjectId
 
 from banchi.api import models
@@ -49,6 +52,204 @@ async def transform_transaction(transaction, current_user):
     return data
 
 
+async def calculate_summary_account_book(
+    db_from_account_book: models.AccountBook,
+    db_to_account_book: models.AccountBook,
+    value: decimal.Decimal,
+    year: int,
+    month: int,
+    type: str = "add",
+) -> dict:
+
+    # monthly summary
+    db_from_monthly_account_book_summary = await models.AccountBookSummary.find_one(
+        models.AccountBookSummary.account_book.id == db_from_account_book.id,
+        models.AccountBookSummary.year == year,
+        models.AccountBookSummary.month == month,
+        models.AccountBookSummary.type == "monthly",
+        models.AccountBookSummary.date
+        == datetime.datetime(
+            year=year, month=month, day=calendar.monthrange(year, month)[1]
+        ),
+    )
+    db_to_monthly_account_book_summary = await models.AccountBookSummary.find_one(
+        models.AccountBookSummary.account_book.id == db_to_account_book.id,
+        models.AccountBookSummary.year == year,
+        models.AccountBookSummary.month == month,
+        models.AccountBookSummary.type == "monthly",
+        models.AccountBookSummary.date
+        == datetime.datetime(
+            year=year, month=month, day=calendar.monthrange(year, month)[1]
+        ),
+    )
+
+    # yearly summary
+    db_from_yearly_account_book_summary = await models.AccountBookSummary.find_one(
+        models.AccountBookSummary.account_book.id == db_from_account_book.id,
+        models.AccountBookSummary.year == year,
+        models.AccountBookSummary.month == 12,
+        models.AccountBookSummary.type == "yearly",
+        models.AccountBookSummary.date
+        == datetime.datetime(year=year, month=12, day=31),
+    )
+    db_to_yearly_account_book_summary = await models.AccountBookSummary.find_one(
+        models.AccountBookSummary.account_book.id == db_to_account_book.id,
+        models.AccountBookSummary.year == year,
+        models.AccountBookSummary.month == 12,
+        models.AccountBookSummary.type == "yearly",
+        models.AccountBookSummary.date
+        == datetime.datetime(year=year, month=12, day=31),
+    )
+
+    if not db_from_monthly_account_book_summary:
+        db_from_monthly_account_book_summary = models.AccountBookSummary(
+            account_book=db_from_account_book,
+            type="monthly",
+            year=year,
+            month=month,
+            date=datetime.datetime(
+                year=year, month=month, day=calendar.monthrange(year, month)[1]
+            ),
+        )
+    if not db_to_monthly_account_book_summary:
+        db_to_monthly_account_book_summary = models.AccountBookSummary(
+            account_book=db_to_account_book,
+            type="monthly",
+            year=year,
+            month=month,
+            date=datetime.datetime(
+                year=year, month=month, day=calendar.monthrange(year, month)[1]
+            ),
+        )
+
+    if not db_from_yearly_account_book_summary:
+        db_from_yearly_account_book_summary = models.AccountBookSummary(
+            account_book=db_from_account_book,
+            type="yearly",
+            year=year,
+            month=12,
+            date=datetime.datetime(year=year, month=12, day=31),
+        )
+    if not db_to_yearly_account_book_summary:
+        db_to_yearly_account_book_summary = models.AccountBookSummary(
+            account_book=db_to_account_book,
+            type="yearly",
+            year=year,
+            month=12,
+            date=datetime.datetime(year=year, month=12, day=31),
+        )
+
+    if type == "add":
+        if db_from_account_book.type in [
+            "income",
+            "equity",
+            "liability",
+            "credit card",
+        ]:
+            db_from_monthly_account_book_summary.balance += value
+            db_from_yearly_account_book_summary.balance += value
+        else:
+            db_from_monthly_account_book_summary.balance -= value
+            db_from_yearly_account_book_summary.balance -= value
+
+        if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
+            db_to_monthly_account_book_summary.balance -= value
+            db_to_yearly_account_book_summary.balance -= value
+        else:
+            db_to_monthly_account_book_summary.balance += value
+            db_to_yearly_account_book_summary.balance += value
+
+        db_from_monthly_account_book_summary.decrease += value
+        db_to_monthly_account_book_summary.increase += value
+
+        db_from_yearly_account_book_summary.decrease += value
+        db_to_yearly_account_book_summary.increase += value
+
+    elif type == "remove":
+        if db_from_account_book.type in [
+            "income",
+            "equity",
+            "liability",
+            "credit card",
+        ]:
+            db_from_monthly_account_book_summary.balance -= value
+            db_from_yearly_account_book_summary.balance -= value
+        else:
+            db_from_monthly_account_book_summary.balance += value
+            db_from_yearly_account_book_summary.balance += value
+
+        if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
+            db_to_monthly_account_book_summary.balance += value
+            db_from_yearly_account_book_summary.balance += value
+        else:
+            db_to_monthly_account_book_summary.balance -= value
+            db_to_yearly_account_book_summary.balance -= value
+
+        db_from_monthly_account_book_summary.decrease -= value
+        db_to_monthly_account_book_summary.increase -= value
+
+        db_from_yearly_account_book_summary.decrease -= value
+        db_to_yearly_account_book_summary.increase -= value
+
+    print(
+        "save monthly summaries",
+        db_from_monthly_account_book_summary.year,
+        db_from_monthly_account_book_summary.month,
+    )
+    await db_to_monthly_account_book_summary.save()
+    await db_from_monthly_account_book_summary.save()
+
+    print(
+        "save yearly summaries",
+        db_from_yearly_account_book_summary.year,
+        db_from_yearly_account_book_summary.month,
+    )
+    await db_to_yearly_account_book_summary.save()
+    await db_from_yearly_account_book_summary.save()
+
+
+async def calculate_balance_account_book(
+    db_from_account_book: models.AccountBook,
+    db_to_account_book: models.AccountBook,
+    value: decimal.Decimal,
+    type: str = "add",
+) -> dict:
+
+    if type == "add":
+        if db_from_account_book.type in [
+            "income",
+            "equity",
+            "liability",
+            "credit card",
+        ]:
+            db_from_account_book.balance += value
+        else:
+            db_from_account_book.balance -= value
+
+        if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
+            db_to_account_book.balance -= value
+        else:
+            db_to_account_book.balance += value
+    elif type == "remove":
+        if db_from_account_book.type in [
+            "income",
+            "equity",
+            "liability",
+            "credit card",
+        ]:
+            db_from_account_book.balance -= value
+        else:
+            db_from_account_book.balance += value
+
+        if db_to_account_book.type in ["income", "equity", "liability", "credit card"]:
+            db_to_account_book.balance += value
+        else:
+            db_to_account_book.balance -= value
+
+    await db_to_account_book.save()
+    await db_from_account_book.save()
+
+
 @router.get("")
 async def get_all(
     from_account_book_id: PydanticObjectId | None,
@@ -56,6 +257,12 @@ async def get_all(
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
     page: typing.Annotated[int | None, Query()] = 1,
     size_per_page: typing.Annotated[int | None, Query()] = 50,
+    started_date: typing.Annotated[datetime.datetime | None, Query()] = None,
+    ended_date: typing.Annotated[datetime.datetime | None, Query()] = None,
+    year: typing.Annotated[int | None, Query()] = None,
+    month: typing.Annotated[int | None, Query()] = None,
+    description: typing.Annotated[str | None, Query()] = None,
+    value: typing.Annotated[decimal.Decimal | None, Query()] = None,
 ) -> schemas.transactions.TransactionList:
     # print(">>>", page, size_per_page)
     from_account_book = None
@@ -84,8 +291,39 @@ async def get_all(
 
     query_args = [
         models.transactions.Transaction.status == "active",
-        account_book_query,
     ]
+
+    if started_date:
+        query_args.append(models.transactions.Transaction.date >= started_date)
+    if ended_date:
+        query_args.append(models.transactions.Transaction.date <= ended_date)
+
+    # print("----->", year, month)
+    if year and month:
+        started_date = datetime.datetime(year=year, month=month, day=1)
+        ended_date = datetime.datetime(
+            year=year,
+            month=month,
+            day=calendar.monthrange(year, month)[1],
+        ) + datetime.timedelta(days=1)
+
+        # print(started_date, ended_date)
+        query_args.append(models.transactions.Transaction.date >= started_date)
+        query_args.append(models.transactions.Transaction.date < ended_date)
+
+    if description:
+        pattern_text = [f"(?=.*{t})" for t in description.split(" ")]
+        pattern = re.compile(f"{''.join(pattern_text)}", re.IGNORECASE)
+        query_args.append(RegEx(models.transactions.Transaction.description, pattern))
+    if value:
+        query_args.append(
+            Or(
+                models.transactions.Transaction.value == value,
+                models.transactions.Transaction.value == -value,
+            )
+        )
+
+    query_args.append(account_book_query)
 
     transaction_count = await models.transactions.Transaction.find(
         *query_args,
@@ -164,24 +402,26 @@ async def create(
     db_from_account_book = data["from_account_book"]
     db_to_account_book = data["to_account_book"]
 
-    if db_from_account_book.type in ["income", "equity", "liability"]:
-        db_from_account_book.balance += data["value"]
-    else:
-        db_from_account_book.balance -= data["value"]
-
-    if db_to_account_book.type in ["income", "equity", "liability"]:
-        db_to_account_book.balance -= data["value"]
-    else:
-        db_to_account_book.balance += data["value"]
-
-    db_from_account_book.decrease += data["value"]
-    db_to_account_book.increase += data["value"]
+    await calculate_balance_account_book(
+        db_from_account_book,
+        db_to_account_book,
+        data["value"],
+        type="add",
+    )
 
     await db_to_account_book.save()
     await db_from_account_book.save()
 
     db_transaction = models.transactions.Transaction.parse_obj(data)
     await db_transaction.save()
+
+    await calculate_summary_account_book(
+        db_from_account_book,
+        db_to_account_book,
+        data["value"],
+        data["date"].year,
+        data["date"].month,
+    )
 
     return db_transaction
 
@@ -207,26 +447,26 @@ async def update(
     ],
     current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
 ) -> schemas.transactions.Transaction:
+
+    await calculate_summary_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        db_transaction.date.year,
+        db_transaction.date.month,
+        type="remove",
+    )
+    await calculate_balance_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        type="remove",
+    )
     data = transaction.dict()
     await db_transaction.update(Set(data))
 
     data = await transform_transaction(transaction, current_user)
     db_transaction.value = data["value"]
-
-    if db_transaction.from_account_book != data["from_account_book_id"]:
-        db_transaction.from_account_book.balance -= db_transaction.value
-        db_transaction.from_account_book.decrease += db_transaction.value
-    else:
-        db_transaction.from_account_book.balance += db_transaction.value
-        db_transaction.from_account_book.increase -= db_transaction.value
-    if db_transaction.to_account_book != data["to_account_book_id"]:
-        db_transaction.to_account_book.balance += db_transaction.value
-        db_transaction.to_account_book.increase -= db_transaction.value
-    else:
-        db_transaction.to_account_book.balance -= db_transaction.value
-        db_transaction.to_account_book.decrease += db_transaction.value
-    await db_transaction.to_account_book.save()
-    await db_transaction.from_account_book.save()
 
     db_transaction.to_account_book = data["to_account_book"]
     db_transaction.from_account_book = data["from_account_book"]
@@ -234,6 +474,22 @@ async def update(
     db_transaction.updated_by = current_user
 
     await db_transaction.save()
+
+    await calculate_balance_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        type="add",
+    )
+
+    await calculate_summary_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        db_transaction.date.year,
+        db_transaction.date.month,
+        type="add",
+    )
 
     await db_transaction.fetch_all_links()
     return db_transaction
@@ -256,16 +512,25 @@ async def delete(
     to_account_book = db_transaction.to_account_book
     from_account_book = db_transaction.from_account_book
 
-    to_account_book.balance -= db_transaction.value
-    from_account_book.balance += db_transaction.value
-
-    to_account_book.increase -= db_transaction.value
-    from_account_book.decrease += db_transaction.value
-
-    to_account_book.save()
-    from_account_book.save()
-
+    await to_account_book.save()
+    await from_account_book.save()
     await db_transaction.save()
+
+    await calculate_balance_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        type="remove",
+    )
+
+    await calculate_summary_account_book(
+        db_transaction.from_account_book,
+        db_transaction.to_account_book,
+        db_transaction.value,
+        db_transaction.date.year,
+        db_transaction.date.month,
+        type="remove",
+    )
 
     return db_transaction
 

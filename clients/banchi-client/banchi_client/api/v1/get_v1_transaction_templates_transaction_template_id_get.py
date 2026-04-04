@@ -1,47 +1,42 @@
 from http import HTTPStatus
-from typing import Any, Optional, Union
+from typing import Any
+from urllib.parse import quote
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...models.body_login_for_access_token_v1_auth_token_post import BodyLoginForAccessTokenV1AuthTokenPost
 from ...models.http_validation_error import HTTPValidationError
-from ...models.token import Token
+from ...models.transaction_template import TransactionTemplate
 from ...types import Response
 
 
 def _get_kwargs(
-    *,
-    body: BodyLoginForAccessTokenV1AuthTokenPost,
+    transaction_template_id: str,
 ) -> dict[str, Any]:
-    headers: dict[str, Any] = {}
-
     _kwargs: dict[str, Any] = {
-        "method": "post",
-        "url": "/v1/auth/token",
+        "method": "get",
+        "url": "/v1/transaction-templates/{transaction_template_id}".format(
+            transaction_template_id=quote(str(transaction_template_id), safe=""),
+        ),
     }
 
-    _body = body.to_dict()
-
-    _kwargs["data"] = _body
-    headers["Content-Type"] = "application/x-www-form-urlencoded"
-
-    _kwargs["headers"] = headers
     return _kwargs
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[HTTPValidationError, Token]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> HTTPValidationError | TransactionTemplate | None:
     if response.status_code == 200:
-        response_200 = Token.from_dict(response.json())
+        response_200 = TransactionTemplate.from_dict(response.json())
 
         return response_200
+
     if response.status_code == 422:
         response_422 = HTTPValidationError.from_dict(response.json())
 
         return response_422
+
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -49,8 +44,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[HTTPValidationError, Token]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[HTTPValidationError | TransactionTemplate]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -60,25 +55,25 @@ def _build_response(
 
 
 def sync_detailed(
+    transaction_template_id: str,
     *,
-    client: Union[AuthenticatedClient, Client],
-    body: BodyLoginForAccessTokenV1AuthTokenPost,
-) -> Response[Union[HTTPValidationError, Token]]:
-    """Get OAuth2 access token
+    client: AuthenticatedClient,
+) -> Response[HTTPValidationError | TransactionTemplate]:
+    """Get
 
     Args:
-        body (BodyLoginForAccessTokenV1AuthTokenPost):
+        transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, Token]]
+        Response[HTTPValidationError | TransactionTemplate]
     """
 
     kwargs = _get_kwargs(
-        body=body,
+        transaction_template_id=transaction_template_id,
     )
 
     response = client.get_httpx_client().request(
@@ -89,49 +84,49 @@ def sync_detailed(
 
 
 def sync(
+    transaction_template_id: str,
     *,
-    client: Union[AuthenticatedClient, Client],
-    body: BodyLoginForAccessTokenV1AuthTokenPost,
-) -> Optional[Union[HTTPValidationError, Token]]:
-    """Get OAuth2 access token
+    client: AuthenticatedClient,
+) -> HTTPValidationError | TransactionTemplate | None:
+    """Get
 
     Args:
-        body (BodyLoginForAccessTokenV1AuthTokenPost):
+        transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, Token]
+        HTTPValidationError | TransactionTemplate
     """
 
     return sync_detailed(
+        transaction_template_id=transaction_template_id,
         client=client,
-        body=body,
     ).parsed
 
 
 async def asyncio_detailed(
+    transaction_template_id: str,
     *,
-    client: Union[AuthenticatedClient, Client],
-    body: BodyLoginForAccessTokenV1AuthTokenPost,
-) -> Response[Union[HTTPValidationError, Token]]:
-    """Get OAuth2 access token
+    client: AuthenticatedClient,
+) -> Response[HTTPValidationError | TransactionTemplate]:
+    """Get
 
     Args:
-        body (BodyLoginForAccessTokenV1AuthTokenPost):
+        transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, Token]]
+        Response[HTTPValidationError | TransactionTemplate]
     """
 
     kwargs = _get_kwargs(
-        body=body,
+        transaction_template_id=transaction_template_id,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -140,26 +135,26 @@ async def asyncio_detailed(
 
 
 async def asyncio(
+    transaction_template_id: str,
     *,
-    client: Union[AuthenticatedClient, Client],
-    body: BodyLoginForAccessTokenV1AuthTokenPost,
-) -> Optional[Union[HTTPValidationError, Token]]:
-    """Get OAuth2 access token
+    client: AuthenticatedClient,
+) -> HTTPValidationError | TransactionTemplate | None:
+    """Get
 
     Args:
-        body (BodyLoginForAccessTokenV1AuthTokenPost):
+        transaction_template_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, Token]
+        HTTPValidationError | TransactionTemplate
     """
 
     return (
         await asyncio_detailed(
+            transaction_template_id=transaction_template_id,
             client=client,
-            body=body,
         )
     ).parsed

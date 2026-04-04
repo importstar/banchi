@@ -97,8 +97,7 @@ async def create(
     )
 
     if user:
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
+        raise status.HTTP_409_CONFLICT(
             detail="This username is exists.",
         )
 
@@ -122,13 +121,11 @@ def change_password(
     try:
         user = models.users.User.objects.get(id=user_id)
     except Exception:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+        raise status.HTTP_404_NOT_FOUND(
             detail="Not found this user",
         )
     if not user.verify_password(password_update.current_password):
-        raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
+        raise status.HTTP_401_UNAUTHORIZED(
             detail="Incorrect password",
         )
 
@@ -151,8 +148,7 @@ def update(
     try:
         user = models.users.User.objects.get(id=user_id)
     except Exception:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+        raise status.HTTP_404_NOT_FOUND(
             detail="Not found this user",
         )
 
@@ -185,8 +181,7 @@ def set_status(
     try:
         user = models.users.User.objects.get(id=user_id)
     except Exception:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+        raise status.HTTP_404_NOT_FOUND(
             detail="Not found this user",
         )
     user.update(status=status)
@@ -214,16 +209,14 @@ def set_space(
     try:
         user = models.users.User.objects.get(id=user_id)
     except Exception:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+        raise status.HTTP_404_NOT_FOUND(
             detail="Not found this user",
         )
     if action == "add":
         try:
             space = models.Space.objects.get(id=space_id)
         except Exception:
-            raise HTTPException(
-                status_code=HTTP_404_NOT_FOUND,
+            raise status.HTTP_404_NOT_FOUND(
                 detail="Not found this space",
             )
         user.update(space=space)
@@ -254,8 +247,7 @@ def set_role(
     try:
         user = models.users.User.objects.get(id=user_id)
     except Exception:
-        raise HTTPException(
-            status_code=HTTP_404_NOT_FOUND,
+        raise status.HTTP_404_NOT_FOUND(
             detail="Not found this user",
         )
     if action == "add":

@@ -6,38 +6,43 @@
 {{ super() }}
 <i class="right angle icon divider"></i>
 {% if 'edit' not in request.path %}
-  <div class="active section">Create Account Book</div>
+<div class="active section">Create Account Book</div>
 {% else %}
-  <div class="active section">Edit Account Book</div>
+<div class="active section">Edit: {{ account_book.name }}</div>
 {% endif %}
 {% endblock %}
 
 {% block content %}
-  <div class="ui segment">
-    <h2>Account Book</h2>
-    <form method="POST" class="ui form" enctype="multipart/form-data">
-      {{ form.csrf_token }}
-      {{ renderer.render_field(form.name) }}
-      {{ renderer.render_select(form.parent_id) }}
-      {{ renderer.render_field(form.description) }}
-      <div class="three fields">
+<div class="ui segment">
+  {% if 'edit' not in request.path %}
+  <h2>Account Book</h2>
+  {% else %}
+  <h2>Edit: {{ account_book.name }}</h2>
+  {% endif %}
+
+  <form method="POST" class="ui form" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+    {{ renderer.render_field(form.name) }}
+    {{ renderer.render_select(form.parent_id) }}
+    {{ renderer.render_field(form.description) }}
+    <div class="three fields">
       {{ renderer.render_select(form.type) }}
       {{ renderer.render_select(form.smallest_fraction) }}
       {{ renderer.render_select(form.currency) }}
-      </div>
-      <button name="subnit" type="submit" class="ui primary button">
-        {% if 'edit' not in request.path %}
-          Create
-        {% else %}
-          Edit
-        {% endif %}
-      </button>
-    </form>
-  </div>
+    </div>
+    <button name="subnit" type="submit" class="ui primary button">
+      {% if 'edit' not in request.path %}
+      Create
+      {% else %}
+      Edit
+      {% endif %}
+    </button>
+  </form>
+</div>
 {% endblock content %}
 
 {% block additional_js %}
-  <script type="text/javascript">
-    $('.ui.dropdown').dropdown();
-  </script>
+<script type="text/javascript">
+  $('.ui.dropdown').dropdown();
+</script>
 {% endblock additional_js %}

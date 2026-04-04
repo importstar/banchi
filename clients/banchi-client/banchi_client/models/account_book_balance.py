@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union
+from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
+from ..models.account_type_enum import AccountTypeEnum
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="AccountBookBalance")
@@ -14,23 +17,25 @@ class AccountBookBalance:
     """
     Attributes:
         id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        balance (str):
-        increase (str):
-        decrease (str):
-        net_balance (str):
-        net_increase (str):
-        net_decrease (str):
-        children (Union[Unset, int]):  Default: 0.
+        balance (str | Unset):  Default: '0'.
+        increase (str | Unset):  Default: '0'.
+        decrease (str | Unset):  Default: '0'.
+        net_balance (str | Unset):  Default: '0'.
+        net_increase (str | Unset):  Default: '0'.
+        net_decrease (str | Unset):  Default: '0'.
+        children (int | Unset):  Default: 0.
+        type_ (AccountTypeEnum | Unset):
     """
 
     id: str
-    balance: str
-    increase: str
-    decrease: str
-    net_balance: str
-    net_increase: str
-    net_decrease: str
-    children: Union[Unset, int] = 0
+    balance: str | Unset = "0"
+    increase: str | Unset = "0"
+    decrease: str | Unset = "0"
+    net_balance: str | Unset = "0"
+    net_increase: str | Unset = "0"
+    net_decrease: str | Unset = "0"
+    children: int | Unset = 0
+    type_: AccountTypeEnum | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -50,21 +55,33 @@ class AccountBookBalance:
 
         children = self.children
 
+        type_: str | Unset = UNSET
+        if not isinstance(self.type_, Unset):
+            type_ = self.type_.value
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "id": id,
-                "balance": balance,
-                "increase": increase,
-                "decrease": decrease,
-                "net_balance": net_balance,
-                "net_increase": net_increase,
-                "net_decrease": net_decrease,
             }
         )
+        if balance is not UNSET:
+            field_dict["balance"] = balance
+        if increase is not UNSET:
+            field_dict["increase"] = increase
+        if decrease is not UNSET:
+            field_dict["decrease"] = decrease
+        if net_balance is not UNSET:
+            field_dict["net_balance"] = net_balance
+        if net_increase is not UNSET:
+            field_dict["net_increase"] = net_increase
+        if net_decrease is not UNSET:
+            field_dict["net_decrease"] = net_decrease
         if children is not UNSET:
             field_dict["children"] = children
+        if type_ is not UNSET:
+            field_dict["type"] = type_
 
         return field_dict
 
@@ -73,19 +90,26 @@ class AccountBookBalance:
         d = dict(src_dict)
         id = d.pop("id")
 
-        balance = d.pop("balance")
+        balance = d.pop("balance", UNSET)
 
-        increase = d.pop("increase")
+        increase = d.pop("increase", UNSET)
 
-        decrease = d.pop("decrease")
+        decrease = d.pop("decrease", UNSET)
 
-        net_balance = d.pop("net_balance")
+        net_balance = d.pop("net_balance", UNSET)
 
-        net_increase = d.pop("net_increase")
+        net_increase = d.pop("net_increase", UNSET)
 
-        net_decrease = d.pop("net_decrease")
+        net_decrease = d.pop("net_decrease", UNSET)
 
         children = d.pop("children", UNSET)
+
+        _type_ = d.pop("type", UNSET)
+        type_: AccountTypeEnum | Unset
+        if isinstance(_type_, Unset):
+            type_ = UNSET
+        else:
+            type_ = AccountTypeEnum(_type_)
 
         account_book_balance = cls(
             id=id,
@@ -96,6 +120,7 @@ class AccountBookBalance:
             net_increase=net_increase,
             net_decrease=net_decrease,
             children=children,
+            type_=type_,
         )
 
         account_book_balance.additional_properties = d

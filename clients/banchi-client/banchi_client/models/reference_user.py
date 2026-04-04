@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
 from typing import Any, TypeVar
 
@@ -11,7 +13,7 @@ T = TypeVar("T", bound="ReferenceUser")
 class ReferenceUser:
     """
     Attributes:
-        id (str):  Example: 0.
+        id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         username (str):  Example: admin.
         first_name (str):  Example: Firstname.
         last_name (str):  Example: Lastname.

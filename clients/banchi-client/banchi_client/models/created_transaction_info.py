@@ -1,0 +1,149 @@
+from __future__ import annotations
+
+import datetime
+from collections.abc import Mapping
+from typing import Any, TypeVar, cast
+
+from attrs import define as _attrs_define
+from attrs import field as _attrs_field
+from dateutil.parser import isoparse
+
+from ..models.currency_enum import CurrencyEnum
+from ..types import UNSET, Unset
+
+T = TypeVar("T", bound="CreatedTransactionInfo")
+
+
+@_attrs_define
+class CreatedTransactionInfo:
+    """
+    Attributes:
+        description (str):  Example: Desctription.
+        value (float | str):
+        currency (CurrencyEnum):
+        from_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        to_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        date (datetime.datetime | Unset):  Default: isoparse('2026-01-11T22:48:44.262147').
+        tags (list[str] | Unset):
+        remarks (None | str | Unset):  Default: ''. Example: Text Remark.
+    """
+
+    description: str
+    value: float | str
+    currency: CurrencyEnum
+    from_account_book_id: str
+    to_account_book_id: str
+    date: datetime.datetime | Unset = isoparse("2026-01-11T22:48:44.262147")
+    tags: list[str] | Unset = UNSET
+    remarks: None | str | Unset = ""
+    additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        description = self.description
+
+        value: float | str
+        value = self.value
+
+        currency = self.currency.value
+
+        from_account_book_id = self.from_account_book_id
+
+        to_account_book_id = self.to_account_book_id
+
+        date: str | Unset = UNSET
+        if not isinstance(self.date, Unset):
+            date = self.date.isoformat()
+
+        tags: list[str] | Unset = UNSET
+        if not isinstance(self.tags, Unset):
+            tags = self.tags
+
+        remarks: None | str | Unset
+        if isinstance(self.remarks, Unset):
+            remarks = UNSET
+        else:
+            remarks = self.remarks
+
+        field_dict: dict[str, Any] = {}
+        field_dict.update(self.additional_properties)
+        field_dict.update(
+            {
+                "description": description,
+                "value": value,
+                "currency": currency,
+                "from_account_book_id": from_account_book_id,
+                "to_account_book_id": to_account_book_id,
+            }
+        )
+        if date is not UNSET:
+            field_dict["date"] = date
+        if tags is not UNSET:
+            field_dict["tags"] = tags
+        if remarks is not UNSET:
+            field_dict["remarks"] = remarks
+
+        return field_dict
+
+    @classmethod
+    def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
+        d = dict(src_dict)
+        description = d.pop("description")
+
+        def _parse_value(data: object) -> float | str:
+            return cast(float | str, data)
+
+        value = _parse_value(d.pop("value"))
+
+        currency = CurrencyEnum(d.pop("currency"))
+
+        from_account_book_id = d.pop("from_account_book_id")
+
+        to_account_book_id = d.pop("to_account_book_id")
+
+        _date = d.pop("date", UNSET)
+        date: datetime.datetime | Unset
+        if isinstance(_date, Unset):
+            date = UNSET
+        else:
+            date = isoparse(_date)
+
+        tags = cast(list[str], d.pop("tags", UNSET))
+
+        def _parse_remarks(data: object) -> None | str | Unset:
+            if data is None:
+                return data
+            if isinstance(data, Unset):
+                return data
+            return cast(None | str | Unset, data)
+
+        remarks = _parse_remarks(d.pop("remarks", UNSET))
+
+        created_transaction_info = cls(
+            description=description,
+            value=value,
+            currency=currency,
+            from_account_book_id=from_account_book_id,
+            to_account_book_id=to_account_book_id,
+            date=date,
+            tags=tags,
+            remarks=remarks,
+        )
+
+        created_transaction_info.additional_properties = d
+        return created_transaction_info
+
+    @property
+    def additional_keys(self) -> list[str]:
+        return list(self.additional_properties.keys())
+
+    def __getitem__(self, key: str) -> Any:
+        return self.additional_properties[key]
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        self.additional_properties[key] = value
+
+    def __delitem__(self, key: str) -> None:
+        del self.additional_properties[key]
+
+    def __contains__(self, key: str) -> bool:
+        return key in self.additional_properties

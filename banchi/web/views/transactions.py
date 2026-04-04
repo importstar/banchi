@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 import datetime
 import decimal
 from collections import OrderedDict
@@ -29,6 +30,7 @@ module = Blueprint("transactions", __name__, url_prefix="/transactions")
 
 
 @module.route("")
+@login_required
 def index():
 
     return render_template(
@@ -37,6 +39,7 @@ def index():
 
 
 @module.route("/tags/<tag>")
+@login_required
 def show_by_tag(tag):
 
     client = banchi_api_clients.client.get_current_client()
@@ -48,7 +51,6 @@ def show_by_tag(tag):
         account_book = get_v1_account_books_account_book_id_get.sync(
             client=client, account_book_id=account_book_id
         )
-        print(">>>>", account_book)
         account_id = account_book.account.id
 
     response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
@@ -70,6 +72,7 @@ def show_by_tag(tag):
     defaults=dict(account_book_id=None, transaction_id=None),
 )
 @module.route("/<transaction_id>/edit", methods=["GET", "POST"])
+@login_required
 def add_or_edit(transaction_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = None
@@ -154,6 +157,7 @@ def add_or_edit(transaction_id):
 
 
 @module.route("/<transaction_id>/delete")
+@login_required
 def delete(transaction_id):
     client = banchi_api_clients.client.get_current_client()
     transaction = delete_v1_transactions_transaction_id_delete.sync(

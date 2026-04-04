@@ -1,4 +1,6 @@
+from xmlrpc import client
 from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required
 import datetime
 import decimal
 from collections import OrderedDict
@@ -16,7 +18,10 @@ from banchi_client.api.v1 import (
     get_v1_transactions_transaction_id_get,
     get_label_v1_account_books_account_book_id_label_get,
     get_children_v1_account_books_account_book_id_children_get,
+    get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get,
+    get_summaries_v1_account_books_account_book_id_summaries_get,
     get_balance_v1_account_books_account_book_id_balance_get,
+    get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get,
     delete_v1_account_books_account_book_id_delete,
     delete_v1_transactions_transaction_id_delete,
 )
@@ -29,6 +34,7 @@ module = Blueprint("account_books", __name__, url_prefix="/account-books")
 
 
 @module.route("")
+@login_required
 def index():
     account_id = request.args.get("account_id")
     account_books = []
@@ -42,13 +48,21 @@ def index():
     account_books = response.account_books
     balances = dict()
     display_account_books = dict()
+    now = datetime.datetime.now()
 
     display_names = utils.account_books.get_display_names(account_books)
+    account_book_month_summaries = dict()
     for account_book in account_books:
         display_account_books[account_book.id] = dict(
             name=display_names[account_book.id],
             account_balance=get_balance_v1_account_books_account_book_id_balance_get.sync(
                 client=client, account_book_id=account_book.id
+            ),
+            month_summary=get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
+                client=client,
+                account_book_id=account_book.id,
+                year=now.year,
+                month=now.month,
             ),
             obj=account_book,
         )
@@ -67,30 +81,35 @@ def index():
 
 @module.route("/create", defaults=dict(account_book_id=None), methods=["GET", "POST"])
 @module.route("/<account_book_id>/edit", methods=["GET", "POST"])
+@login_required
 def create_or_edit(account_book_id):
     form = forms.account_books.AccountBookForm()
     client = banchi_api_clients.client.get_current_client()
     account_book = None
     account_id = request.args.get("account_id")
+    parent_id = request.args.get("parent_id", None)
 
     if account_book_id:
         account_book = get_v1_account_books_account_book_id_get.sync(
             client=client, account_book_id=account_book_id
         )
-        account_id = account_book.account.id
 
     if request.method == "GET" and account_book:
         form = forms.account_books.AccountBookForm(obj=account_book)
-        form.parent_id.data = account_book.parent.id
+        form.type.data = account_book.type_
+        if account_book.parent:
+            form.parent_id.data = account_book.parent.id
 
-    elif request.method == "GET" and not account_book and request.args.get("parent_id"):
-        parent_id = request.args.get("parent_id")
+    elif request.method == "GET" and not account_book and parent_id:
         parent = get_v1_account_books_account_book_id_get.sync(
             client=client, account_book_id=parent_id
         )
 
         form.parent_id.data = parent_id
-        form.type.data = parent.type
+        form.type.data = parent.type_
+
+    if account_book:
+        account_id = account_book.account.id
 
     if account_id:
         response = get_all_v1_account_books_get.sync(
@@ -112,7 +131,9 @@ def create_or_edit(account_book_id):
         )
 
     if not form.validate_on_submit():
-        return render_template("/account_books/create-or-edit.html", form=form)
+        return render_template(
+            "/account_books/create-or-edit.html", form=form, account_book=account_book
+        )
 
     data = form.data.copy()
     if data["parent_id"] == "-":
@@ -142,20 +163,43 @@ def create_or_edit(account_book_id):
 
 
 @module.route("/<account_book_id>")
+@login_required
 def view(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = get_v1_account_books_account_book_id_get.sync(
         client=client, account_book_id=account_book_id
     )
 
-    page = int(request.args.get("page", "1"))
-    size_per_page = int(request.args.get("size_per_page", "50"))
+    args = request.args.to_dict().copy()
+    try:
+        started_date = datetime.datetime.fromisoformat(args["started_date"])
+        args["started_date"] = started_date
+    except Exception:
+        args.pop("started_date", None)
+
+    try:
+        ended_date = datetime.datetime.fromisoformat(args["ended_date"])
+        args["ended_date"] = ended_date
+    except Exception:
+        args.pop("ended_date", None)
+
+    if "description" in args and not args["description"]:
+        args.pop("description", None)
+
+    try:
+        if "value" in args:
+            args["value"] = decimal.Decimal(args["value"])
+    except Exception:
+        args.pop("value", None)
+
+    args["page"] = int(request.args.get("page", "1"))
+    args["size_per_page"] = int(request.args.get("size_per_page", "50"))
+
     response = get_all_v1_transactions_get.sync(
         client=client,
         from_account_book_id=account_book.id,
         to_account_book_id=account_book.id,
-        page=page,
-        size_per_page=size_per_page,
+        **args,
     )
     transaction_chunk = response
 
@@ -165,6 +209,14 @@ def view(account_book_id):
     balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
         client=client, account_book_id=account_book.id
     )
+
+    now = datetime.datetime.now()
+
+    month_summary = get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
+        client=client, account_book_id=account_book.id, year=now.year, month=now.month
+    )
+
+    # print(">>>", month_summary)
 
     response = get_children_v1_account_books_account_book_id_children_get.sync(
         client=client, account_book_id=account_book.id
@@ -185,17 +237,7 @@ def view(account_book_id):
 
     display_names = utils.account_books.get_display_names(account_books)
 
-    # account_book_children = [
-    #     ab for ab in account_books if ab.parent and ab.parent.id == account_book.id
-    # ]
-
-    # def get_balance_sub_balance(account_book, balance):
-    #     for b in balance:
-    #         if b.id == account_book.id:
-    #             return b
-    #     return None
-
-    # print(">>>", account_book_children_balance)
+    form = forms.account_books.TransactionFilterForm(data=args)
     return render_template(
         "/account_books/view.html",
         account_book=account_book,
@@ -203,14 +245,99 @@ def view(account_book_id):
         transaction_chunk=transaction_chunk,
         label=label,
         balance=balance,
+        month_summary=month_summary,
         account_book_children=account_book_children,
         account_book_children_balance=account_book_children_balance,
+        form=form,
         # account_book_children=account_book_children,
         # get_balance_sub_balance=get_balance_sub_balance,
     )
 
 
+@module.route("/<account_book_id>/<int:year>/<int:month>")
+@login_required
+def view_by_year_month(account_book_id, year, month):
+    client = banchi_api_clients.client.get_current_client()
+    account_book = get_v1_account_books_account_book_id_get.sync(
+        client=client, account_book_id=account_book_id
+    )
+
+    month_account_book_summary = get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
+        client=client, account_book_id=account_book_id, year=year, month=month
+    )
+
+    last_mounth = month - 1
+    last_year = year
+    if last_mounth == 0:
+        last_mounth = 12
+        last_year = year - 1
+
+    last_month_account_book_summary = get_summary_by_year_month_v1_account_books_account_book_id_summary_year_month_get.sync(
+        client=client,
+        account_book_id=account_book_id,
+        year=last_year,
+        month=last_mounth,
+    )
+
+    response = get_all_v1_transactions_get.sync(
+        client=client,
+        from_account_book_id=account_book.id,
+        to_account_book_id=account_book.id,
+        year=year,
+        month=month,
+    )
+    transaction_chunk = response
+
+    label = get_label_v1_account_books_account_book_id_label_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+    balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
+        client=client, account_book_id=account_book.id
+    )
+
+    # response = get_children_v1_account_books_account_book_id_children_get.sync(
+    #     client=client, account_book_id=account_book.id
+    # )
+
+    # account_book_children = response.account_books
+    # account_book_children_balance = dict()
+    # for abc in account_book_children:
+    #     abc_balance = get_balance_v1_account_books_account_book_id_balance_get.sync(
+    #         client=client, account_book_id=abc.id
+    #     )
+    #     account_book_children_balance[abc.id] = abc_balance
+
+    response = get_all_v1_account_books_get.sync(
+        client=client, account_id=account_book.account.id
+    )
+    account_books = response.account_books
+
+    display_names = utils.account_books.get_display_names(account_books)
+
+    last_month_balance = get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get.sync(
+        client=client,
+        account_book_id=account_book.id,
+        year=last_year,
+        month=last_mounth,
+    )
+
+    return render_template(
+        "/account_books/view-year-month.html",
+        account_book=account_book,
+        account_book_display_names=display_names,
+        transaction_chunk=transaction_chunk,
+        label=label,
+        balance=balance,
+        # account_book_children=account_book_children,
+        # account_book_children_balance=account_book_children_balance,
+        month_summary=month_account_book_summary,
+        last_month_account_book_summary=last_month_account_book_summary,
+        last_month_balance=last_month_balance,
+    )
+
+
 @module.route("/<account_book_id>/all-transactions")
+@login_required
 def view_recursive_transactions(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = get_v1_account_books_account_book_id_get.sync(
@@ -261,6 +388,88 @@ def view_recursive_transactions(account_book_id):
 
 
 @module.route(
+    "/<account_book_id>/transactions/add-bulk",
+    methods=["GET", "POST"],
+)
+@login_required
+def add_bulk_transactions(account_book_id):
+
+    client = banchi_api_clients.client.get_current_client()
+    account_book = None
+
+    if account_book_id:
+        account_book = get_v1_account_books_account_book_id_get.sync(
+            client=client, account_book_id=account_book_id
+        )
+
+    account_id = request.args.get("account_id", None)
+    if account_book:
+        account_id = account_book.account.id
+
+    response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
+
+    account_books = response.account_books
+
+    form = forms.transactions.TransactionListForm()
+
+    display_names = utils.account_books.get_display_names(
+        account_books, excluse_none_parent=True
+    )
+    account_book_choices = [
+        (str(ab.id), display_names[ab.id])
+        for ab in account_books
+        if ab.id in display_names
+    ]
+
+    account_book_choices = sorted(
+        account_book_choices,
+        key=lambda abn: abn[1],
+    )
+
+    if request.method == "GET":
+        [form.transactions.append_entry() for _ in range(9)]
+
+    for sub_form in form.transactions:
+        sub_form.to_account_book_id.choices = account_book_choices
+        sub_form.from_account_book_id.choices = account_book_choices
+
+        if request.method == "GET" and account_book:
+            sub_form.from_account_book_id.data = str(account_book.id)
+            sub_form.to_account_book_id.data = str(account_book.id)
+
+    if not form.validate_on_submit():
+
+        return render_template(
+            "/account_books/add-or-edit-transaction.html",
+            account_book=account_book,
+            form=form,
+        )
+
+    for idx, sub_form in enumerate(form.transactions):
+        if (
+            not sub_form.data
+            or not sub_form.date.data
+            or (
+                not sub_form.data.get("description_", "").strip()
+                or not sub_form.data.get("value", 0)
+            )
+        ):
+            continue
+
+        entry_data = sub_form.data.copy()
+        entry_data.pop("csrf_token")
+        entry_data["date"] = entry_data["date"].isoformat()
+        entry_data["value"] = float(entry_data["value"])
+        entry_data["description"] = entry_data["description_"]
+
+        transaction = models.CreatedTransaction.from_dict(entry_data)
+
+        response = create_v1_transactions_post.sync(client=client, body=transaction)
+
+    return redirect(url_for("account_books.view", account_book_id=account_book.id))
+
+
+@module.route(
     "/transactions/add",
     methods=["GET", "POST"],
     defaults=dict(account_book_id=None, transaction_id=None),
@@ -273,6 +482,7 @@ def view_recursive_transactions(account_book_id):
 @module.route(
     "/<account_book_id>/transactions/<transaction_id>/edit", methods=["GET", "POST"]
 )
+@login_required
 def add_or_edit_transaction(account_book_id, transaction_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = None
@@ -340,6 +550,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
             form.to_account_book_id.data = str(transaction.to_account_book.id)
             form.from_account_book_id.data = str(transaction.from_account_book.id)
             form.value.data = decimal.Decimal(form.value.data)
+            form.description_.data = transaction.description
 
         # if not transaction:
         #     form.from_account_book_id.render_kw = {"disabled": ""}
@@ -355,6 +566,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
     data["date"] = data["date"].isoformat()
     data["value"] = float(data["value"])
+    data["description"] = data["description_"]
     if not transaction:
         transaction = models.CreatedTransaction.from_dict(data)
         response = create_v1_transactions_post.sync(client=client, body=transaction)
@@ -370,6 +582,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
 
 @module.route("/<account_book_id>/transactions/<transaction_id>/delete")
+@login_required
 def delete_transaction(account_book_id, transaction_id):
     client = banchi_api_clients.client.get_current_client()
     transaction = delete_v1_transactions_transaction_id_delete.sync(
@@ -380,6 +593,7 @@ def delete_transaction(account_book_id, transaction_id):
 
 
 @module.route("/<account_book_id>/delete")
+@login_required
 def delete(account_book_id):
     client = banchi_api_clients.client.get_current_client()
     account_book = delete_v1_account_books_account_book_id_delete.sync(
@@ -387,3 +601,28 @@ def delete(account_book_id):
     )
 
     return redirect(url_for("account_books.index", account_id=account_book.account.id))
+
+
+@module.route("/<account_book_id>/summary")
+@login_required
+def summary(account_book_id):
+    client = banchi_api_clients.client.get_current_client()
+    account_book = get_v1_account_books_account_book_id_get.sync(
+        client=client, account_book_id=account_book_id
+    )
+    account_book_summaries = (
+        get_summaries_v1_account_books_account_book_id_summaries_get.sync(
+            client=client, account_book_id=account_book_id
+        )
+    )
+
+    years = list(
+        set([summary.year for summary in account_book_summaries.account_book_summaries])
+    )
+    years.sort(reverse=True)
+    return render_template(
+        "/account_books/summary.html",
+        account_book_summaries=account_book_summaries.account_book_summaries,
+        account_book=account_book,
+        years=years,
+    )

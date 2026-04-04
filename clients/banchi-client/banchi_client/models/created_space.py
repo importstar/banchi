@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -12,22 +14,22 @@ class CreatedSpace:
     """
     Attributes:
         name (str):  Example: Space Name.
-        code (Union[None, str]):  Example: Space Code.
-        tax_id (Union[None, str]):  Example: Text ID.
+        code (None | str):  Example: Space Code.
+        tax_id (None | str):  Example: Text ID.
     """
 
     name: str
-    code: Union[None, str]
-    tax_id: Union[None, str]
+    code: None | str
+    tax_id: None | str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         name = self.name
 
-        code: Union[None, str]
+        code: None | str
         code = self.code
 
-        tax_id: Union[None, str]
+        tax_id: None | str
         tax_id = self.tax_id
 
         field_dict: dict[str, Any] = {}
@@ -47,17 +49,17 @@ class CreatedSpace:
         d = dict(src_dict)
         name = d.pop("name")
 
-        def _parse_code(data: object) -> Union[None, str]:
+        def _parse_code(data: object) -> None | str:
             if data is None:
                 return data
-            return cast(Union[None, str], data)
+            return cast(None | str, data)
 
         code = _parse_code(d.pop("code"))
 
-        def _parse_tax_id(data: object) -> Union[None, str]:
+        def _parse_tax_id(data: object) -> None | str:
             if data is None:
                 return data
-            return cast(Union[None, str], data)
+            return cast(None | str, data)
 
         tax_id = _parse_tax_id(d.pop("tax_id"))
 

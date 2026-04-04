@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import datetime
 from collections.abc import Mapping
 from typing import Any, TypeVar
@@ -14,27 +16,25 @@ class Token:
     """
     Attributes:
         access_token (str):
-        refresh_token (str):
         token_type (str):
         expires_in (int):
         expires_at (datetime.datetime):
         scope (str):
         issued_at (datetime.datetime):
+        refresh_token (str):
     """
 
     access_token: str
-    refresh_token: str
     token_type: str
     expires_in: int
     expires_at: datetime.datetime
     scope: str
     issued_at: datetime.datetime
+    refresh_token: str
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         access_token = self.access_token
-
-        refresh_token = self.refresh_token
 
         token_type = self.token_type
 
@@ -46,17 +46,19 @@ class Token:
 
         issued_at = self.issued_at.isoformat()
 
+        refresh_token = self.refresh_token
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
             {
                 "access_token": access_token,
-                "refresh_token": refresh_token,
                 "token_type": token_type,
                 "expires_in": expires_in,
                 "expires_at": expires_at,
                 "scope": scope,
                 "issued_at": issued_at,
+                "refresh_token": refresh_token,
             }
         )
 
@@ -66,8 +68,6 @@ class Token:
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
         access_token = d.pop("access_token")
-
-        refresh_token = d.pop("refresh_token")
 
         token_type = d.pop("token_type")
 
@@ -79,14 +79,16 @@ class Token:
 
         issued_at = isoparse(d.pop("issued_at"))
 
+        refresh_token = d.pop("refresh_token")
+
         token = cls(
             access_token=access_token,
-            refresh_token=refresh_token,
             token_type=token_type,
             expires_in=expires_in,
             expires_at=expires_at,
             scope=scope,
             issued_at=issued_at,
+            refresh_token=refresh_token,
         )
 
         token.additional_properties = d

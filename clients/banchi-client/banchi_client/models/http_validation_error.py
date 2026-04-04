@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, TypeVar, Union
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -17,14 +19,14 @@ T = TypeVar("T", bound="HTTPValidationError")
 class HTTPValidationError:
     """
     Attributes:
-        errors (Union[Unset, list['ValidationError']]):
+        errors (list[ValidationError] | Unset):
     """
 
-    errors: Union[Unset, list["ValidationError"]] = UNSET
+    errors: list[ValidationError] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
-        errors: Union[Unset, list[dict[str, Any]]] = UNSET
+        errors: list[dict[str, Any]] | Unset = UNSET
         if not isinstance(self.errors, Unset):
             errors = []
             for errors_item_data in self.errors:
@@ -44,12 +46,14 @@ class HTTPValidationError:
         from ..models.validation_error import ValidationError
 
         d = dict(src_dict)
-        errors = []
         _errors = d.pop("errors", UNSET)
-        for errors_item_data in _errors or []:
-            errors_item = ValidationError.from_dict(errors_item_data)
+        errors: list[ValidationError] | Unset = UNSET
+        if _errors is not UNSET:
+            errors = []
+            for errors_item_data in _errors:
+                errors_item = ValidationError.from_dict(errors_item_data)
 
-            errors.append(errors_item)
+                errors.append(errors_item)
 
         http_validation_error = cls(
             errors=errors,

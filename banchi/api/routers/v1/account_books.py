@@ -1,4 +1,5 @@
 import datetime
+import calendar
 import io
 import bson
 import decimal
@@ -139,7 +140,7 @@ async def get_account_book_balance_by_trasaction(
 async def get_account_book_balance_by_account_book_summary(db_account_book):
 
     pipline = [
-        {"$match": {"_id": db_account_book.id}},
+        {"$match": {"_id": db_account_book.id, "status": "active"}},
         {
             "$graphLookup": {
                 "from": "account_books",
@@ -155,8 +156,8 @@ async def get_account_book_balance_by_account_book_summary(db_account_book):
                 "_id": None,
                 "quantity": {"$sum": 1},
                 "balance": {"$sum": "$children.balance"},
-                "increase": {"$sum": "$children.increase"},
-                "decrease": {"$sum": "$children.decrease"},
+                # "increase": {"$sum": "$children.increase"},
+                # "decrease": {"$sum": "$children.decrease"},
             }
         },
     ]
@@ -171,8 +172,8 @@ async def get_account_book_balance_by_account_book_summary(db_account_book):
 
     results = dict(
         balance=decimal.Decimal(0),
-        increase=decimal.Decimal(0),
-        decrease=decimal.Decimal(0),
+        # increase=decimal.Decimal(0),
+        # decrease=decimal.Decimal(0),
         quantity=0,
     )
     if "_id" in data:
@@ -203,13 +204,14 @@ async def get_account_book_balance_by_trasaction(
         db_account_book, "to_account_book"
     )
 
-    if db_account_book.type in ["income", "equity", "liability"]:
+    if db_account_book.type in ["income", "equity", "liability", "credit_card"]:
         balance = decrease - increase
     else:
         balance = increase - decrease
 
     account_book_balance = schemas.account_books.AccountBookBalance(
         id=db_account_book.id,
+        type=db_account_book.type,
         balance=balance,
         decrease=decrease,
         increase=increase,
@@ -227,7 +229,7 @@ async def get_account_book_balance_by_trasaction(
     ).to_list()
 
     for account_book_child in account_book_children:
-        child_account_book_balance = await get_account_book_balance(
+        child_account_book_balance = await get_account_book_balance_by_trasaction(
             account_book_child,
             True,
         )
@@ -247,17 +249,11 @@ async def get_account_book_balance_by_summary(
     results = await get_account_book_balance_by_account_book_summary(db_account_book)
 
     net_balance = results.get("balance", 0)
-    net_increase = results.get("increase", 0)
-    net_decrease = results.get("decrease", 0)
 
     account_book_balance = schemas.account_books.AccountBookBalance(
         id=db_account_book.id,
         balance=db_account_book.balance,
-        decrease=db_account_book.decrease,
-        increase=db_account_book.increase,
         net_balance=net_balance,
-        net_decrease=net_decrease,
-        net_increase=net_increase,
         children=results.get("quantity", 0),
     )
 
@@ -267,17 +263,154 @@ async def get_account_book_balance_by_summary(
 
 @router.get(
     "/{account_book_id}/balance",
-    response_model_by_alias=False,
 )
 async def get_balance(
     account_book_id: PydanticObjectId,
     db_account_book: typing.Annotated[
-        models.account_books.AccountBook, Depends(deps.get_account_book)
+        models.AccountBook, Depends(deps.get_account_book)
     ],
-    current_user: models.users.User = Depends(deps.get_current_user),
+    current_user: models.User = Depends(deps.get_current_user),
 ) -> schemas.account_books.AccountBookBalance:
 
     return await get_account_book_balance_by_summary(db_account_book)
+
+
+@router.get(
+    "/{account_book_id}/summary/{year}/{month}",
+)
+async def get_summary_by_year_month(
+    account_book_id: PydanticObjectId,
+    year: int,
+    month: int,
+    db_account_book: typing.Annotated[
+        models.AccountBook, Depends(deps.get_account_book)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> schemas.account_books.AccountBookSummary:
+    db_account_book_summary = await models.account_books.AccountBookSummary.find_one(
+        models.account_books.AccountBookSummary.account_book.id == db_account_book.id,
+        models.account_books.AccountBookSummary.year == year,
+        models.account_books.AccountBookSummary.month == month,
+        models.account_books.AccountBookSummary.type == "monthly",
+    )
+
+    if not db_account_book_summary:
+        db_account_book_summary = models.account_books.AccountBookSummary(
+            account_book=db_account_book,
+            year=year,
+            month=month,
+            type="monthly",
+            date=datetime.datetime(year, month, calendar.monthrange(year, month)[1]),
+        )
+
+    return db_account_book_summary
+
+
+@router.get(
+    "/{account_book_id}/balance/{year}/{month}",
+)
+async def get_balance_by_year_month(
+    account_book_id: PydanticObjectId,
+    year: int,
+    month: int,
+    db_account_book: typing.Annotated[
+        models.AccountBook, Depends(deps.get_account_book)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> dict:
+
+    first_day_of_next_month = datetime.datetime(
+        year, month, calendar.monthrange(year, month)[1]
+    ) + datetime.timedelta(days=1)
+
+    first_day_of_year = datetime.datetime(year, 1, 1)
+
+    db_past_year_account_book_balance = (
+        await models.account_books.AccountBookSummary.find(
+            models.account_books.AccountBookSummary.account_book.id
+            == db_account_book.id,
+            models.account_books.AccountBookSummary.date < first_day_of_year,
+            models.account_books.AccountBookSummary.type == "yearly",
+        )
+        .aggregate(
+            [
+                {
+                    "$group": {
+                        "_id": None,
+                        # "increase": {"$sum": "$increase"},
+                        # "decrease": {"$sum": "$decrease"},
+                        "balance": {"$sum": "$balance"},
+                    }
+                }
+            ]
+        )
+        .to_list()
+    )
+
+    db_this_year_account_book_balance = (
+        await models.account_books.AccountBookSummary.find(
+            models.account_books.AccountBookSummary.account_book.id
+            == db_account_book.id,
+            models.account_books.AccountBookSummary.type == "monthly",
+            models.account_books.AccountBookSummary.date >= first_day_of_year,
+            models.account_books.AccountBookSummary.date < first_day_of_next_month,
+        )
+        .aggregate(
+            [
+                {
+                    "$group": {
+                        "_id": None,
+                        # "increase": {"$sum": "$increase"},
+                        # "decrease": {"$sum": "$decrease"},
+                        "balance": {"$sum": "$balance"},
+                    }
+                }
+            ]
+        )
+        .to_list()
+    )
+
+    result = dict(balance=decimal.Decimal("0"))
+    if len(db_past_year_account_book_balance) > 0:
+        result["balance"] = db_past_year_account_book_balance[0]["balance"].to_decimal()
+
+    if len(db_this_year_account_book_balance) > 0:
+        result["balance"] += db_this_year_account_book_balance[0][
+            "balance"
+        ].to_decimal()
+
+    return result
+
+
+@router.get(
+    "/{account_book_id}/summaries",
+)
+async def get_summaries(
+    account_book_id: PydanticObjectId,
+    db_account_book: typing.Annotated[
+        models.AccountBook, Depends(deps.get_account_book)
+    ],
+    current_user: models.users.User = Depends(deps.get_current_user),
+) -> schemas.account_books.AccountBookSummaryList:
+
+    db_account_book_summary = (
+        await models.account_books.AccountBookSummary.find(
+            models.account_books.AccountBookSummary.type == "monthly",
+            models.account_books.AccountBookSummary.account_book.id
+            == db_account_book.id,
+        )
+        .sort(
+            [
+                (models.account_books.AccountBookSummary.year, -1),
+                (models.account_books.AccountBookSummary.month, -1),
+            ]
+        )
+        .to_list()
+    )
+
+    return schemas.account_books.AccountBookSummaryList(
+        account_book_summaries=db_account_book_summary
+    )
 
 
 @router.put("/{account_book_id}")
@@ -333,7 +466,10 @@ async def get_label(
         equity=dict(positive="decrease", negative="increase"),
         expense=dict(positive="expense", negative="rebate"),
         income=dict(positive="charge", negative="income"),
-        liability=dict(positive="decrease", negative="increase"),
+        liability=dict(positive="increase", negative="decrease"),
         credit_card=dict(positive="payment", negative="charge"),
     )
-    return labels[db_account_book.type]
+    type_name = db_account_book.type
+    if type_name == "credit card":
+        type_name = "credit_card"
+    return labels[type_name]

@@ -36,13 +36,13 @@ class AccountBook(schemas.account_books.AccountBook, Document):
     updated_by: Link[users.User]
 
     balance: DecimalAnnotation = 0
-    increase: DecimalAnnotation = 0
-    decrease: DecimalAnnotation = 0
+    # increase: DecimalAnnotation = 0
+    # decrease: DecimalAnnotation = 0
 
     children: list[BackLink["AccountBook"]] = Field(original_field="parent")
 
 
-class AccountBookSummary(Document):
+class AccountBookSummary(schemas.account_books.AccountBookSummary, Document):
     class Settings:
         name = "account_book_summaries"
 
@@ -51,10 +51,9 @@ class AccountBookSummary(Document):
         alias="_id",
     )
 
-    type_: str
-
-    increse: DecimalAnnotation
-    decrese: DecimalAnnotation
+    increase: DecimalAnnotation = 0
+    decrease: DecimalAnnotation = 0
+    balance: DecimalAnnotation = 0
 
     account_book: Link["AccountBook"]
 

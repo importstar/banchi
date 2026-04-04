@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -13,16 +15,16 @@ class SystemSettingInResponse:
     Attributes:
         title_names (list[str]):
         banks (list[str]):
-        bill_expired (Union[None, int]):
-        year (Union[None, str]):
-        vat (Union[None, float]):
+        bill_expired (int | None):
+        year (None | str):
+        vat (float | None):
     """
 
     title_names: list[str]
     banks: list[str]
-    bill_expired: Union[None, int]
-    year: Union[None, str]
-    vat: Union[None, float]
+    bill_expired: int | None
+    year: None | str
+    vat: float | None
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -30,13 +32,13 @@ class SystemSettingInResponse:
 
         banks = self.banks
 
-        bill_expired: Union[None, int]
+        bill_expired: int | None
         bill_expired = self.bill_expired
 
-        year: Union[None, str]
+        year: None | str
         year = self.year
 
-        vat: Union[None, float]
+        vat: float | None
         vat = self.vat
 
         field_dict: dict[str, Any] = {}
@@ -60,24 +62,24 @@ class SystemSettingInResponse:
 
         banks = cast(list[str], d.pop("banks"))
 
-        def _parse_bill_expired(data: object) -> Union[None, int]:
+        def _parse_bill_expired(data: object) -> int | None:
             if data is None:
                 return data
-            return cast(Union[None, int], data)
+            return cast(int | None, data)
 
         bill_expired = _parse_bill_expired(d.pop("bill_expired"))
 
-        def _parse_year(data: object) -> Union[None, str]:
+        def _parse_year(data: object) -> None | str:
             if data is None:
                 return data
-            return cast(Union[None, str], data)
+            return cast(None | str, data)
 
         year = _parse_year(d.pop("year"))
 
-        def _parse_vat(data: object) -> Union[None, float]:
+        def _parse_vat(data: object) -> float | None:
             if data is None:
                 return data
-            return cast(Union[None, float], data)
+            return cast(float | None, data)
 
         vat = _parse_vat(d.pop("vat"))
 

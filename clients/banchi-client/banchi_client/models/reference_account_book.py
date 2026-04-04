@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
 from typing import Any, TypeVar
 
@@ -13,7 +15,7 @@ T = TypeVar("T", bound="ReferenceAccountBook")
 class ReferenceAccountBook:
     """
     Attributes:
-        id (str):  Example: 0.
+        id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         name (str):  Example: Account Book Name.
         type_ (AccountTypeEnum):
     """

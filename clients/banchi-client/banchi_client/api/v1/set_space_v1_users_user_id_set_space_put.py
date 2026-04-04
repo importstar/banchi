@@ -1,5 +1,6 @@
 from http import HTTPStatus
-from typing import Any, Optional, Union
+from typing import Any
+from urllib.parse import quote
 
 import httpx
 
@@ -26,7 +27,9 @@ def _get_kwargs(
 
     _kwargs: dict[str, Any] = {
         "method": "put",
-        "url": f"/v1/users/{user_id}/set_space",
+        "url": "/v1/users/{user_id}/set_space".format(
+            user_id=quote(str(user_id), safe=""),
+        ),
         "params": params,
     }
 
@@ -34,16 +37,18 @@ def _get_kwargs(
 
 
 def _parse_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Optional[Union[HTTPValidationError, User]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> HTTPValidationError | User | None:
     if response.status_code == 200:
         response_200 = User.from_dict(response.json())
 
         return response_200
+
     if response.status_code == 422:
         response_422 = HTTPValidationError.from_dict(response.json())
 
         return response_422
+
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
     else:
@@ -51,8 +56,8 @@ def _parse_response(
 
 
 def _build_response(
-    *, client: Union[AuthenticatedClient, Client], response: httpx.Response
-) -> Response[Union[HTTPValidationError, User]]:
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[HTTPValidationError | User]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -67,7 +72,7 @@ def sync_detailed(
     client: AuthenticatedClient,
     space_id: str,
     action: str,
-) -> Response[Union[HTTPValidationError, User]]:
+) -> Response[HTTPValidationError | User]:
     """Set Space
 
     Args:
@@ -80,7 +85,7 @@ def sync_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, User]]
+        Response[HTTPValidationError | User]
     """
 
     kwargs = _get_kwargs(
@@ -102,7 +107,7 @@ def sync(
     client: AuthenticatedClient,
     space_id: str,
     action: str,
-) -> Optional[Union[HTTPValidationError, User]]:
+) -> HTTPValidationError | User | None:
     """Set Space
 
     Args:
@@ -115,7 +120,7 @@ def sync(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, User]
+        HTTPValidationError | User
     """
 
     return sync_detailed(
@@ -132,7 +137,7 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     space_id: str,
     action: str,
-) -> Response[Union[HTTPValidationError, User]]:
+) -> Response[HTTPValidationError | User]:
     """Set Space
 
     Args:
@@ -145,7 +150,7 @@ async def asyncio_detailed(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[Union[HTTPValidationError, User]]
+        Response[HTTPValidationError | User]
     """
 
     kwargs = _get_kwargs(
@@ -165,7 +170,7 @@ async def asyncio(
     client: AuthenticatedClient,
     space_id: str,
     action: str,
-) -> Optional[Union[HTTPValidationError, User]]:
+) -> HTTPValidationError | User | None:
     """Set Space
 
     Args:
@@ -178,7 +183,7 @@ async def asyncio(
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Union[HTTPValidationError, User]
+        HTTPValidationError | User
     """
 
     return (

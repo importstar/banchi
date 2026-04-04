@@ -19,7 +19,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/v1/auth/login")
 
 
 async def get_current_user(
-    token: typing.Annotated[str, Depends(oauth2_scheme)]
+    token: typing.Annotated[str, Depends(oauth2_scheme)],
 ) -> models.users.User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -45,7 +45,7 @@ async def get_current_user(
 
 
 async def get_current_active_user(
-    current_user: typing.Annotated[models.users.User, Depends(get_current_user)]
+    current_user: typing.Annotated[models.users.User, Depends(get_current_user)],
     # current_user: models.users.User = Depends(get_current_user),
 ) -> models.users.User:
     if current_user.status != "active":
@@ -64,7 +64,7 @@ async def get_current_active_superuser(
 
 
 async def get_current_user_spaces(
-    user: typing.Annotated[models.users.User, Depends(get_current_user)]
+    user: typing.Annotated[models.users.User, Depends(get_current_user)],
 ) -> list[models.spaces.Space]:
     space_roles = await models.spaces.SpaceRole.find(
         models.spaces.SpaceRole.member.id == user.id,
@@ -250,6 +250,39 @@ async def get_transactions_by_tag(
         )
 
     return db_transactions
+
+
+async def get_transaction_template(
+    transaction_template_id: typing.Annotated[PydanticObjectId, Path()],
+    user: typing.Annotated[models.users.User, Depends(get_current_user)],
+) -> models.transactions.TransactionTemplate:
+    db_transaction_template = await models.transactions.TransactionTemplate.find_one(
+        models.transactions.TransactionTemplate.id == transaction_template_id,
+        models.transactions.TransactionTemplate.status == "active",
+        fetch_links=True,
+        nesting_depth=1,
+    )
+
+    if not db_transaction_template:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Not found transaction_template",
+        )
+
+    return db_transaction_template
+
+
+async def get_transaction_templates(
+    account_id: typing.Annotated[PydanticObjectId, Query()],
+) -> list[models.transactions.TransactionTemplate]:
+    db_transaction_templates = await models.transactions.TransactionTemplate.find(
+        models.transactions.TransactionTemplate.account.id == account_id,
+        models.transactions.TransactionTemplate.status == "active",
+        fetch_links=True,
+        nesting_depth=1,
+    ).to_list()
+
+    return db_transaction_templates
 
 
 async def create_logs(action, request, current_user):

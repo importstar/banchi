@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections.abc import Mapping
 from typing import Any, TypeVar
 
@@ -16,7 +18,7 @@ class UpdatedAccount:
         name (str):  Example: Account Name.
         description (str):  Example: Description.
         currency (CurrencyEnum):
-        space_id (str):  Example: 0.
+        space_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
     """
 
     name: str

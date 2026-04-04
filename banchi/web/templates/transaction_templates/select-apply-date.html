@@ -1,0 +1,46 @@
+{% extends '/transaction_templates/index.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+
+{% block breadcrumbs %}
+{{ super() }}
+<i class="right angle icon divider"></i>
+<div class="active section">Select Date</div>
+{% endblock %}
+
+{% block content %}
+<div class="ui segment">
+  <h2>Transaction</h2>
+  <form method="POST" class="ui form" enctype="multipart/form-data">
+    {{ form.csrf_token }}
+
+    {{ renderer.render_calendar(form.date, calendar_id='date_calendar') }}
+    <button name="submit" type="submit" class="ui primary button">
+      Apply
+    </button>
+  </form>
+</div>
+{% endblock content %}
+
+{% block additional_js %}
+<script type="text/javascript">
+  datetime_formatter = {
+    datetime: "YYYY-MM-DD HH:mm:ss",
+    date: "YYYY-MM-DD",
+  };
+
+  $('div[id$="date_calendar"]').calendar({
+    type: 'datetime',
+    today: true,
+    monthFirst: false,
+    formatter: datetime_formatter,
+  });
+
+  $('.ui.search.dropdown').dropdown({
+    allowAdditions: true,
+  });
+
+
+</script>
+
+{% endblock additional_js %}

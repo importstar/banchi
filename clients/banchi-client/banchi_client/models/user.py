@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import datetime
 from collections.abc import Mapping
-from typing import Any, TypeVar, Union, cast
+from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
@@ -19,10 +21,10 @@ class User:
         username (str):  Example: admin.
         first_name (str):  Example: Firstname.
         last_name (str):  Example: Lastname.
-        id (str):  Example: 0.
-        roles (Union[None, list[str]]):  Example: ['user'].
-        last_login_date (Union[None, Unset, datetime.datetime]):  Example: 2023-01-01T00:00:00.000000.
-        register_date (Union[None, Unset, datetime.datetime]):  Example: 2023-01-01T00:00:00.000000.
+        id (str):  Example: 5eb7cf5a86d9755df3a6c593.
+        roles (list[str] | None):  Example: ['user'].
+        last_login_date (datetime.datetime | None | Unset):  Example: 2023-01-01T00:00:00.000000.
+        register_date (datetime.datetime | None | Unset):  Example: 2023-01-01T00:00:00.000000.
     """
 
     email: str
@@ -30,9 +32,9 @@ class User:
     first_name: str
     last_name: str
     id: str
-    roles: Union[None, list[str]]
-    last_login_date: Union[None, Unset, datetime.datetime] = UNSET
-    register_date: Union[None, Unset, datetime.datetime] = UNSET
+    roles: list[str] | None
+    last_login_date: datetime.datetime | None | Unset = UNSET
+    register_date: datetime.datetime | None | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -46,14 +48,14 @@ class User:
 
         id = self.id
 
-        roles: Union[None, list[str]]
+        roles: list[str] | None
         if isinstance(self.roles, list):
             roles = self.roles
 
         else:
             roles = self.roles
 
-        last_login_date: Union[None, Unset, str]
+        last_login_date: None | str | Unset
         if isinstance(self.last_login_date, Unset):
             last_login_date = UNSET
         elif isinstance(self.last_login_date, datetime.datetime):
@@ -61,7 +63,7 @@ class User:
         else:
             last_login_date = self.last_login_date
 
-        register_date: Union[None, Unset, str]
+        register_date: None | str | Unset
         if isinstance(self.register_date, Unset):
             register_date = UNSET
         elif isinstance(self.register_date, datetime.datetime):
@@ -101,7 +103,7 @@ class User:
 
         id = d.pop("id")
 
-        def _parse_roles(data: object) -> Union[None, list[str]]:
+        def _parse_roles(data: object) -> list[str] | None:
             if data is None:
                 return data
             try:
@@ -110,13 +112,13 @@ class User:
                 roles_type_0 = cast(list[str], data)
 
                 return roles_type_0
-            except:  # noqa: E722
+            except (TypeError, ValueError, AttributeError, KeyError):
                 pass
-            return cast(Union[None, list[str]], data)
+            return cast(list[str] | None, data)
 
         roles = _parse_roles(d.pop("roles"))
 
-        def _parse_last_login_date(data: object) -> Union[None, Unset, datetime.datetime]:
+        def _parse_last_login_date(data: object) -> datetime.datetime | None | Unset:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -127,13 +129,13 @@ class User:
                 last_login_date_type_0 = isoparse(data)
 
                 return last_login_date_type_0
-            except:  # noqa: E722
+            except (TypeError, ValueError, AttributeError, KeyError):
                 pass
-            return cast(Union[None, Unset, datetime.datetime], data)
+            return cast(datetime.datetime | None | Unset, data)
 
         last_login_date = _parse_last_login_date(d.pop("last_login_date", UNSET))
 
-        def _parse_register_date(data: object) -> Union[None, Unset, datetime.datetime]:
+        def _parse_register_date(data: object) -> datetime.datetime | None | Unset:
             if data is None:
                 return data
             if isinstance(data, Unset):
@@ -144,9 +146,9 @@ class User:
                 register_date_type_0 = isoparse(data)
 
                 return register_date_type_0
-            except:  # noqa: E722
+            except (TypeError, ValueError, AttributeError, KeyError):
                 pass
-            return cast(Union[None, Unset, datetime.datetime], data)
+            return cast(datetime.datetime | None | Unset, data)
 
         register_date = _parse_register_date(d.pop("register_date", UNSET))
 

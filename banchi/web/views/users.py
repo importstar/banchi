@@ -155,6 +155,7 @@ def logout():
 
 
 @module.route("/users/<user_id>")
+@login_required
 def profile(user_id):
     return index()
 
@@ -219,6 +220,7 @@ def edit_profile():
 
 
 @module.route("/users/<user_id>/picture/<filename>", methods=["GET", "POST"])
+@login_required
 def picture(user_id, filename):
     user = models.User.objects.get(id=user_id)
 
@@ -239,6 +241,7 @@ def picture(user_id, filename):
     defaults={"signature_id": None},
 )
 @module.route("/users/<user_id>/signatures/<signature_id>", methods=["GET", "POST"])
+@login_required
 def add_or_edit_signature(user_id, signature_id):
     user = models.User.objects.get(id=user_id)
 
@@ -280,6 +283,7 @@ def add_or_edit_signature(user_id, signature_id):
 
 
 @module.route("/change_organization/<organization_id>")
+@login_required
 def change_organization(organization_id):
     user = current_user._get_current_object()
     organization = models.Organization.objects.get(id=organization_id)
