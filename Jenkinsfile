@@ -32,7 +32,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Updating package list and installing npm and python..."
-                apt-get update && apt-get install -y nodejs npm openjdk-17-jdk
+                apt-get update && apt-get install -y nodejs npm openjdk-17-jdk unzip curl
 
                 echo "Setting up JAVA_HOME..."
                 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
@@ -92,11 +92,25 @@ pipeline {
 
                 java -version || exit 1
                 '''
-                dependencyCheck additionalArguments: ''' 
-                    --out './'
-                    --scan './banchi/web/static/package-lock.json'
-                    --format 'ALL'
-                    --prettyPrint''', odcInstallation: 'OWASP Dependency-Check Vulnerabilities', nvdCredentialsId: 'importstar-nvd-api-key'
+                withCredentials([string(credentialsId: 'importstar-nvd-api-key', variable: 'NVD_API_KEY')]) {
+                    sh '''
+                    # Download and extract latest Dependency-Check CLI (v12.2.0)
+                    if [ ! -d "dependency-check" ]; then
+                        echo "Installing Dependency-Check 12.2.0..."
+                        curl -L https://github.com/jeremylong/DependencyCheck/releases/download/v12.2.0/dependency-check-12.2.0-release.zip -o odc.zip
+                        unzip -q odc.zip
+                        rm odc.zip
+                    fi
+
+                    # Run Dependency-Check using the latest CLI
+                    ./dependency-check/bin/dependency-check.sh \
+                        --nvdApiKey "$NVD_API_KEY" \
+                        --out . \
+                        --scan './banchi/web/static/package-lock.json' \
+                        --format ALL \
+                        --prettyPrint
+                    '''
+                }
                 
                 dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
