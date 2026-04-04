@@ -97,7 +97,7 @@ pipeline {
                     # Download and extract latest Dependency-Check CLI (v12.2.0)
                     if [ ! -d "dependency-check" ]; then
                         echo "Installing Dependency-Check 12.2.0..."
-                        curl -L https://github.com/jeremylong/DependencyCheck/releases/download/v12.2.0/dependency-check-12.2.0-release.zip -o odc.zip
+                        curl -fsSL https://github.com/dependency-check/DependencyCheck/releases/download/v12.2.0/dependency-check-12.2.0-release.zip -o odc.zip
                         unzip -q odc.zip
                         rm odc.zip
                     fi
