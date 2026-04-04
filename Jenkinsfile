@@ -7,7 +7,7 @@ pipeline {
     // agent any
     agent {
         docker {
-            image 'python:3.12-bookworm'
+            image 'python:3.13-bookworm'
         }
     }
     environment {
@@ -32,7 +32,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Updating package list and installing npm and python..."
-                apt-get update && apt-get install -y nodejs npm pip openjdk-17-jdk
+                apt-get update && apt-get install -y nodejs npm openjdk-17-jdk
 
                 echo "Setting up JAVA_HOME..."
                 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
