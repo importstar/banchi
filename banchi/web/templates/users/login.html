@@ -3,37 +3,30 @@
 
 {% block title %}Log in{% endblock %}
 
-{% block additional_head %}
-
-{% endblock %}
-
 {% block content %}
-  <div style="min-height: 75vh; height: 100%;">
-    <div class="ui centered card">
-      <div class="content">
+  <div class="flex items-center justify-center" style="min-height: 75vh;">
+    <div class="card bg-base-100 shadow w-full max-w-md">
+      <div class="card-body">
 
-        <h2 class="ui teal" style="font-size: 3em;">
+        <h2 class="card-title text-3xl font-bold text-primary mb-4">
           Login
         </h2>
-        <form class="ui form" action="{{ url_for('users.authorized_banchi') }}" method="POST">
+        <form action="{{ url_for('users.authorized_banchi') }}" method="POST">
           {{ form.hidden_tag() }}
           {{ renderer.render_field(form.username) }}
           {{ renderer.render_field(form.password) }}
-          <button type="submit" class="ui button primary">Login</button> 
+          <button type="submit" class="btn btn-primary btn-block mt-2">Login</button>
         </form>
 
         <div>
           {#
-          <div class="row" style="padding: 10px;">
-            <div class="column header" style="text-align: left;">
-              <h3>OAuth Login</h3>
-            </div>
-          </div>
+          <div class="divider"></div>
+          <h3 class="text-xl font-bold text-left">OAuth Login</h3>
 
           {% if 'google' in oauth_clients %}
-          <div class="row" style="padding-top: 5px;">
-            <a class="ui  labeled icon red button huge" href="{{ url_for('users.login_oauth', name='google') }}">
-              <i class="google icon"></i>
+          <div class="pt-2">
+            <a class="btn btn-error btn-lg btn-block" href="{{ url_for('users.login_oauth', name='google') }}">
+              <i class="fa-brands fa-google"></i>
               Google
             </a>
           </div>

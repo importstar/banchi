@@ -1,11 +1,10 @@
-
-<div class="ui inverted menu">
-  <div class="ui container">
-    <a class="item" href="{{ url_for('site.index') }}">
-      <i class="ui book icon"></i> {{ config.get('APP_TITLE') }}
+<div class="navbar bg-neutral text-neutral-content shadow">
+  <div class="container mx-auto px-4 flex items-center gap-2">
+    <a class="btn btn-ghost text-lg" href="{{ url_for('site.index') }}">
+      <i class="fa-solid fa-book"></i> {{ config.get('APP_TITLE') }}
     </a>
-  
-    <a class="item" href="{{ url_for('users.index') }}"><i class="address book icon"></i>Profile</a>
-    <a class="item" href="{{ url_for('dashboard.index') }}"><i class="dashboard icon"></i>Dashboard</a>
+
+    <a class="btn btn-ghost" href="{{ url_for('users.index') }}"><i class="fa-solid fa-address-book"></i>Profile</a>
+    <a class="btn btn-ghost" href="{{ url_for('dashboard.index') }}"><i class="fa-solid fa-gauge"></i>Dashboard</a>
   </div>
-</div
+</div>

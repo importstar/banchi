@@ -71,7 +71,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'cd ./banchi/web/static && npm install'
+                    sh 'cd ./banchi/web/static && npm install && npm run build:css'
                     sh '''
                     . ~/.profile
                     export PATH="$POETRY_HOME:$PATH"

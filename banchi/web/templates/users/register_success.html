@@ -13,10 +13,12 @@
 
 {% block content %}
 
-<div class="row" style="min-height: 40vh;">
-  <div class="col s12">
-    <h3>Register Success</h3>
-    Going to <a href="{{ url_for('accounts.login') }}">login</a> page!
+<div class="flex items-center justify-center" style="min-height: 40vh;">
+  <div class="card bg-base-100 shadow w-full max-w-md">
+    <div class="card-body">
+      <h3 class="card-title text-2xl font-bold">Register Success</h3>
+      <p>Going to <a class="link link-primary" href="{{ url_for('accounts.login') }}">login</a> page!</p>
+    </div>
   </div>
 </div>
 

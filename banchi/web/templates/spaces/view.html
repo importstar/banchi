@@ -6,11 +6,10 @@ Space
 
 {% block breadcrumbs %}
   {{ super() }}
-  <i class="right angle icon divider"></i>
   {% if request.endpoint == 'spaces.view' %}
-      <div class="active section">{{ space.name }} </div>
+    <li>{{ space.name }}</li>
   {% elif space %}
-    <a class="section" href="{{ url_for('spaces.view', space_id=space.id ) }}">{{ space.name }} </a>
+    <li><a href="{{ url_for('spaces.view', space_id=space.id ) }}">{{ space.name }}</a></li>
   {% endif %}
 
 {% endblock %}
@@ -19,29 +18,33 @@ Space
 {% endblock %}
 
 {% block content %}
-  <div class="ui segment">
-    <a class="ui button primary" href="{{ url_for('spaces.index') }}">Space</a>
-    <a class="ui button primary" href="{{ url_for('spaces.list_roles', space_id=space.id) }}">Roles</a>
+  <div class="card bg-base-100 shadow mb-4">
+    <div class="card-body py-3">
+      <div class="flex flex-wrap gap-3">
+        <a class="btn btn-primary" href="{{ url_for('spaces.index') }}">Space</a>
+        <a class="btn btn-primary" href="{{ url_for('spaces.list_roles', space_id=space.id) }}">Roles</a>
+      </div>
+    </div>
   </div>
-  <div>
+  <div class="mb-4">
     {% if not account %}
-      <a class="ui icon button primary" href="{{ url_for('accounts.create_or_edit', space_id=space.id) }}"><i class="add icon"></i> Create Account</a>
+      <a class="btn btn-primary" href="{{ url_for('accounts.create_or_edit', space_id=space.id) }}"><i class="fa-solid fa-plus"></i> Create Account</a>
     {% endif %}
   </div>
   <div>
     {% if account %}
-    <div class="ui card">
-      <div class="content">
-        <div class="header">Account: {{ account.name }}</div>
-        <div class="meta">{{ account.description }}</div>
-        <div class="description">
-          <p>Currentcy {{ account.currency }}</p>
+    <div class="card bg-base-100 shadow max-w-sm">
+      <div class="card-body">
+        <h2 class="card-title">Account: {{ account.name }}</h2>
+        <p class="text-base-content/60">{{ account.description }}</p>
+        <p>Currentcy {{ account.currency }}</p>
+        <div class="card-actions">
+          <a class="btn btn-primary" href="{{ url_for('accounts.view', account_id=account.id) }}"><i class="fa-solid fa-eye"></i> View</a>
         </div>
       </div>
-        <a class="ui primary icon button" href="{{ url_for('accounts.view', account_id=account.id) }}"><i class="eye icon"></i> View</a>
-    </div> 
+    </div>
 
     {% endif %}
   </div>
-  
+
 {% endblock %}

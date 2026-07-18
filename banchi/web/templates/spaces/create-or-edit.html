@@ -4,39 +4,37 @@
 
 {% block breadcrumbs %}
 {{ super() }}
-<i class="right angle icon divider"></i>
 {% if 'edit' in request.path %}
-  <div class="active section">Edit Space</div>
+  <li>Edit Space</li>
 {% elif 'copy' in request.path %}
-  <div class="active section">Copy Space</div>
+  <li>Copy Space</li>
 
 {% else %}
-  <div class="active section">Create Space</div>
+  <li>Create Space</li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
-  <div class="ui segment">
-    <h2>Space</h2>
-    <form method="POST" class="ui form" enctype="multipart/form-data">
-      {{ form.csrf_token }}
-      {{ renderer.render_field(form.name) }}
-      <div class="two fields">
-      {{ renderer.render_field(form.code) }}
-      {{ renderer.render_field(form.tax_id) }}
-      </div>
-      <button name="submit" type="submit" class="ui primary button">
-        {% if 'edit' in request.path %}
-          Edit
-        {% elif 'copy' in request.path %}
-          Copy
-        {% else %}
-          Create
-        {% endif %}
-      </button>
-    </form>
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="text-2xl font-bold mb-4">Space</h2>
+      <form method="POST" enctype="multipart/form-data">
+        {{ form.csrf_token }}
+        {{ renderer.render_field(form.name) }}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {{ renderer.render_field(form.code) }}
+        {{ renderer.render_field(form.tax_id) }}
+        </div>
+        <button name="submit" type="submit" class="btn btn-primary">
+          {% if 'edit' in request.path %}
+            Edit
+          {% elif 'copy' in request.path %}
+            Copy
+          {% else %}
+            Create
+          {% endif %}
+        </button>
+      </form>
+    </div>
   </div>
 {% endblock content %}
-
-{% block additional_js %}
-{% endblock additional_js %}

@@ -1,79 +1,66 @@
 {% import '/base/error-handler.html' as eh %}
 
-{% macro render_field(field, class_='') -%}
-{%- set style = '%s' | format(eh.get_validate_class(field.errors)) -%}
-{%- if class_ != '' -%}
-{%- set style = '%s %s' | format(class_, eh.get_validate_class(field.errors)) -%}
-{%- endif -%}
-<div class="field">
-  {{ field.label }}
+{% macro render_field(field, class_='input w-full', error_class='input-error') -%}
+{%- set style = '%s %s' | format(class_, eh.get_validate_class(field.errors, error_class)) -%}
+<div class="form-field mb-3">
+  {{ field.label(class_='label mb-1 font-medium text-base-content') }}
   {{ field(class_=style) }}
 </div>
 {{ eh.get_error_messages(field.errors) }}
 {%- endmacro %}
 
 {% macro render_checkbox(field) -%}
-<div class="field">
-  <div class="ui checkbox">
-    {{ field }}
-    {{ field.label }}
-  </div>
+<div class="form-field mb-3">
+  <label class="label cursor-pointer justify-start gap-3 text-base-content">
+    {{ field(class_='checkbox') }}
+    <span>{{ field.label.text }}</span>
+  </label>
 </div>
+{{ eh.get_error_messages(field.errors) }}
 {%- endmacro %}
 
 
 {% macro render_fileinput(field) -%}
-<div class="field">
-  {{ field.label }}
-  <div class="ui action input">
-    <input type="text" placeholder="{{ field.label.text }}" readonly class="attach-file-{{field.name}}">
-    {{ field(style="display: none;") }}
-    <div class="ui icon button attach-file-{{field.name}}">
-      <i class="attach icon"></i>
-    </div>
-  </div>
+<div class="form-field mb-3">
+  {{ field.label(class_='label mb-1 font-medium text-base-content') }}
+  {{ field(class_='file-input w-full') }}
 </div>
+{{ eh.get_error_messages(field.errors) }}
 {%- endmacro %}
 
 
 {% macro render_select_disabled(field) -%}
-{{ render_field(field, class_='ui fluid search selection dropdown disabled') }}
+{{ render_field(field, class_='select w-full', error_class='select-error') }}
 {%- endmacro %}
 
 {% macro render_select(field) -%}
-{{ render_field(field, class_='ui fluid search selection dropdown') }}
+{{ render_field(field, class_='select w-full', error_class='select-error') }}
 {%- endmacro %}
 
 {% macro render_select_no_search(field) -%}
-{{ render_field(field, class_='ui selection dropdown') }}
+{{ render_field(field, class_='select w-full', error_class='select-error') }}
 {%- endmacro %}
 
 {% macro render_multiple_select(field) -%}
-{{ render_field(field, class_='ui fluid multiple search selection dropdown') }}
+{{ render_field(field, class_='select w-full h-auto', error_class='select-error') }}
 {%- endmacro %}
 
 
 
 {% macro render_calendar(field, calendar_id='calendar') -%}
-<div class="field">
-  {{ field.label }}
-  <div class="ui calendar" id="{{ calendar_id }}">
-    <div class="ui input left icon">
-      <i class="calendar icon"></i>
-      {{ field(autocomplete='off') }}
-    </div>
-  </div>
+{%- set style = 'input w-full %s' | format(eh.get_validate_class(field.errors, 'input-error')) -%}
+<div class="form-field mb-3" id="{{ calendar_id }}">
+  {{ field.label(class_='label mb-1 font-medium text-base-content') }}
+  {{ field(type='datetime-local', class_=style, autocomplete='off') }}
 </div>
+{{ eh.get_error_messages(field.errors) }}
 {%- endmacro %}
 
 {% macro render_timepicker(field, timepicker_id='timepicker') -%}
-<div class="field">
-  {{ field.label }}
-  <div class="ui calendar" id="{{ timepicker_id }}">
-    <div class="ui input left icon">
-      <i class="time icon"></i>
-      {{ field(placeholder='Time') }}
-    </div>
-  </div>
+{%- set style = 'input w-full %s' | format(eh.get_validate_class(field.errors, 'input-error')) -%}
+<div class="form-field mb-3" id="{{ timepicker_id }}">
+  {{ field.label(class_='label mb-1 font-medium text-base-content') }}
+  {{ field(type='time', class_=style) }}
 </div>
+{{ eh.get_error_messages(field.errors) }}
 {%- endmacro %}

@@ -50,13 +50,13 @@ class TransactionFilterForm(FlaskForm):
 
     started_date = fields.DateTimeField(
         "Start Date",
-        format="%Y-%m-%d %H:%M:%S",
+        format=["%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"],
         widget=widgets.TextInput(),
         validators=[validators.Optional()],
     )
     ended_date = fields.DateTimeField(
         "End Date",
-        format="%Y-%m-%d %H:%M:%S",
+        format=["%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"],
         widget=widgets.TextInput(),
         validators=[validators.Optional()],
     )

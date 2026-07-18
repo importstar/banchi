@@ -4,45 +4,40 @@
 
 {% block breadcrumbs %}
 {{ super() }}
-<i class="right angle icon divider"></i>
 {% if 'edit' not in request.path %}
-<div class="active section">Create Account Book</div>
+<li>Create Account Book</li>
 {% else %}
-<div class="active section">Edit: {{ account_book.name }}</div>
+<li>Edit: {{ account_book.name }}</li>
 {% endif %}
 {% endblock %}
 
 {% block content %}
-<div class="ui segment">
-  {% if 'edit' not in request.path %}
-  <h2>Account Book</h2>
-  {% else %}
-  <h2>Edit: {{ account_book.name }}</h2>
-  {% endif %}
+<div class="card bg-base-100 shadow">
+  <div class="card-body">
+    {% if 'edit' not in request.path %}
+    <h2 class="text-2xl font-bold mb-4">Account Book</h2>
+    {% else %}
+    <h2 class="text-2xl font-bold mb-4">Edit: {{ account_book.name }}</h2>
+    {% endif %}
 
-  <form method="POST" class="ui form" enctype="multipart/form-data">
-    {{ form.csrf_token }}
-    {{ renderer.render_field(form.name) }}
-    {{ renderer.render_select(form.parent_id) }}
-    {{ renderer.render_field(form.description) }}
-    <div class="three fields">
-      {{ renderer.render_select(form.type) }}
-      {{ renderer.render_select(form.smallest_fraction) }}
-      {{ renderer.render_select(form.currency) }}
-    </div>
-    <button name="subnit" type="submit" class="ui primary button">
-      {% if 'edit' not in request.path %}
-      Create
-      {% else %}
-      Edit
-      {% endif %}
-    </button>
-  </form>
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.csrf_token }}
+      {{ renderer.render_field(form.name) }}
+      {{ renderer.render_select(form.parent_id) }}
+      {{ renderer.render_field(form.description) }}
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        {{ renderer.render_select(form.type) }}
+        {{ renderer.render_select(form.smallest_fraction) }}
+        {{ renderer.render_select(form.currency) }}
+      </div>
+      <button name="subnit" type="submit" class="btn btn-primary">
+        {% if 'edit' not in request.path %}
+        Create
+        {% else %}
+        Edit
+        {% endif %}
+      </button>
+    </form>
+  </div>
 </div>
 {% endblock content %}
-
-{% block additional_js %}
-<script type="text/javascript">
-  $('.ui.dropdown').dropdown();
-</script>
-{% endblock additional_js %}

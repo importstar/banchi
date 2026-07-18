@@ -4,20 +4,19 @@
 
 {% block breadcrumbs %}
 {{ super() }}
-<i class="right angle icon divider"></i>
-<div class="active section">Apply Transaction Template</div>
+<li>Apply Transaction Template</li>
 {% endblock %}
 
 {% macro render_transaction(form) %}
-<div class="two fields">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
   {{ renderer.render_calendar(form.date, calendar_id=form.date.id+'_date_calendar') }}
   {{ renderer.render_field(form.description_) }}
 </div>
-<div class="two fields">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
   {{ renderer.render_field(form.value) }}
   {{ renderer.render_select(form.currency) }}
 </div>
-<div class="two fields">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-3">
   {{ renderer.render_select(form.from_account_book_id) }}
   {{ renderer.render_select(form.to_account_book_id) }}
 </div>
@@ -27,52 +26,33 @@
 {% endmacro %}
 
 {% block content %}
-<div class="ui segment">
-  <h2>Transaction</h2>
-  <form method="POST" class="ui form" enctype="multipart/form-data">
-    {{ form.csrf_token }}
+<div class="card bg-base-100 shadow">
+  <div class="card-body">
+    <h2 class="text-2xl font-bold mb-4">Transaction</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.csrf_token }}
 
-    {% if form.transactions is defined %}
-    {% for sub_form in form.transactions %}
-    <div class="ui vertical {{ 'red' if loop.index % 2 == 1 else 'blue' }} segment">
-      <h3 class="ui header">Transaction #{{ loop.index }}</h3>
-      {{ render_transaction(sub_form) }}
-      {{ sub_form.csrf_token }}
-    </div>
-    {% endfor %}
-    {% else %}
-    {{ render_transaction(form) }}
-    {% endif %}
-    <button name="submit" type="submit" class="ui primary button">
-      {% if 'edit' not in request.path %}
-      Add
+      {% if form.transactions is defined %}
+      {% for sub_form in form.transactions %}
+      <div class="card bg-base-100 shadow border-l-4 {{ 'border-error' if loop.index % 2 == 1 else 'border-primary' }} mb-4">
+        <div class="card-body p-4">
+          <h3 class="text-xl font-bold">Transaction #{{ loop.index }}</h3>
+          {{ render_transaction(sub_form) }}
+          {{ sub_form.csrf_token }}
+        </div>
+      </div>
+      {% endfor %}
       {% else %}
-      Edit
+      {{ render_transaction(form) }}
       {% endif %}
-    </button>
-  </form>
+      <button name="submit" type="submit" class="btn btn-primary">
+        {% if 'edit' not in request.path %}
+        Add
+        {% else %}
+        Edit
+        {% endif %}
+      </button>
+    </form>
+  </div>
 </div>
 {% endblock content %}
-
-{% block additional_js %}
-<script type="text/javascript">
-  datetime_formatter = {
-    datetime: "YYYY-MM-DD HH:mm:ss",
-    date: "YYYY-MM-DD",
-  };
-
-  $('div[id$="date_calendar"]').calendar({
-    type: 'datetime',
-    today: true,
-    monthFirst: false,
-    formatter: datetime_formatter,
-  });
-
-  $('.ui.search.dropdown').dropdown({
-    allowAdditions: true,
-  });
-
-
-</script>
-
-{% endblock additional_js %}

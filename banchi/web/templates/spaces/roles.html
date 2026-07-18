@@ -6,11 +6,10 @@ Space
 
 {% block breadcrumbs %}
   {{ super() }}
-  <i class="right angle icon divider"></i>
   {% if request.endpoint == 'spaces.list_roles' %}
-      <div class="active section">Space Role </div>
+    <li>Space Role</li>
   {% elif space %}
-    <a class="section" href="{{ url_for('spaces.list_roles', space_id=space.id ) }}">Space Role </a>
+    <li><a href="{{ url_for('spaces.list_roles', space_id=space.id ) }}">Space Role</a></li>
   {% endif %}
 
 
@@ -20,12 +19,16 @@ Space
 {% endblock %}
 
 {% block content %}
-  <div class="ui segment">
-    <a class="ui button primary" href="{{ url_for('spaces.index') }}">Space</a>
-    <a class="ui button primary" href="{{ url_for('spaces.add_or_edit_role', space_id=space.id) }}">Add Role</a>
+  <div class="card bg-base-100 shadow mb-4">
+    <div class="card-body py-3">
+      <div class="flex flex-wrap gap-3">
+        <a class="btn btn-primary" href="{{ url_for('spaces.index') }}">Space</a>
+        <a class="btn btn-primary" href="{{ url_for('spaces.add_or_edit_role', space_id=space.id) }}">Add Role</a>
+      </div>
+    </div>
   </div>
-  <div>
-    <table class="ui table">
+  <div class="card bg-base-100 shadow overflow-x-auto">
+    <table class="table table-zebra">
       <thead>
         <tr>
           <th>Member</th>
@@ -43,12 +46,12 @@ Space
           <td>{{ space_role.updated_by.first_name }} {{ space_role.updated_by.last_name }}</td>
           <td>{{ space_role.updated_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
           <td>
-            <a class="ui primary icon circular button" href="{{ url_for('spaces.add_or_edit_role', space_id=space_role.space.id, space_role_id=space_role.id) }}"><i class="edit icon"></i></a>
+            <a class="btn btn-primary btn-circle btn-sm" title="Edit" href="{{ url_for('spaces.add_or_edit_role', space_id=space_role.space.id, space_role_id=space_role.id) }}"><i class="fa-solid fa-pen-to-square"></i></a>
           </td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
   </div>
-  
+
 {% endblock %}
