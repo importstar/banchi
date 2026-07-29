@@ -12,6 +12,7 @@
     <h2 class="text-2xl font-bold mb-4">Verify Statement</h2>
     <form method="POST" enctype="multipart/form-data">
       {{ form.csrf_token }}
+      {{ renderer.render_select(form.bank) }}
       {{ renderer.render_field(form.statement) }}
       <button name="submit" type="submit" class="btn btn-primary">
         <i class="fa-solid fa-upload"></i> Upload &amp; Verify

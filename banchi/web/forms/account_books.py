@@ -11,6 +11,7 @@ from flask_wtf import FlaskForm
 from flask_wtf.file import FileAllowed, FileField, FileRequired
 
 from .fields import TagListField
+from ..utils import bank_statements
 
 from banchi_client import models
 import datetime
@@ -80,6 +81,11 @@ class TransactionFilterForm(FlaskForm):
 
 
 class VerifyStatementForm(FlaskForm):
+    bank = fields.SelectField(
+        "Bank",
+        validators=[validators.InputRequired()],
+        choices=bank_statements.BANK_CHOICES,
+    )
     statement = FileField(
         "Bank Statement (CSV)",
         validators=[

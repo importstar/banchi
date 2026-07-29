@@ -79,6 +79,22 @@ def parse_kasikorn_statement(file_stream):
     )
 
 
+BANK_PARSERS = {
+    "kasikorn": parse_kasikorn_statement,
+}
+
+BANK_CHOICES = [
+    ("kasikorn", "Kasikorn Bank (K-Bank)"),
+]
+
+
+def parse_statement(bank, file_stream):
+    parser = BANK_PARSERS.get(bank)
+    if parser is None:
+        raise StatementParseError(f"Unsupported bank: {bank}")
+    return parser(file_stream)
+
+
 def reconcile_statement(entries, account_book_id, transactions):
     """Match statement entries against existing account book transactions.
 

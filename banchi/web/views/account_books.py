@@ -493,8 +493,8 @@ def verify_statement(account_book_id):
 
     if form.validate_on_submit():
         try:
-            statement = utils.bank_statements.parse_kasikorn_statement(
-                form.statement.data.stream
+            statement = utils.bank_statements.parse_statement(
+                form.bank.data, form.statement.data.stream
             )
         except utils.bank_statements.StatementParseError as error:
             parse_error = str(error)
