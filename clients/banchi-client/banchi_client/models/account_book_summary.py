@@ -6,8 +6,8 @@ from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
+from ..models.summary_type_enum import SummaryTypeEnum
 from ..types import UNSET, Unset
 
 T = TypeVar("T", bound="AccountBookSummary")
@@ -26,6 +26,7 @@ class AccountBookSummary:
         increase (str | Unset):  Default: '0'.
         decrease (str | Unset):  Default: '0'.
         balance (str | Unset):  Default: '0'.
+        type_ (SummaryTypeEnum | Unset):
     """
 
     id: str
@@ -37,6 +38,7 @@ class AccountBookSummary:
     increase: str | Unset = "0"
     decrease: str | Unset = "0"
     balance: str | Unset = "0"
+    type_: SummaryTypeEnum | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -58,6 +60,10 @@ class AccountBookSummary:
 
         balance = self.balance
 
+        type_: str | Unset = UNSET
+        if not isinstance(self.type_, Unset):
+            type_ = self.type_.value
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -76,6 +82,8 @@ class AccountBookSummary:
             field_dict["decrease"] = decrease
         if balance is not UNSET:
             field_dict["balance"] = balance
+        if type_ is not UNSET:
+            field_dict["type"] = type_
 
         return field_dict
 
@@ -88,17 +96,24 @@ class AccountBookSummary:
 
         month = d.pop("month")
 
-        date = isoparse(d.pop("date"))
+        date = datetime.datetime.fromisoformat(d.pop("date"))
 
-        created_date = isoparse(d.pop("created_date"))
+        created_date = datetime.datetime.fromisoformat(d.pop("created_date"))
 
-        updated_date = isoparse(d.pop("updated_date"))
+        updated_date = datetime.datetime.fromisoformat(d.pop("updated_date"))
 
         increase = d.pop("increase", UNSET)
 
         decrease = d.pop("decrease", UNSET)
 
         balance = d.pop("balance", UNSET)
+
+        _type_ = d.pop("type", UNSET)
+        type_: SummaryTypeEnum | Unset
+        if isinstance(_type_, Unset):
+            type_ = UNSET
+        else:
+            type_ = SummaryTypeEnum(_type_)
 
         account_book_summary = cls(
             id=id,
@@ -110,6 +125,7 @@ class AccountBookSummary:
             increase=increase,
             decrease=decrease,
             balance=balance,
+            type_=type_,
         )
 
         account_book_summary.additional_properties = d

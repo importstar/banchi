@@ -1,0 +1,145 @@
+{% extends '/account_books/view.html' %}
+{% import '/base/html-renderer.html' as renderer %}
+
+{% block breadcrumbs %}
+{{ super() }}
+<li>Verify Statement</li>
+{% endblock %}
+
+{% block content %}
+<div class="card bg-base-100 shadow mb-4">
+  <div class="card-body">
+    <h2 class="text-2xl font-bold mb-4">Verify Statement</h2>
+    <form method="POST" enctype="multipart/form-data">
+      {{ form.csrf_token }}
+      {{ renderer.render_field(form.statement) }}
+      <button name="submit" type="submit" class="btn btn-primary">
+        <i class="fa-solid fa-upload"></i> Upload &amp; Verify
+      </button>
+    </form>
+  </div>
+</div>
+
+{% if parse_error %}
+<div class="alert alert-error mb-4">
+  <span>{{ parse_error }}</span>
+</div>
+{% endif %}
+
+{% if report %}
+<div class="card bg-base-100 shadow mb-4">
+  <div class="card-body">
+    <h3 class="text-xl font-bold mb-2">Statement Summary</h3>
+    <div>Account Number: {{ report.account_number or '-' }}</div>
+    <div>Period: {{ report.started_date.strftime('%d/%m/%Y') }} - {{ report.ended_date.strftime('%d/%m/%Y') }}</div>
+    <div class="flex flex-wrap gap-4 mt-2">
+      <div class="badge badge-success badge-lg">Matched: {{ report.matched | length }}</div>
+      <div class="badge badge-error badge-lg">Missing in Account Book: {{ report.missing_in_account_book | length }}</div>
+      <div class="badge badge-warning badge-lg">Extra in Account Book: {{ report.extra_in_account_book | length }}</div>
+    </div>
+  </div>
+</div>
+
+{% if report.missing_in_account_book %}
+<div class="card bg-base-100 shadow mb-4">
+  <div class="card-body overflow-x-auto">
+    <h3 class="text-xl font-bold mb-2 text-error">In Statement but Missing from Account Book</h3>
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th class="text-right">Withdrawal</th>
+          <th class="text-right">Deposit</th>
+          <th>Channel</th>
+          <th>Detail</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for entry in report.missing_in_account_book %}
+        <tr>
+          <td>{{ entry.date.strftime('%d/%m/%Y %H:%M') }}</td>
+          <td>{{ entry.description }}</td>
+          <td class="text-right">{{ "{:,.2f}".format(entry.withdrawal) if entry.withdrawal else '' }}</td>
+          <td class="text-right">{{ "{:,.2f}".format(entry.deposit) if entry.deposit else '' }}</td>
+          <td>{{ entry.channel }}</td>
+          <td>{{ entry.detail }}</td>
+          <td>
+            <a class="btn btn-xs btn-primary"
+              target="_blank" rel="noopener"
+              href="{{ url_for('account_books.add_or_edit_transaction',
+                account_book_id=account_book.id,
+                date=entry.date.isoformat(),
+                value=(entry.withdrawal if entry.withdrawal else entry.deposit),
+                description=(entry.detail or entry.description),
+                direction=('withdrawal' if entry.withdrawal else 'deposit')) }}">
+              <i class="fa-solid fa-plus"></i> Create
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if report.extra_in_account_book %}
+<div class="card bg-base-100 shadow mb-4">
+  <div class="card-body overflow-x-auto">
+    <h3 class="text-xl font-bold mb-2 text-warning">In Account Book but Not Found in Statement</h3>
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Direction</th>
+          <th class="text-right">Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in report.extra_in_account_book %}
+        <tr>
+          <td>{{ item.transaction.date.strftime('%d/%m/%Y %H:%M') }}</td>
+          <td>{{ item.transaction.description }}</td>
+          <td>{{ item.direction }}</td>
+          <td class="text-right">{{ "{:,.2f}".format(item.amount) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% if report.matched %}
+<div class="card bg-base-100 shadow mb-4">
+  <div class="card-body overflow-x-auto">
+    <h3 class="text-xl font-bold mb-2 text-success">Matched</h3>
+    <table class="table table-zebra">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Statement Description</th>
+          <th class="text-right">Amount</th>
+          <th>Account Book Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in report.matched %}
+        <tr>
+          <td>{{ item.statement_entry.date.strftime('%d/%m/%Y %H:%M') }}</td>
+          <td>{{ item.statement_entry.description }}</td>
+          <td class="text-right">{{ "{:,.2f}".format(item.book_entry.amount) }}</td>
+          <td>{{ item.book_entry.transaction.description }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+{% endif %}
+{% endblock content %}

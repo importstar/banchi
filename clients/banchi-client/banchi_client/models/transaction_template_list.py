@@ -67,9 +67,7 @@ class TransactionTemplateList:
         transaction_templates = []
         _transaction_templates = d.pop("transaction_templates")
         for transaction_templates_item_data in _transaction_templates:
-            transaction_templates_item = TransactionTemplate.from_dict(
-                transaction_templates_item_data
-            )
+            transaction_templates_item = TransactionTemplate.from_dict(transaction_templates_item_data)
 
             transaction_templates.append(transaction_templates_item)
 

@@ -10,3 +10,4 @@ node_modules
 *.brython.js
 babel.sh
 geojsons
+data

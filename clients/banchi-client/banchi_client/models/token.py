@@ -6,7 +6,6 @@ from typing import Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 T = TypeVar("T", bound="Token")
 
@@ -73,11 +72,11 @@ class Token:
 
         expires_in = d.pop("expires_in")
 
-        expires_at = isoparse(d.pop("expires_at"))
+        expires_at = datetime.datetime.fromisoformat(d.pop("expires_at"))
 
         scope = d.pop("scope")
 
-        issued_at = isoparse(d.pop("issued_at"))
+        issued_at = datetime.datetime.fromisoformat(d.pop("issued_at"))
 
         refresh_token = d.pop("refresh_token")
 

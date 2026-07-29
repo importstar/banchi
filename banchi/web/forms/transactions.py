@@ -12,7 +12,13 @@ from banchi_client import models
 class TransactionForm(FlaskForm):
     date = fields.DateTimeField(
         "Date",
-        format=["%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"],
+        format=[
+            "%d/%m/%Y %H:%M",
+            "%d/%m/%Y %H:%M:%S",
+            "%Y-%m-%dT%H:%M",
+            "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%d %H:%M:%S",
+        ],
         widget=widgets.TextInput(),
         default=datetime.datetime.now,
     )
@@ -30,7 +36,7 @@ class TransactionForm(FlaskForm):
         choices=[(e.value, e.value.upper()) for e in models.CurrencyEnum],
     )
 
-    tags = fields.SelectMultipleField("Tags", choices=[], validate_choice=False)
+    tags = TagListField("Tags")
     remarks = fields.TextAreaField("Remarks")
 
 
@@ -50,7 +56,13 @@ class TransactionTemplateForm(TransactionListForm):
 class ApplyTransactionTemplateForm(FlaskForm):
     date = fields.DateTimeField(
         "Date",
-        format=["%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S"],
+        format=[
+            "%d/%m/%Y %H:%M",
+            "%d/%m/%Y %H:%M:%S",
+            "%Y-%m-%dT%H:%M",
+            "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%d %H:%M:%S",
+        ],
         widget=widgets.TextInput(),
         default=datetime.datetime.now,
     )

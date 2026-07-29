@@ -7,7 +7,7 @@
 <li>Apply Transaction Template</li>
 {% endblock %}
 
-{% macro render_transaction(form) %}
+{% macro render_transaction(form, all_tags=[]) %}
 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
   {{ renderer.render_calendar(form.date, calendar_id=form.date.id+'_date_calendar') }}
   {{ renderer.render_field(form.description_) }}
@@ -21,8 +21,8 @@
   {{ renderer.render_select(form.to_account_book_id) }}
 </div>
 
-{{ renderer.render_multiple_select(form.tags) }}
-{{ renderer.render_field(form.remarks) }}
+{{ renderer.render_tag_input(form.tags, all_tags) }}
+{{ renderer.render_textarea(form.remarks) }}
 {% endmacro %}
 
 {% block content %}
@@ -37,13 +37,13 @@
       <div class="card bg-base-100 shadow border-l-4 {{ 'border-error' if loop.index % 2 == 1 else 'border-primary' }} mb-4">
         <div class="card-body p-4">
           <h3 class="text-xl font-bold">Transaction #{{ loop.index }}</h3>
-          {{ render_transaction(sub_form) }}
+          {{ render_transaction(sub_form, all_tags|default([])) }}
           {{ sub_form.csrf_token }}
         </div>
       </div>
       {% endfor %}
       {% else %}
-      {{ render_transaction(form) }}
+      {{ render_transaction(form, all_tags|default([])) }}
       {% endif %}
       <button name="submit" type="submit" class="btn btn-primary">
         {% if 'edit' not in request.path %}

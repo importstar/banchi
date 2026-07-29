@@ -6,11 +6,11 @@ from typing import Any, TypeVar
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
 
-T = TypeVar("T", bound="ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet")
+T = TypeVar("T", bound="Context")
 
 
 @_attrs_define
-class ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGet:
+class Context:
     """ """
 
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -24,10 +24,10 @@ class ResponseGetBalanceByYearMonthV1AccountBooksAccountBookIdBalanceYearMonthGe
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         d = dict(src_dict)
-        response_get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get = cls()
+        context = cls()
 
-        response_get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get.additional_properties = d
-        return response_get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get
+        context.additional_properties = d
+        return context
 
     @property
     def additional_keys(self) -> list[str]:

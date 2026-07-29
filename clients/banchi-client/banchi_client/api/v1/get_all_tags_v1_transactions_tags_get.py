@@ -1,26 +1,46 @@
 from http import HTTPStatus
-from typing import Any, cast
+from typing import Any
 
 import httpx
 
 from ... import errors
 from ...client import AuthenticatedClient, Client
-from ...types import Response
+from ...models.http_validation_error import HTTPValidationError
+from ...models.tag_list import TagList
+from ...types import UNSET, Response
 
 
-def _get_kwargs() -> dict[str, Any]:
+def _get_kwargs(
+    *,
+    account_id: str,
+) -> dict[str, Any]:
+    params: dict[str, Any] = {}
+
+    params["account_id"] = account_id
+
+    params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
+
     _kwargs: dict[str, Any] = {
         "method": "get",
-        "url": "/v1/users/me/check_password",
+        "url": "/v1/transactions/tags",
+        "params": params,
     }
 
     return _kwargs
 
 
-def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> bool | None:
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> HTTPValidationError | TagList | None:
     if response.status_code == 200:
-        response_200 = cast(bool, response.json())
+        response_200 = TagList.from_dict(response.json())
+
         return response_200
+
+    if response.status_code == 422:
+        response_422 = HTTPValidationError.from_dict(response.json())
+
+        return response_422
 
     if client.raise_on_unexpected_status:
         raise errors.UnexpectedStatus(response.status_code, response.content)
@@ -28,7 +48,9 @@ def _parse_response(*, client: AuthenticatedClient | Client, response: httpx.Res
         return None
 
 
-def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Response) -> Response[bool]:
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[HTTPValidationError | TagList]:
     return Response(
         status_code=HTTPStatus(response.status_code),
         content=response.content,
@@ -40,18 +62,24 @@ def _build_response(*, client: AuthenticatedClient | Client, response: httpx.Res
 def sync_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[bool]:
-    """Get Me Check Password
+    account_id: str,
+) -> Response[HTTPValidationError | TagList]:
+    """Get All Tags
+
+    Args:
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[bool]
+        Response[HTTPValidationError | TagList]
     """
 
-    kwargs = _get_kwargs()
+    kwargs = _get_kwargs(
+        account_id=account_id,
+    )
 
     response = client.get_httpx_client().request(
         **kwargs,
@@ -63,37 +91,48 @@ def sync_detailed(
 def sync(
     *,
     client: AuthenticatedClient,
-) -> bool | None:
-    """Get Me Check Password
+    account_id: str,
+) -> HTTPValidationError | TagList | None:
+    """Get All Tags
+
+    Args:
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        bool
+        HTTPValidationError | TagList
     """
 
     return sync_detailed(
         client=client,
+        account_id=account_id,
     ).parsed
 
 
 async def asyncio_detailed(
     *,
     client: AuthenticatedClient,
-) -> Response[bool]:
-    """Get Me Check Password
+    account_id: str,
+) -> Response[HTTPValidationError | TagList]:
+    """Get All Tags
+
+    Args:
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        Response[bool]
+        Response[HTTPValidationError | TagList]
     """
 
-    kwargs = _get_kwargs()
+    kwargs = _get_kwargs(
+        account_id=account_id,
+    )
 
     response = await client.get_async_httpx_client().request(**kwargs)
 
@@ -103,19 +142,24 @@ async def asyncio_detailed(
 async def asyncio(
     *,
     client: AuthenticatedClient,
-) -> bool | None:
-    """Get Me Check Password
+    account_id: str,
+) -> HTTPValidationError | TagList | None:
+    """Get All Tags
+
+    Args:
+        account_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
         httpx.TimeoutException: If the request takes longer than Client.timeout.
 
     Returns:
-        bool
+        HTTPValidationError | TagList
     """
 
     return (
         await asyncio_detailed(
             client=client,
+            account_id=account_id,
         )
     ).parsed

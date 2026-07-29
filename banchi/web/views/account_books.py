@@ -24,6 +24,7 @@ from banchi_client.api.v1 import (
     get_balance_by_year_month_v1_account_books_account_book_id_balance_year_month_get,
     delete_v1_account_books_account_book_id_delete,
     delete_v1_transactions_transaction_id_delete,
+    get_all_tags_v1_transactions_tags_get,
 )
 
 from .. import banchi_api_clients
@@ -410,6 +411,14 @@ def add_bulk_transactions(account_book_id):
 
     account_books = response.account_books
 
+    all_tags = (
+        get_all_tags_v1_transactions_tags_get.sync(
+            client=client, account_id=account_id
+        ).tags
+        if account_id
+        else []
+    )
+
     form = forms.transactions.TransactionListForm()
 
     display_names = utils.account_books.get_display_names(
@@ -443,6 +452,7 @@ def add_bulk_transactions(account_book_id):
             "/account_books/add-or-edit-transaction.html",
             account_book=account_book,
             form=form,
+            all_tags=all_tags,
         )
 
     for idx, sub_form in enumerate(form.transactions):
@@ -467,6 +477,57 @@ def add_bulk_transactions(account_book_id):
         response = create_v1_transactions_post.sync(client=client, body=transaction)
 
     return redirect(url_for("account_books.view", account_book_id=account_book.id))
+
+
+@module.route("/<account_book_id>/verify-statement", methods=["GET", "POST"])
+@login_required
+def verify_statement(account_book_id):
+    client = banchi_api_clients.client.get_current_client()
+    account_book = get_v1_account_books_account_book_id_get.sync(
+        client=client, account_book_id=account_book_id
+    )
+
+    form = forms.account_books.VerifyStatementForm()
+    report = None
+    parse_error = None
+
+    if form.validate_on_submit():
+        try:
+            statement = utils.bank_statements.parse_kasikorn_statement(
+                form.statement.data.stream
+            )
+        except utils.bank_statements.StatementParseError as error:
+            parse_error = str(error)
+        else:
+            started_date = statement["started_date"].replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
+            ended_date = statement["ended_date"].replace(
+                hour=23, minute=59, second=59, microsecond=999999
+            )
+
+            response = get_all_v1_transactions_get.sync(
+                client=client,
+                from_account_book_id=account_book_id,
+                to_account_book_id=account_book_id,
+                started_date=started_date,
+                ended_date=ended_date,
+                size_per_page=1000,
+            )
+            report = utils.bank_statements.reconcile_statement(
+                statement["entries"], account_book_id, response.transactions
+            )
+            report["account_number"] = statement["account_number"]
+            report["started_date"] = statement["started_date"]
+            report["ended_date"] = statement["ended_date"]
+
+    return render_template(
+        "/account_books/verify-statement.html",
+        account_book=account_book,
+        form=form,
+        report=report,
+        parse_error=parse_error,
+    )
 
 
 @module.route(
@@ -500,6 +561,14 @@ def add_or_edit_transaction(account_book_id, transaction_id):
 
     account_books = response.account_books
 
+    all_tags = (
+        get_all_tags_v1_transactions_tags_get.sync(
+            client=client, account_id=account_id
+        ).tags
+        if account_id
+        else []
+    )
+
     form = forms.transactions.TransactionForm()
 
     transaction = None
@@ -509,7 +578,6 @@ def add_or_edit_transaction(account_book_id, transaction_id):
         )
 
         form = forms.transactions.TransactionForm(obj=transaction)
-        form.tags.choices = [(t, t) for t in transaction.tags]
 
     display_names = utils.account_books.get_display_names(
         account_books, excluse_none_parent=True
@@ -552,6 +620,34 @@ def add_or_edit_transaction(account_book_id, transaction_id):
             form.value.data = decimal.Decimal(form.value.data)
             form.description_.data = transaction.description
 
+        if request.method == "GET" and not transaction:
+            prefill_date = request.args.get("date")
+            prefill_value = request.args.get("value")
+            prefill_description = request.args.get("description")
+            prefill_direction = request.args.get("direction")
+
+            if prefill_date:
+                try:
+                    form.date.data = datetime.datetime.fromisoformat(prefill_date)
+                except ValueError:
+                    pass
+
+            if prefill_value:
+                try:
+                    form.value.data = decimal.Decimal(prefill_value)
+                except decimal.InvalidOperation:
+                    pass
+
+            if prefill_description:
+                form.description_.data = prefill_description
+
+            if account_book and prefill_direction == "withdrawal":
+                form.from_account_book_id.data = str(account_book.id)
+                form.to_account_book_id.data = ""
+            elif account_book and prefill_direction == "deposit":
+                form.to_account_book_id.data = str(account_book.id)
+                form.from_account_book_id.data = ""
+
         # if not transaction:
         #     form.from_account_book_id.render_kw = {"disabled": ""}
 
@@ -559,6 +655,7 @@ def add_or_edit_transaction(account_book_id, transaction_id):
             "/account_books/add-or-edit-transaction.html",
             account_book=account_book,
             form=form,
+            all_tags=all_tags,
         )
 
     data = form.data.copy()
