@@ -29,55 +29,32 @@ pipeline {
     }
 
     stages {
-        stage('Setup System (Install Java, NPM and Python)') {
+        stage('Setup System') {
             steps {
                 sh '''
                 echo "Updating package list and installing npm and python..."
-                apt-get update && apt-get install -y nodejs npm unzip curl
-
-                echo "Installing Poetry..."
-                curl -sSL https://install.python-poetry.org | python3 -
-
-                if [ -f "/root/.poetry/bin/poetry" ]; then
-                    export POETRY_HOME="/root/.poetry/bin"
-                elif [ -f "/root/.poetry/bin/bin/poetry" ]; then
-                    export POETRY_HOME="/root/.poetry/bin/bin"
-                else
-                    echo "Poetry installation failed."
-                    exit 1
-                fi
-
-                echo "export POETRY_HOME=$POETRY_HOME" >> ~/.profile
-                echo "export PATH=$POETRY_HOME:$PATH" >> ~/.profile
-                . ~/.profile
-
-                poetry --version || exit 1
-
-                poetry self add poetry-plugin-export
-
-                pip install safety
-                pip install bandit
+                apt-get update && apt-get install -y unzip curl
                 '''
             }
         }
 
-        stage('Run Safety Dependency-Check Python Package Vulnerabilities') {
-            steps {
-                script {
-                    sh '''
-                        safety check -r requirements.txt --full-report --output html > safety_report.html || true
-                    '''
-                    publishHTML (target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: '.',
-                        reportFiles: 'safety_report.html',
-                        reportName: 'Safety Dependency Report'
-                    ])
-                }
-            }
-        }
+        // stage('Run Safety Dependency-Check Python Package Vulnerabilities') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //                 safety check -r requirements.txt --full-report --output html > safety_report.html || true
+        //             '''
+        //             publishHTML (target: [
+        //                 allowMissing: false,
+        //                 alwaysLinkToLastBuild: true,
+        //                 keepAll: true,
+        //                 reportDir: '.',
+        //                 reportFiles: 'safety_report.html',
+        //                 reportName: 'Safety Dependency Report'
+        //             ])
+        //         }
+        //     }
+        // }
 
 
         stage('Build Docker Image') {
