@@ -1,25 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="banchi">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
     <title>{% block title  %}{{ config.get('APP_TITLE') }}{% endblock %}</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/fomantic-ui-css/semantic.min.css') | add_date_url }}">
-    <script src="{{ url_for('static', filename='node_modules/jquery/dist/jquery.min.js') | add_date_url }}"></script>
-    <script src="{{ url_for('static', filename='node_modules/fomantic-ui-css/semantic.min.js') | add_date_url }}"></script>
-    <style type="text/css">
-      body {
-        background-color: #DADADA;
-      }
-    </style>
-    
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/banchi.css') | add_date_url }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/@fortawesome/fontawesome-free/css/all.min.css') | add_date_url }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/flatpickr/dist/flatpickr.min.css') | add_date_url }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='node_modules/@yaireo/tagify/dist/tagify.css') | add_date_url }}">
+
     {% block default_head %}{% endblock %}
     {% block additional_head %}{% endblock %}
   </head>
 
-  <body>
+  <body class="min-h-screen bg-base-200 text-base-content">
     {% block body %}{% endblock %}
   </body>
+  <script src="{{ url_for('static', filename='node_modules/flatpickr/dist/flatpickr.min.js') | add_date_url }}"></script>
+  <script src="{{ url_for('static', filename='js/datetime-picker.js') | add_date_url }}"></script>
+  <script src="{{ url_for('static', filename='node_modules/@yaireo/tagify/dist/tagify.js') | add_date_url }}"></script>
+  <script src="{{ url_for('static', filename='js/tag-input.js') | add_date_url }}"></script>
   {% block additional_js %}{% endblock %}
   {% include "/base/analytic.html" %}
 </html>

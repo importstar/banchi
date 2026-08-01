@@ -9,7 +9,7 @@ Profile
 {% endblock %}
 
 {% block breadcrumbs %}
-<a href="{{ url_for('users.index') }}" class="section">User</a>
+<li><a href="{{ url_for('users.index') }}">User</a></li>
 {% endblock %}
 
 {% block title %}
@@ -17,35 +17,37 @@ Profile
 {% endblock %}
 
 {% block content %}
-<div class="ui container"> {# start div container #}
-  <div class="ui segment">
-    <h2 class="ui header">Profile
+<div class="card bg-base-100 shadow">
+  <div class="card-body">
+    <h2 class="text-2xl font-bold">Profile
       {% if current_user.is_authenticated and current_user.id == user.id %}
       {#
-      <a class="btn-floating btn-large waves-effect waves-light" href="{{ url_for('users.edit_profile') }}" title='Edit profile.'><i class="edit icon"></i></a>
+      <a class="btn btn-circle btn-primary" href="{{ url_for('users.edit_profile') }}" title='Edit profile.'><i class="fa-solid fa-pen-to-square"></i></a>
       #}
       {% endif %}
     </h2>
-    <div class="ui grid">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
 
-      <div class="four wide column center aligned">
-        <div class="ui small image">
-          <img src="{{ user.get_picture() }}">
+      <div class="flex justify-center">
+        <div class="avatar">
+          <div class="w-32 rounded-full">
+            <img src="{{ user.get_picture() }}">
+          </div>
         </div>
       </div>
 
-      <div class="twelve wide column">
+      <div class="md:col-span-3">
         <div>
-          <h3 class="ui header">{{ user.first_name }} {{ user.last_name }}</h3>
-          <div class="ui label large">
-            <i class="mail icon"></i>
+          <h3 class="text-xl font-bold">{{ user.first_name }} {{ user.last_name }}</h3>
+          <div class="badge badge-ghost badge-lg gap-2 mt-2">
+            <i class="fa-solid fa-envelope"></i>
             {{ user.email }}
           </div>
-          <div style="margin-top: .5vh;">
+          <div class="mt-2">
             {% if current_user.is_authenticated and current_user.id == user.id %}
             Role:
             {% for role in user.roles %}
-            <div class="ui label">
+            <div class="badge badge-ghost">
               {{ role }}
             </div>
             {% endfor %}
@@ -55,15 +57,5 @@ Profile
       </div>
     </div>
   </div>
-{% endblock %}
-
-{% block additional_js %}
-  {{ super() }}
-  <script type="text/javascript">
-    $().ready(function(){
-      $('.icon.link.pop')
-        .popup()
-        ;
-    });
-  </script>
+</div>
 {% endblock %}

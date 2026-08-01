@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, TypeVar
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.space_role_role import SpaceRoleRole
 from ..models.space_role_status import SpaceRoleStatus
@@ -104,9 +103,9 @@ class SpaceRole:
 
         space = ReferenceSpace.from_dict(d.pop("space"))
 
-        created_date = isoparse(d.pop("created_date"))
+        created_date = datetime.datetime.fromisoformat(d.pop("created_date"))
 
-        updated_date = isoparse(d.pop("updated_date"))
+        updated_date = datetime.datetime.fromisoformat(d.pop("updated_date"))
 
         _status = d.pop("status", UNSET)
         status: SpaceRoleStatus | Unset

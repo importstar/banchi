@@ -6,10 +6,10 @@ Transaction Template
 
 {% block breadcrumbs %}
 {% if request.endpoint == 'transaction_templates.index' %}
-<div class="section active">Transaction Templates</div>
+<li>Transaction Templates</li>
 {% else %}
-<a href="{{ url_for('transaction_templates.index', account_id=request.args.get('account_id')) }}" class="section">Transaction
-  Templates</a>
+<li><a href="{{ url_for('transaction_templates.index', account_id=request.args.get('account_id')) }}">Transaction
+  Templates</a></li>
 {% endif %}
 {% endblock %}
 
@@ -17,11 +17,13 @@ Transaction Template
 {% endblock %}
 
 {% block content %}
-  <div class="ui segment">
-      <a class="ui button primary" href="{{ url_for('transaction_templates.add_or_edit', account_id=request.args.get('account_id')) }}">Create</a>
+  <div class="card bg-base-100 shadow mb-4">
+    <div class="card-body py-3 px-5 flex-row items-center">
+      <a class="btn btn-primary" href="{{ url_for('transaction_templates.add_or_edit', account_id=request.args.get('account_id')) }}">Create</a>
+    </div>
   </div>
-  <div class="ui segment">
-    <table class="ui table">
+  <div class="card bg-base-100 shadow overflow-x-auto">
+    <table class="table table-zebra">
       <thead>
         <tr>
           <th>Name</th>
@@ -38,23 +40,40 @@ Transaction Template
           <td>{{ template.updated_by.first_name }} {{ template.updated_by.last_name }}</td>
           <td>{{ template.updated_date }}</td>
           <td>
-            <a class="ui primary circular icon button"
+            <a class="btn btn-primary btn-circle" title="Apply"
               href="{{ url_for('transaction_templates.select_apply_date', transaction_template_id=template.id, account_id=template.account.id) }}">
-              <i class="cog icon"></i>
+              <i class="fa-solid fa-gear"></i>
             </a>
-            <a class="ui yellow circular icon button"
+            <a class="btn btn-warning btn-circle" title="Edit"
               href="{{ url_for('transaction_templates.add_or_edit', transaction_template_id=template.id, account_id=template.account.id) }}">
-              <i class="edit icon"></i>
+              <i class="fa-solid fa-pen-to-square"></i>
             </a>
 
 
-            <a class="ui red circular icon button" id="delete-transaction-template-{{ template.id }}">
-              <i class="trash icon"></i>
-            </a>
+            <button type="button" class="btn btn-error btn-circle" id="delete-transaction-template-{{ template.id }}"
+              title="Delete"
+              onclick="document.getElementById('delete-modal-{{ template.id }}').showModal()">
+              <i class="fa-solid fa-trash"></i>
+            </button>
+
+            <dialog id="delete-modal-{{ template.id }}" class="modal">
+              <div class="modal-box">
+                <h3 class="text-lg font-bold">Delete {{ template.name }}</h3>
+                <p class="py-4">Are you sure you want to delete the {{ template.name }} transaction template?</p>
+                <div class="modal-action">
+                  <form method="dialog"><button class="btn">Cancel</button></form>
+                  <a href="{{ url_for('transaction_templates.delete', transaction_template_id=template.id, account_id=template.account.id) }}" class="btn btn-error">
+                    Delete
+                    <i class="fa-solid fa-trash"></i>
+                  </a>
+                </div>
+              </div>
+              <form method="dialog" class="modal-backdrop"><button>close</button></form>
+            </dialog>
           </td>
         </tr>
         {% endfor %}
       </tbody>
-    </table>  
+    </table>
   </div>
 {% endblock %}

@@ -48,6 +48,10 @@ class TransactionList(BaseModel):
     page_size: int = 1
 
 
+class TagList(BaseModel):
+    tags: list[str]
+
+
 class CreatedTransaction(BaseTransaction):
     from_account_book_id: PydanticObjectId = Field(..., example="0")
     to_account_book_id: PydanticObjectId = Field(..., example="0")

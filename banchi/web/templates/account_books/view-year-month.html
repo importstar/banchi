@@ -9,8 +9,7 @@ Account Book: {{ account_book.name }} ({{ month_summary['year'] }}-{{ month_summ
 {% block breadcrumbs %}
 {{ super() }}
 {% if account_book %}
-<i class="right angle icon divider"></i>
-<div class="active section">{{ month_summary['year'] }}-{{ month_summary['month'] }} </div>
+<li>{{ month_summary['year'] }}-{{ month_summary['month'] }} </li>
 {% endif %}
 
 {% endblock %}
@@ -22,52 +21,50 @@ Account Book: {{ account_book.name }} ({{ month_summary['year'] }}-{{ month_summ
 
 
 {% block account_content %}
-<div style="padding-top:1vh;">
-  <div class="ui cards">
+<div class="pt-2">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
     {% for c_account_book in account_book_children %}
-    <div class="card">
-      <div class="content">
-        <div class="header">{{ c_account_book.name }}</div>
-        <div class="description">
+    <div class="card bg-base-100 shadow">
+      <div class="card-body p-4">
+        <h3 class="card-title text-lg">{{ c_account_book.name }}</h3>
+        <div class="space-y-1">
 
-          <div>
+          <div class="flex justify-between">
             <span>type:</span>
-            <span class="right floated bold" style="font-weight: bold;">
+            <span class="font-bold">
               {{ c_account_book.type_.title() }}
             </span>
           </div>
 
-          <div>
+          <div class="flex justify-between">
             <span>net balance:</span>
-            <span class="right floated bold" style="font-weight: bold;">
+            <span class="font-bold">
               {{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_balance']|float) }}
             </span>
           </div>
-          <div>
+          <div class="flex justify-between">
             <span>net {{ label.positive.title() }}:</span>
-            <span class="right floated" style="font-weight: bold;">
+            <span class="font-bold">
               {{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_increase']|float) }}
             </span>
           </div>
-          <div>
+          <div class="flex justify-between">
             <span>net {{ label.negative.title() }}:</span>
-            <span class="right floated" style="font-weight: bold;">
+            <span class="font-bold">
               {{ "{:,.2f}".format(account_book_children_balance[c_account_book.id]['net_decrease']|float) }}
             </span>
           </div>
         </div>
-      </div>
 
-      <div class="extra content">
-        <div class="ui two buttons">
-          <a class="ui icon primary button"
+        <div class="card-actions mt-3">
+          <a class="btn btn-primary flex-1"
             href="{{ url_for('account_books.view', account_book_id=c_account_book.id) }}">
-            <i class="eye icon"></i>
+            <i class="fa-solid fa-eye"></i>
             View
           </a>
-          <a class="ui icon yellow button"
+          <a class="btn btn-warning flex-1"
             href="{{ url_for('account_books.create_or_edit', account_book_id=c_account_book.id) }}">
-            <i class="edit icon"></i>
+            <i class="fa-solid fa-pen-to-square"></i>
             Edit
           </a>
         </div>
@@ -77,32 +74,31 @@ Account Book: {{ account_book.name }} ({{ month_summary['year'] }}-{{ month_summ
   </div>
 </div>
 
-<div style="padding-top:1vh;">
-  <h2 class="ui header">Account Book Summary</h2>
-  <div class="ui segment">
-    <div class="ui grid">
-      <div class="row">
-        <div class="four wide column">
+<div class="pt-4">
+  <h2 class="text-2xl font-bold mb-4">Account Book Summary</h2>
+  <div class="card bg-base-100 shadow mb-4">
+    <div class="card-body p-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div>
           <strong>Type:</strong> {{ account_book.type_.title() }}
         </div>
-        <div class="four wide column">
-          <strong>Balance:</strong> {{ "{:,.2f}".format(account_book.balance|float) }}<br />
+        <div>
+          <strong>Balance:</strong> {{ "{:,.2f}".format(account_book.balance|float) }}
         </div>
-        <div class="four wide column">
-          <strong>Net balance:</strong> {{ "{:,.2f}".format(balance['net_balance']|float) }} <br />
+        <div>
+          <strong>Net balance:</strong> {{ "{:,.2f}".format(balance['net_balance']|float) }}
         </div>
-      </div>
-      <div class="row">
-        <div class="four wide column">
-          <strong>This month:</strong> {{ month_summary['year'] }}-{{ month_summary['month'] }}<br />
+        <div></div>
+        <div>
+          <strong>This month:</strong> {{ month_summary['year'] }}-{{ month_summary['month'] }}
         </div>
-        <div class="four wide column">
+        <div>
           <strong>Balance:</strong> {{ "{:,.2f}".format(month_summary.balance|float) }}
         </div>
-        <div class="four wide column">
+        <div>
           <strong>{{ label.positive.title() }}:</strong> {{ "{:,.2f}".format(month_summary.increase|float) }}
         </div>
-        <div class="four wide column">
+        <div>
           <strong>{{ label.negative.title() }}:</strong> {{ "{:,.2f}".format(month_summary.decrease|float) }}
         </div>
       </div>
@@ -110,105 +106,107 @@ Account Book: {{ account_book.name }} ({{ month_summary['year'] }}-{{ month_summ
   </div>
 
   {% set ns = namespace(increase=0, decrease=0, balance=0) %}
-  <div style="padding-top:1vh;">
-    <table class="ui Large table">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Transfer</th>
-          <th class="right aligned">{{ label.positive.title() }}</th>
-          <th class="right aligned">{{ label.negative.title() }}</th>
-          <th>Blance</th>
-          <th>User</th>
-          <th>Operation</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr class="top aligned">
-          <td></td>
-          <td>
-            ยอดยกมา {{ last_month_account_book_summary.year }}-{{ last_month_account_book_summary.month }}
-          </td>
-          <td>
-          </td>
-          <td>
-          </td>
-          <td>
-          </td>
-          <td> {{ "{:,.2f}".format(last_month_balance.balance|float) }}
-          </td>
-          <td>
-          </td>
-        </tr>
+  <div class="pt-2">
+    <div class="card bg-base-100 shadow overflow-x-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Transfer</th>
+            <th class="text-right">{{ label.positive.title() }}</th>
+            <th class="text-right">{{ label.negative.title() }}</th>
+            <th>Blance</th>
+            <th>User</th>
+            <th>Operation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="align-top">
+            <td></td>
+            <td>
+              ยอดยกมา {{ last_month_account_book_summary.year }}-{{ last_month_account_book_summary.month }}
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td>
+            </td>
+            <td> {{ "{:,.2f}".format(last_month_balance.balance|float) }}
+            </td>
+            <td>
+            </td>
+          </tr>
 
-        {% for transaction in transaction_chunk.transactions|sort(attribute='date') %}
-        {% set ns.increase = ns.increase + (transaction.value|float) if transaction.to_account_book.id == account_book.id else ns.increase %}
-        {% set ns.decrease = ns.decrease + (transaction.value|float) if transaction.from_account_book.id == account_book.id else ns.decrease %}
-        {% set ns.balance = (last_month_balance.balance|float) + ns.increase - ns.decrease %}
-        <tr class="top aligned">
-          <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
-          <td>
-            {{ transaction.description }}
-            <br />
-            {% for tag in transaction.tags %}
-            <a class="ui label" href="{{ url_for('transactions.show_by_tag', tag=tag) }}">{{ tag }}</a>
-            {% endfor %}
-          </td>
-          <td>
+          {% for transaction in transaction_chunk.transactions|sort(attribute='date') %}
+          {% set ns.increase = ns.increase + (transaction.value|float) if transaction.to_account_book.id == account_book.id else ns.increase %}
+          {% set ns.decrease = ns.decrease + (transaction.value|float) if transaction.from_account_book.id == account_book.id else ns.decrease %}
+          {% set ns.balance = (last_month_balance.balance|float) + ns.increase - ns.decrease %}
+          <tr class="align-top">
+            <td>{{ transaction.date.strftime('%Y/%m/%d %H:%M:%S') }}</td>
+            <td>
+              {{ transaction.description }}
+              <br />
+              {% for tag in transaction.tags %}
+              <a class="badge badge-ghost" href="{{ url_for('transactions.show_by_tag', tag=tag) }}">{{ tag }}</a>
+              {% endfor %}
+            </td>
+            <td>
+              {% if transaction.from_account_book.id != account_book.id %}
+              <a class="link link-primary" href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
+                {{ account_book_display_names[transaction.from_account_book.id] }}
+              </a>
+              {% else %}
+              <a class="link link-primary" href="{{ url_for('account_books.view', account_book_id=transaction.to_account_book.id) }}">
+                {{ account_book_display_names[transaction.to_account_book.id] }}
+              </a>
+              {% endif %}
+            </td>
             {% if transaction.from_account_book.id != account_book.id %}
-            <a href="{{ url_for('account_books.view', account_book_id=transaction.from_account_book.id) }}">
-              {{ account_book_display_names[transaction.from_account_book.id] }}
-            </a>
-            {% else %}
-            <a href="{{ url_for('account_books.view', account_book_id=transaction.to_account_book.id) }}">
-              {{ account_book_display_names[transaction.to_account_book.id] }}
-            </a>
-            {% endif %}
-          </td>
-          {% if transaction.from_account_book.id != account_book.id %}
 
-          <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-          <td class="right aligned"></td>
-          {% else %}
-          <td></td>
-          <td class="right aligned">{{ "{:,.2f}".format(transaction.value|float) }}</td>
-          {% endif %}
-          <td class="right aligned">{{ "{:,.2f}".format(ns.balance|float) }}</td>
-          <td>
-            {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
-          </td>
-          <td class="single line">
-            <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}"
-              class="ui icon yellow circular button"><i class="edit icon"></i></a>
-            <a href="{{ url_for('account_books.delete_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}"
-              class="ui icon red circular button"><i class="trash icon"></i></a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th></th>
-          <th></th>
-          <th></th>
-          <th class="right aligned">
-            {{ "{:,.2f}".format(ns.increase|float) }}
-          </th>
-          <th class="right aligned">
-            {{ "{:,.2f}".format(ns.decrease|float) }}
-          </th>
-          <th class="right aligned">
-            {{ "{:,.2f}".format((ns.increase-ns.decrease)|float) }}
-          </th>
-          <th></th>
-          <th></th>
-        </tr>
-      </tfoot>
-    </table>
+            <td class="text-right">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+            <td class="text-right"></td>
+            {% else %}
+            <td></td>
+            <td class="text-right">{{ "{:,.2f}".format(transaction.value|float) }}</td>
+            {% endif %}
+            <td class="text-right">{{ "{:,.2f}".format(ns.balance|float) }}</td>
+            <td>
+              {{ transaction.updated_by.first_name }} {{ transaction.updated_by.last_name }}
+            </td>
+            <td class="whitespace-nowrap">
+              <a href="{{ url_for('account_books.add_or_edit_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}"
+                class="btn btn-warning btn-circle" title="Edit"><i class="fa-solid fa-pen-to-square"></i></a>
+              <a href="{{ url_for('account_books.delete_transaction', account_book_id=account_book.id, transaction_id=transaction.id) }}"
+                class="btn btn-error btn-circle" title="Delete"><i class="fa-solid fa-trash"></i></a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th class="text-right">
+              {{ "{:,.2f}".format(ns.increase|float) }}
+            </th>
+            <th class="text-right">
+              {{ "{:,.2f}".format(ns.decrease|float) }}
+            </th>
+            <th class="text-right">
+              {{ "{:,.2f}".format((ns.increase-ns.decrease)|float) }}
+            </th>
+            <th></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
     {% if transaction_chunk.page_size > 1 %}
-    <div style="padding-top: 1vh;">
+    <div class="pt-2">
       {{ pagination.render_pagination(request.path, transaction_chunk.page, transaction_chunk.page_size,
       transaction_chunk.size_per_page, request.args) }}
     </div>
@@ -216,28 +214,23 @@ Account Book: {{ account_book.name }} ({{ month_summary['year'] }}-{{ month_summ
   </div>
 
 
-  <div class="ui modal" id="delete-modal">
-    <i class="close icon"></i>
-    <div class="header">
-      Delete {{ account_book.name }} Account Book
-    </div>
-    <div class="content">
-      <div class="description">
-        <div class="ui header">Are you sure you want to delete the {{ account_book.name }} account book ?</div>
+  <dialog id="delete-modal" class="modal">
+    <div class="modal-box">
+      <h3 class="text-lg font-bold">
+        Delete {{ account_book.name }} Account Book
+      </h3>
+      <p class="py-4">Are you sure you want to delete the {{ account_book.name }} account book ?</p>
+      <div class="modal-action">
+        <form method="dialog"><button class="btn">Cancel</button></form>
+
+        <a class="btn btn-error"
+          href="{{ url_for('account_books.delete', account_book_id=account_book.id) }}">
+          Delete
+          <i class="fa-solid fa-trash"></i>
+        </a>
       </div>
     </div>
-    <div class="actions">
-      <button class="ui black deny button">
-        Cancel
-      </button>
-
-      <a class="ui red right labeled icon button"
-        href="{{ url_for('account_books.delete', account_book_id=account_book.id) }}">
-        Delete
-        <i class="trash icon"></i>
-      </a>
-    </div>
-  </div>
+    <form method="dialog" class="modal-backdrop"><button>close</button></form>
+  </dialog>
 </div>
 {% endblock account_content %}
-

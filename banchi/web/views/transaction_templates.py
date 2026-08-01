@@ -15,6 +15,7 @@ from banchi_client.api.v1 import (
     get_all_v1_account_books_get,
     get_v1_account_books_account_book_id_get,
     create_v1_transactions_post,
+    get_all_tags_v1_transactions_tags_get,
 )
 
 from .. import banchi_api_clients
@@ -57,6 +58,14 @@ def add_or_edit(transaction_template_id):
     response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
 
     account_books = response.account_books
+
+    all_tags = (
+        get_all_tags_v1_transactions_tags_get.sync(
+            client=client, account_id=account_id
+        ).tags
+        if account_id
+        else []
+    )
 
     form = forms.transactions.TransactionTemplateForm()
 
@@ -105,6 +114,7 @@ def add_or_edit(transaction_template_id):
             "/transaction_templates/add-or-edit-transaction-template.html",
             # account_book=account_book,
             form=form,
+            all_tags=all_tags,
         )
 
     transactions = []
@@ -176,6 +186,14 @@ def apply(transaction_template_id):
     response = get_all_v1_account_books_get.sync(client=client, account_id=account_id)
     account_books = response.account_books
 
+    all_tags = (
+        get_all_tags_v1_transactions_tags_get.sync(
+            client=client, account_id=account_id
+        ).tags
+        if account_id
+        else []
+    )
+
     form = forms.transactions.TransactionListForm()
 
     display_names = utils.account_books.get_display_names(
@@ -217,6 +235,7 @@ def apply(transaction_template_id):
         return render_template(
             "/transaction_templates/apply-transaction.html",
             form=form,
+            all_tags=all_tags,
         )
 
     for idx, sub_form in enumerate(form.transactions):

@@ -7,40 +7,47 @@ User
 
 {% block breadcrumbs %}
   {{ super() }}
-  <div class="divider"> / </div>
   {% if request.endpoint == 'admin.users.index' %}
-    <div class="active section">User</div>
+    <li>User</li>
   {% else %}
-    <a href="{{ url_for('users.index') }}" class="section">User</a>
+    <li><a href="{{ url_for('users.index') }}">User</a></li>
   {% endif %}
 {% endblock %}
 
 {% block content %}
 {# start div container #}
-<div class="ui segment">
-  <h1>User</h1>
-  <a href="{{ url_for('admin.users.add_or_edit') }}" class="ui primary button">Add User</a>
-  <table class="ui table">
-    <thead>
-      <tr>
-        <th>Username</th>
-        <th>Name</th>
-        <th>Email</th>
-        <th>Register Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in users %}
-        <tr>
-          <td>{{ user.username }}</td>
-          <td>{{ user.first_name }} {{ user.last_name }}</td>
-          <td>{{ user.email }}</td>
-          <td>{{ user.register_date.strftime('%Y-%m-%d %H:%M:%s') }}</td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div> 
+<div class="card bg-base-100 shadow">
+  <div class="card-body">
+    <div class="flex items-center justify-between mb-4">
+      <h1 class="text-3xl font-bold">User</h1>
+      <a href="{{ url_for('admin.users.add_or_edit') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i>
+        Add User
+      </a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="table table-zebra">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Register Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ user.first_name }} {{ user.last_name }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.register_date.strftime('%Y-%m-%d %H:%M:%s') }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 {# end div container #}
 {% endblock %}
-

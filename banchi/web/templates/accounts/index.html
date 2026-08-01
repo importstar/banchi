@@ -6,46 +6,40 @@ Account
 
 {% block breadcrumbs %}
   {% if request.endpoint == 'accounts.index' %}
-    <a class="active section">Accounts</a>
+    <li>Accounts</li>
   {% else %}
-    <a href="{{ url_for('accounts.index') }}" class="section">Accounts</a>
+    <li><a href="{{ url_for('accounts.index') }}">Accounts</a></li>
   {% endif %}
 {% endblock %}
 
 
 {% block content %}
-  <div class="ui segment">
-      <a class="ui button primary" href="{{ url_for('accounts.create_or_edit') }}">Create</a>
+  <div class="card bg-base-100 shadow mb-4">
+    <div class="card-body py-3">
+      <div>
+        <a class="btn btn-primary" href="{{ url_for('accounts.create_or_edit') }}">Create</a>
+      </div>
+    </div>
   </div>
-  <div class="ui cards">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
     {% for account in accounts %}
-    <div class="card">
-      <div class="content">
-        <div class="header">{{ account.name }}</div>
-      </div>
-      <div class="content">
-        <h4 class="ui sub header">Infomation</h4>
-        <div class="ui small feed">
-          <div class="event">
-            <div class="content">
-              <div class="summary">
-                <b>Code:</b> {{ account.code }}
-              </div>
-            </div>
+    <div class="card bg-base-100 shadow">
+      <div class="card-body">
+        <h3 class="card-title text-xl">{{ account.name }}</h3>
+        <h4 class="text-sm font-bold uppercase text-base-content/60">Infomation</h4>
+        <div class="space-y-1">
+          <div>
+            <b>Code:</b> {{ account.code }}
           </div>
-          <div class="event">
-            <div class="content">
-              <div class="summary">
-                <b>Tax ID:</b> {{ account.tax_id }}
-              </div>
-            </div>
+          <div>
+            <b>Tax ID:</b> {{ account.tax_id }}
           </div>
         </div>
-      </div>
-      <div class="extra content">
-        <a class="ui button primary" href="{{ url_for('accounts.view', account_id=account.id) }}">View Account</a>
-        <a class="ui button yellow" href="{{ url_for('accounts.create_or_edit', account_id=account.id) }}">Edit Account</a>
+        <div class="card-actions mt-2">
+          <a class="btn btn-primary" href="{{ url_for('accounts.view', account_id=account.id) }}">View Account</a>
+          <a class="btn btn-warning" href="{{ url_for('accounts.create_or_edit', account_id=account.id) }}">Edit Account</a>
+        </div>
       </div>
     </div>
     {% endfor %}

@@ -7,27 +7,32 @@ Space Role: {{ space.name }}
 
 {% block breadcrumbs %}
   {{ super() }}
-  <i class="right angle icon divider"></i>
-  <div class="active section">Add or Edit Space Role</div>
+  <li>Add or Edit Space Role</li>
 {% endblock %}
 
 {% block title %}
 {% endblock %}
 
 {% block content %}
-  <div class="ui segment">
-    <a class="ui button primary" href="{{ url_for('spaces.index') }}">Space</a>
-  </div>
-  <div>
-    <h2>Space Role</h2>
-    <form class="ui form" method="POST">
-      {{ form.csrf_token }}
-      <div class="two fields">
-        {{ renderer.render_select(form.member_id) }}
-        {{ renderer.render_select(form.role) }}
+  <div class="card bg-base-100 shadow mb-4">
+    <div class="card-body py-3">
+      <div>
+        <a class="btn btn-primary" href="{{ url_for('spaces.index') }}">Space</a>
       </div>
-      <button type="submit" class="ui primary button">Submit</button>
-    </form>
+    </div>
   </div>
-  
+  <div class="card bg-base-100 shadow">
+    <div class="card-body">
+      <h2 class="text-2xl font-bold mb-4">Space Role</h2>
+      <form method="POST">
+        {{ form.csrf_token }}
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {{ renderer.render_select(form.member_id) }}
+          {{ renderer.render_select(form.role) }}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </div>
+
 {% endblock %}

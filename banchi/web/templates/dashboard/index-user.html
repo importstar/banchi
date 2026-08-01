@@ -1,47 +1,30 @@
 {% extends '/base/default-dashboard.html' %}
 
-{% block additional_js %}
-<script>
-  $('.ui.big.breadcrumb')[0].parentElement.style.display = "none"
-  const links = document.querySelectorAll('.blinking.link')
-  links.forEach((link, index) => {
-    link.setAttribute('onmouseover', 'this.style.color="#2185d0"');
-    link.setAttribute('onmouseout', 'this.style.color="black"');
-  });
-</script>
-{% endblock%}
-
 {% block content %}
-<div class="ui attached left aligned segment">
-  <h1 class="ui left aligned header">
-    <a href="{{ url_for('users.index') }}" class="ui image">
-      {% if current_user.get_picture() %}
-      <img class="ui avatar image" src="{{ current_user.get_picture() }}">
-      {% else %}
-      <i class="user icon"></i>
-      {% endif %}
-    </a>
-  
-    <div class="content">
-      <a class="ui header blinking link" href="{{ url_for('users.index') }}">
-        {{ current_user.first_name }} {{ current_user.last_name }}
+<div class="card bg-base-100 shadow">
+  <div class="card-body py-4 px-5">
+    <div class="flex items-center gap-4">
+      <a href="{{ url_for('users.index') }}">
+        {% if current_user.get_picture() %}
+        <div class="avatar">
+          <div class="w-12 rounded-full">
+            <img src="{{ current_user.get_picture() }}">
+          </div>
+        </div>
+        {% else %}
+        <i class="fa-solid fa-user text-4xl"></i>
+        {% endif %}
       </a>
-      <div class="sub header">
-        {{ current_user.email }}
+
+      <div>
+        <a class="text-2xl font-bold hover:text-primary" href="{{ url_for('users.index') }}">
+          {{ current_user.first_name }} {{ current_user.last_name }}
+        </a>
+        <div class="text-sm text-base-content/70">
+          {{ current_user.email }}
+        </div>
       </div>
-    </div>        
-  </h1>
+    </div>
+  </div>
 </div>
-
-<style>
-  .card {
-    margin: 1em;
-  }
-  .card:hover {
-    box-shadow: 0 4px 12px #d4d4d5 !important;
-  }
-</style>
-
 {% endblock %}
-
-

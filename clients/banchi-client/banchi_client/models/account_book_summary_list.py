@@ -47,9 +47,7 @@ class AccountBookSummaryList:
         account_book_summaries = []
         _account_book_summaries = d.pop("account_book_summaries")
         for account_book_summaries_item_data in _account_book_summaries:
-            account_book_summaries_item = AccountBookSummary.from_dict(
-                account_book_summaries_item_data
-            )
+            account_book_summaries_item = AccountBookSummary.from_dict(account_book_summaries_item_data)
 
             account_book_summaries.append(account_book_summaries_item)
 

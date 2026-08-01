@@ -1,25 +1,22 @@
-
-    <div class="ui inverted vertical center aligned segment">
-        <div class="ui container grid row two columns">
-          <div class="column">
-            <i class="ui book icon massive"></i>
-            <div style="padding-top: 1vh;">
-              โปรแกรมบัญชี
-            </div>
-          </div>
-          <div class="column">
-            <div>
-              <h1 class="ui huge inverted header" style="font-size:4em">{{ config.get('APP_TITLE') }} </h1>
-              <h2>Banchi, Import Star, Please Login.</h2>
-            </div>
-            <div style="padding-top: 20px;">
-              {% if not current_user.is_authenticated %}
-                <a href="{{ url_for('users.login') }}" class="ui large primary button"><i class="sign in icon"></i>Login</a>
-              {% else %}
-                <a href="{{ url_for('dashboard.index') }}" class="ui large primary button"><i class="dashboard icon"></i>Dashboard</a>
-                <a href="{{ url_for('users.logout') }}" class="ui large primary button"><i class="sign out icon"></i>Logout</a>
-              {% endif %}
-            </div>
-          </div>
-        </div>
+<div class="hero min-h-[60vh] bg-neutral text-neutral-content">
+  <div class="hero-content text-center flex-col gap-8 lg:flex-row lg:gap-16">
+    <div>
+      <i class="fa-solid fa-book text-8xl"></i>
+      <div class="pt-3 text-lg">
+        โปรแกรมบัญชี
+      </div>
     </div>
+    <div>
+      <h1 class="text-6xl font-bold">{{ config.get('APP_TITLE') }}</h1>
+      <h2 class="py-4 text-2xl">Banchi, Import Star, Please Login.</h2>
+      <div class="pt-4 flex justify-center gap-3">
+        {% if not current_user.is_authenticated %}
+          <a href="{{ url_for('users.login') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-right-to-bracket"></i>Login</a>
+        {% else %}
+          <a href="{{ url_for('dashboard.index') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-gauge"></i>Dashboard</a>
+          <a href="{{ url_for('users.logout') }}" class="btn btn-primary btn-lg"><i class="fa-solid fa-right-from-bracket"></i>Logout</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

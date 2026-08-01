@@ -1,14 +1,15 @@
-{% macro get_validate_class(errors) -%}
+{% macro get_validate_class(errors, error_class='input-error') -%}
 {%- set class_str = '' -%}
 {% if errors | count > 0 -%}
-{% set class_str = 'error' %}
+{% set class_str = error_class %}
 {%- endif %}
 {{- class_str -}}
 {%- endmacro %}
 
 {% macro get_error_messages(errors) -%}
 	{% if errors %}
-    <div class="ui negative message">
+    <div class="alert alert-error mb-3">
+      <i class="fa-solid fa-circle-exclamation"></i>
       <ul>
         {% for error in errors %}
           <li>{{ error }}</li>
@@ -17,4 +18,3 @@
     </div>
   {% endif %}
 {%- endmacro %}
-

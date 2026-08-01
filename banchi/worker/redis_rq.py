@@ -1,5 +1,5 @@
 import redis
-from rq import Worker, Queue, Connection
+from rq import Worker, Queue
 from rq.job import Job
 
 listen = ["default"]

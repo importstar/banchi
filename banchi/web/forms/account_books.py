@@ -8,9 +8,10 @@ from wtforms import validators
 from wtforms import fields, widgets
 
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileAllowed
+from flask_wtf.file import FileAllowed, FileField, FileRequired
 
 from .fields import TagListField
+from ..utils import bank_statements
 
 from banchi_client import models
 import datetime
@@ -50,13 +51,25 @@ class TransactionFilterForm(FlaskForm):
 
     started_date = fields.DateTimeField(
         "Start Date",
-        format="%Y-%m-%d %H:%M:%S",
+        format=[
+            "%d/%m/%Y %H:%M",
+            "%d/%m/%Y %H:%M:%S",
+            "%Y-%m-%dT%H:%M",
+            "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%d %H:%M:%S",
+        ],
         widget=widgets.TextInput(),
         validators=[validators.Optional()],
     )
     ended_date = fields.DateTimeField(
         "End Date",
-        format="%Y-%m-%d %H:%M:%S",
+        format=[
+            "%d/%m/%Y %H:%M",
+            "%d/%m/%Y %H:%M:%S",
+            "%Y-%m-%dT%H:%M",
+            "%Y-%m-%dT%H:%M:%S",
+            "%Y-%m-%d %H:%M:%S",
+        ],
         widget=widgets.TextInput(),
         validators=[validators.Optional()],
     )
@@ -64,4 +77,19 @@ class TransactionFilterForm(FlaskForm):
     value = fields.DecimalField(
         "Value",
         validators=[validators.Optional()],
+    )
+
+
+class VerifyStatementForm(FlaskForm):
+    bank = fields.SelectField(
+        "Bank",
+        validators=[validators.InputRequired()],
+        choices=bank_statements.BANK_CHOICES,
+    )
+    statement = FileField(
+        "Bank Statement (CSV)",
+        validators=[
+            FileRequired(),
+            FileAllowed(["csv"], "CSV files only"),
+        ],
     )

@@ -426,6 +426,42 @@ async def create(
     return db_transaction
 
 
+@router.get("/tags")
+async def get_all_tags(
+    current_user: typing.Annotated[models.users.User, Depends(deps.get_current_user)],
+    db_account_books: typing.Annotated[
+        list[models.account_books.AccountBook],
+        Depends(deps.get_account_books_by_account),
+    ],
+) -> schemas.transactions.TagList:
+    account_book_ids = [account_book.id for account_book in db_account_books]
+
+    results = (
+        await models.transactions.Transaction.find(
+            models.transactions.Transaction.status == "active",
+            Or(
+                In(
+                    models.transactions.Transaction.from_account_book.id,
+                    account_book_ids,
+                ),
+                In(
+                    models.transactions.Transaction.to_account_book.id, account_book_ids
+                ),
+            ),
+        )
+        .aggregate(
+            [
+                {"$unwind": "$tags"},
+                {"$group": {"_id": "$tags"}},
+                {"$sort": {"_id": 1}},
+            ]
+        )
+        .to_list()
+    )
+
+    return dict(tags=[result["_id"] for result in results])
+
+
 @router.get("/{transaction_id}")
 async def get(
     transaction_id: PydanticObjectId,

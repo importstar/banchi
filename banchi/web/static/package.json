@@ -4,11 +4,20 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build:css": "tailwindcss -i src/banchi.css -o css/banchi.css --minify",
+    "watch:css": "tailwindcss -i src/banchi.css -o css/banchi.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fomantic-ui-css": "^2.9.3"
+    "@fortawesome/fontawesome-free": "^7.2.0",
+    "@yaireo/tagify": "^4.38.0",
+    "flatpickr": "^4.6.13"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "daisyui": "^5.5.23",
+    "tailwindcss": "^4.3.0"
   }
 }

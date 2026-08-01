@@ -6,7 +6,6 @@ from typing import Any, TypeVar, cast
 
 from attrs import define as _attrs_define
 from attrs import field as _attrs_field
-from dateutil.parser import isoparse
 
 from ..models.currency_enum import CurrencyEnum
 from ..types import UNSET, Unset
@@ -23,7 +22,7 @@ class CreatedTransactionInfo:
         currency (CurrencyEnum):
         from_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
         to_account_book_id (str):  Example: 5eb7cf5a86d9755df3a6c593.
-        date (datetime.datetime | Unset):  Default: isoparse('2026-01-11T22:48:44.262147').
+        date (datetime.datetime | Unset):  Default: datetime.datetime.fromisoformat('2026-07-29T23:41:26.750958').
         tags (list[str] | Unset):
         remarks (None | str | Unset):  Default: ''. Example: Text Remark.
     """
@@ -33,7 +32,7 @@ class CreatedTransactionInfo:
     currency: CurrencyEnum
     from_account_book_id: str
     to_account_book_id: str
-    date: datetime.datetime | Unset = isoparse("2026-01-11T22:48:44.262147")
+    date: datetime.datetime | Unset = datetime.datetime.fromisoformat("2026-07-29T23:41:26.750958")
     tags: list[str] | Unset = UNSET
     remarks: None | str | Unset = ""
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
@@ -105,7 +104,7 @@ class CreatedTransactionInfo:
         if isinstance(_date, Unset):
             date = UNSET
         else:
-            date = isoparse(_date)
+            date = datetime.datetime.fromisoformat(_date)
 
         tags = cast(list[str], d.pop("tags", UNSET))
 
