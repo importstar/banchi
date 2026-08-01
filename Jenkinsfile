@@ -8,6 +8,7 @@ pipeline {
     agent {
         docker {
             image 'python:3.13-bookworm'
+            args '-v dependency-check-data:/dependency-check'
         }
     }
     environment {
@@ -32,15 +33,7 @@ pipeline {
             steps {
                 sh '''
                 echo "Updating package list and installing npm and python..."
-                apt-get update && apt-get install -y nodejs npm openjdk-17-jdk unzip curl
-
-                echo "Setting up JAVA_HOME..."
-                export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-                echo "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> ~/.profile
-                echo "export PATH=$JAVA_HOME/bin:$PATH" >> ~/.profile
-                . ~/.profile
-
-                java -version || exit 1
+                apt-get update && apt-get install -y nodejs npm unzip curl
 
                 echo "Installing Poetry..."
                 curl -sSL https://install.python-poetry.org | python3 -
@@ -65,54 +58,6 @@ pipeline {
                 pip install safety
                 pip install bandit
                 '''
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    sh 'cd ./banchi/web/static && npm install'
-                    sh '''
-                    . ~/.profile
-                    export PATH="$POETRY_HOME:$PATH"
-
-                    $POETRY_HOME/poetry install
-                    $POETRY_HOME/poetry export --without-hashes --format=requirements.txt > requirements.txt
-                    '''
-                }
-            }
-        }
-
-        stage('OWASP Dependency-Check Nodejs Package Vulnerabilities') {
-            steps {
-                sh '''
-                . ~/.profile
-                export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-                export PATH=$JAVA_HOME/bin:$PATH
-
-                java -version || exit 1
-                '''
-                withCredentials([string(credentialsId: 'importstar-nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    sh '''
-                    # Download and extract latest Dependency-Check CLI (v12.2.0)
-                    if [ ! -d "dependency-check" ]; then
-                        echo "Installing Dependency-Check 12.2.0..."
-                        curl -fsSL https://github.com/dependency-check/DependencyCheck/releases/download/v12.2.0/dependency-check-12.2.0-release.zip -o odc.zip
-                        unzip -q odc.zip
-                        rm odc.zip
-                    fi
-
-                    # Run Dependency-Check using the latest CLI
-                    ./dependency-check/bin/dependency-check.sh \
-                        --nvdApiKey "$NVD_API_KEY" \
-                        --out . \
-                        --scan './banchi/web/static/package-lock.json' \
-                        --format ALL \
-                        --prettyPrint
-                    '''
-                }
-                
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
             }
         }
 
