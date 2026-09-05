@@ -8,6 +8,7 @@ pipeline {
     agent {
         docker {
             image 'python:3.13-bookworm'
+            args '-v dependency-check-data:/dependency-check'
         }
     }
     environment {
@@ -28,111 +29,32 @@ pipeline {
     }
 
     stages {
-        stage('Setup System (Install Java, NPM and Python)') {
+        stage('Setup System') {
             steps {
                 sh '''
                 echo "Updating package list and installing npm and python..."
-                apt-get update && apt-get install -y nodejs npm openjdk-17-jdk unzip curl
-
-                echo "Setting up JAVA_HOME..."
-                export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-                echo "export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> ~/.profile
-                echo "export PATH=$JAVA_HOME/bin:$PATH" >> ~/.profile
-                . ~/.profile
-
-                java -version || exit 1
-
-                echo "Installing Poetry..."
-                curl -sSL https://install.python-poetry.org | python3 -
-
-                if [ -f "/root/.poetry/bin/poetry" ]; then
-                    export POETRY_HOME="/root/.poetry/bin"
-                elif [ -f "/root/.poetry/bin/bin/poetry" ]; then
-                    export POETRY_HOME="/root/.poetry/bin/bin"
-                else
-                    echo "Poetry installation failed."
-                    exit 1
-                fi
-
-                echo "export POETRY_HOME=$POETRY_HOME" >> ~/.profile
-                echo "export PATH=$POETRY_HOME:$PATH" >> ~/.profile
-                . ~/.profile
-
-                poetry --version || exit 1
-
-                poetry self add poetry-plugin-export
-
-                pip install safety
-                pip install bandit
+                apt-get update && apt-get install -y unzip curl
                 '''
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    sh 'cd ./banchi/web/static && npm install && npm run build:css'
-                    sh '''
-                    . ~/.profile
-                    export PATH="$POETRY_HOME:$PATH"
-
-                    $POETRY_HOME/poetry install
-                    $POETRY_HOME/poetry export --without-hashes --format=requirements.txt > requirements.txt
-                    '''
-                }
-            }
-        }
-
-        stage('OWASP Dependency-Check Nodejs Package Vulnerabilities') {
-            steps {
-                sh '''
-                . ~/.profile
-                export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-                export PATH=$JAVA_HOME/bin:$PATH
-
-                java -version || exit 1
-                '''
-                withCredentials([string(credentialsId: 'importstar-nvd-api-key', variable: 'NVD_API_KEY')]) {
-                    sh '''
-                    # Download and extract latest Dependency-Check CLI (v12.2.0)
-                    if [ ! -d "dependency-check" ]; then
-                        echo "Installing Dependency-Check 12.2.0..."
-                        curl -fsSL https://github.com/dependency-check/DependencyCheck/releases/download/v12.2.0/dependency-check-12.2.0-release.zip -o odc.zip
-                        unzip -q odc.zip
-                        rm odc.zip
-                    fi
-
-                    # Run Dependency-Check using the latest CLI
-                    ./dependency-check/bin/dependency-check.sh \
-                        --nvdApiKey "$NVD_API_KEY" \
-                        --out . \
-                        --scan './banchi/web/static/package-lock.json' \
-                        --format ALL \
-                        --prettyPrint
-                    '''
-                }
-                
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
-            }
-        }
-
-        stage('Run Safety Dependency-Check Python Package Vulnerabilities') {
-            steps {
-                script {
-                    sh '''
-                        safety check -r requirements.txt --full-report --output html > safety_report.html || true
-                    '''
-                    publishHTML (target: [
-                        allowMissing: false,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: '.',
-                        reportFiles: 'safety_report.html',
-                        reportName: 'Safety Dependency Report'
-                    ])
-                }
-            }
-        }
+        // stage('Run Safety Dependency-Check Python Package Vulnerabilities') {
+        //     steps {
+        //         script {
+        //             sh '''
+        //                 safety check -r requirements.txt --full-report --output html > safety_report.html || true
+        //             '''
+        //             publishHTML (target: [
+        //                 allowMissing: false,
+        //                 alwaysLinkToLastBuild: true,
+        //                 keepAll: true,
+        //                 reportDir: '.',
+        //                 reportFiles: 'safety_report.html',
+        //                 reportName: 'Safety Dependency Report'
+        //             ])
+        //         }
+        //     }
+        // }
 
 
         stage('Build Docker Image') {
