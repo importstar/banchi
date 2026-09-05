@@ -10,7 +10,7 @@ ENV LANG th_TH.UTF-8
 ENV LANGUAGE th_TH:en
 # ENV LC_ALL th_TH.UTF-8
 
-RUN python3 -m venv /venv
+RUN python3.13 -m venv /venv
 ENV PYTHON=/venv/bin/python3
 RUN $PYTHON -m pip install wheel poetry gunicorn
 
