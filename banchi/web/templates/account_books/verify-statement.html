@@ -13,7 +13,8 @@
     <form method="POST" enctype="multipart/form-data">
       {{ form.csrf_token }}
       {{ renderer.render_select(form.bank) }}
-      {{ renderer.render_field(form.statement) }}
+      {{ renderer.render_fileinput(form.statement) }}
+      <p class="text-sm text-base-content/60 -mt-2 mb-3">Accepted formats: CSV or PDF</p>
       <button name="submit" type="submit" class="btn btn-primary">
         <i class="fa-solid fa-upload"></i> Upload &amp; Verify
       </button>
@@ -59,6 +60,11 @@
       </thead>
       <tbody>
         {% for entry in report.missing_in_account_book %}
+        {% if form.bank.data == 'scb' %}
+        {% set create_description = (entry.description ~ ' ' ~ entry.detail) | trim if entry.detail else entry.description %}
+        {% else %}
+        {% set create_description = entry.detail or entry.description %}
+        {% endif %}
         <tr>
           <td>{{ entry.date.strftime('%d/%m/%Y %H:%M') }}</td>
           <td>{{ entry.description }}</td>
@@ -73,7 +79,7 @@
                 account_book_id=account_book.id,
                 date=entry.date.isoformat(),
                 value=(entry.withdrawal if entry.withdrawal else entry.deposit),
-                description=(entry.detail or entry.description),
+                description=create_description,
                 direction=('withdrawal' if entry.withdrawal else 'deposit')) }}">
               <i class="fa-solid fa-plus"></i> Create
             </a>

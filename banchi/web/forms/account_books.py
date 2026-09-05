@@ -92,4 +92,5 @@ class VerifyStatementForm(FlaskForm):
             FileRequired(),
             FileAllowed(["csv", "pdf"], "CSV or PDF files only"),
         ],
+        render_kw={"accept": ".csv,.pdf"},
     )
