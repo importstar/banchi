@@ -87,9 +87,9 @@ class VerifyStatementForm(FlaskForm):
         choices=bank_statements.BANK_CHOICES,
     )
     statement = FileField(
-        "Bank Statement (CSV)",
+        "Bank Statement (CSV or PDF)",
         validators=[
             FileRequired(),
-            FileAllowed(["csv"], "CSV files only"),
+            FileAllowed(["csv", "pdf"], "CSV or PDF files only"),
         ],
     )
