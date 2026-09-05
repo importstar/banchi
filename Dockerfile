@@ -3,7 +3,7 @@ RUN echo 'deb http://mirrors.psu.ac.th/debian/ sid main contrib non-free' > /etc
 # RUN echo 'deb http://mirror.kku.ac.th/debian/ sid main contrib non-free' >> /etc/apt/sources.list
 
 RUN apt update --fix-missing && apt dist-upgrade -y
-RUN apt install -y python3.13 python3.13-dev python-pip python3.13-venv build-essential locales npm
+RUN apt install -y python3.13 python3.13-dev python3-pip python3.13-venv build-essential locales npm
 
 RUN sed -i '/th_TH.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 ENV LANG th_TH.UTF-8
