@@ -494,7 +494,7 @@ def verify_statement(account_book_id):
     if form.validate_on_submit():
         try:
             statement = utils.bank_statements.parse_statement(
-                form.bank.data, form.statement.data.stream
+                form.bank.data, form.statement.data.stream, password=form.password.data
             )
         except utils.bank_statements.StatementParseError as error:
             parse_error = str(error)

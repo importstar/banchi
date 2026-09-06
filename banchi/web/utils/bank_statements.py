@@ -5,6 +5,8 @@ import io
 import re
 
 import pdfplumber
+from pdfminer.pdfdocument import PDFEncryptionError, PDFPasswordIncorrect
+from pdfplumber.utils.exceptions import PdfminerException
 
 BROUGHT_FORWARD_LABEL = "ยอดยกมา"
 DATE_HEADER_LABEL = "วันที่"
@@ -38,6 +40,24 @@ class StatementParseError(Exception):
     pass
 
 
+def _open_pdf(file_stream, password):
+    try:
+        return pdfplumber.open(file_stream, password=password or "")
+    except PdfminerException as error:
+        cause = error.args[0] if error.args else None
+        if isinstance(cause, PDFPasswordIncorrect):
+            if password:
+                raise StatementParseError("Incorrect PDF password") from error
+            raise StatementParseError(
+                "This PDF is password-protected. Please enter its password."
+            ) from error
+        if isinstance(cause, PDFEncryptionError):
+            raise StatementParseError(
+                "Could not decrypt this PDF (unsupported encryption)"
+            ) from error
+        raise
+
+
 def _parse_amount(value):
     value = (value or "").strip().replace(",", "")
     if not value:
@@ -53,7 +73,7 @@ def _parse_date(date_str, time_str):
     return date
 
 
-def parse_kasikorn_statement(file_stream):
+def parse_kasikorn_statement(file_stream, password=None):
     """Parse a K-Bank (Kasikorn) "K-DEPOSIT STATEMENT OF SAVING ACCOUNT" CSV export."""
     text_stream = io.TextIOWrapper(file_stream, encoding="utf-8-sig")
     rows = list(csv.reader(text_stream))
@@ -105,12 +125,12 @@ def parse_kasikorn_statement(file_stream):
     )
 
 
-def parse_scb_statement(file_stream):
+def parse_scb_statement(file_stream, password=None):
     """Parse a SCB (Siam Commercial Bank) "STATEMENT OF SAVING ACCOUNT" PDF export."""
     account_number = None
     blocks = []
 
-    with pdfplumber.open(file_stream) as pdf:
+    with _open_pdf(file_stream, password) as pdf:
         for page in pdf.pages:
             words = page.extract_words()
 
@@ -211,13 +231,13 @@ def parse_scb_statement(file_stream):
     )
 
 
-def parse_scb_credit_card_statement(file_stream):
+def parse_scb_credit_card_statement(file_stream, password=None):
     """Parse a CardX (formerly SCB) "CREDIT CARD STATEMENT" PDF export."""
     card_number = None
     closing_date_str = None
     raw_entries = []
 
-    with pdfplumber.open(file_stream) as pdf:
+    with _open_pdf(file_stream, password) as pdf:
         for page in pdf.pages:
             words = page.extract_words()
 
@@ -325,12 +345,12 @@ def parse_scb_credit_card_statement(file_stream):
     )
 
 
-def parse_ttb_credit_card_statement(file_stream):
+def parse_ttb_credit_card_statement(file_stream, password=None):
     """Parse a TTB (TMBThanachart Bank) "CREDIT CARD STATEMENT" PDF export."""
     card_number = None
     entries = []
 
-    with pdfplumber.open(file_stream) as pdf:
+    with _open_pdf(file_stream, password) as pdf:
         for page in pdf.pages:
             words = page.extract_words()
 
@@ -423,13 +443,13 @@ def _ttb_is_anchor_row(row):
     )
 
 
-def parse_ttb_statement(file_stream):
+def parse_ttb_statement(file_stream, password=None):
     """Parse a TTB (TMBThanachart Bank) "Savings Account Transaction (Detailed)" PDF export."""
     account_number = None
     blocks = []
     current_block = None
 
-    with pdfplumber.open(file_stream) as pdf:
+    with _open_pdf(file_stream, password) as pdf:
         for page in pdf.pages:
             words = page.extract_words()
 
@@ -548,11 +568,11 @@ BANK_CHOICES = [
 ]
 
 
-def parse_statement(bank, file_stream):
+def parse_statement(bank, file_stream, password=None):
     parser = BANK_PARSERS.get(bank)
     if parser is None:
         raise StatementParseError(f"Unsupported bank: {bank}")
-    return parser(file_stream)
+    return parser(file_stream, password=password)
 
 
 def reconcile_statement(entries, account_book_id, transactions):

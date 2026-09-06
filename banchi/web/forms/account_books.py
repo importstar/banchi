@@ -94,3 +94,7 @@ class VerifyStatementForm(FlaskForm):
         ],
         render_kw={"accept": ".csv,.pdf"},
     )
+    password = fields.PasswordField(
+        "PDF Password (if the file is password-protected)",
+        validators=[validators.Optional()],
+    )
