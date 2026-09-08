@@ -126,9 +126,19 @@ def parse_kasikorn_statement(file_stream, password=None):
 
 
 def parse_scb_statement(file_stream, password=None):
-    """Parse a SCB (Siam Commercial Bank) "STATEMENT OF SAVING ACCOUNT" PDF export."""
+    """Parse a SCB (Siam Commercial Bank) "STATEMENT OF SAVING ACCOUNT" PDF export.
+
+    Handles two SCB export layouts: the older one that spells out explicit
+    "DESC"/"NOTE" labels per transaction, and a newer, more compact one that
+    doesn't (and instead just runs the balance and description together as a
+    single word). Blocks are terminated by the next transaction's anchor row
+    or by a summary/footer row (e.g. "TOTAL AMOUNTS", the auto-generated
+    disclaimer) rather than requiring a "NOTE" label, since the newer layout
+    never has one.
+    """
     account_number = None
     blocks = []
+    current_block = None
 
     with _open_pdf(file_stream, password) as pdf:
         for page in pdf.pages:
@@ -150,18 +160,20 @@ def parse_scb_statement(file_stream, password=None):
             for row in rows.values():
                 row.sort(key=lambda word: word["x0"])
 
-            current_block = None
             for top in sorted(rows):
                 row = rows[top]
                 if row[0]["x0"] < 60 and SCB_DATE_RE.match(row[0]["text"]):
+                    if current_block:
+                        blocks.append(current_block)
                     current_block = [row]
-                    continue
-                if current_block is None:
-                    continue
-                current_block.append(row)
-                if any(word["text"] == "NOTE" for word in row):
+                elif current_block is not None and row[0]["x0"] >= 130:
+                    current_block.append(row)
+                elif current_block is not None:
                     blocks.append(current_block)
                     current_block = None
+
+    if current_block:
+        blocks.append(current_block)
 
     if not blocks:
         raise StatementParseError("No transaction rows found in the statement")
@@ -184,11 +196,17 @@ def parse_scb_statement(file_stream, password=None):
             index for index, word in enumerate(first_row) if word is balance_word
         )
 
-        description_parts = [
+        # The newer SCB layout runs the balance and the start of the
+        # description together into a single word (no "DESC" label).
+        balance_remainder = balance_word["text"][balance_match.end() :]
+        description_parts = []
+        if balance_remainder and balance_remainder != "DESC":
+            description_parts.append(balance_remainder.removeprefix(":"))
+        description_parts.extend(
             word["text"].removeprefix(":")
             for word in first_row[balance_index + 1 :]
             if word["text"] != "DESC"
-        ]
+        )
         note_parts = []
 
         for row in block[1:]:
