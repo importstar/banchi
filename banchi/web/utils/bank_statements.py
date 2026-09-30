@@ -75,8 +75,13 @@ def _parse_date(date_str, time_str):
 
 def parse_kasikorn_statement(file_stream, password=None):
     """Parse a K-Bank (Kasikorn) "K-DEPOSIT STATEMENT OF SAVING ACCOUNT" CSV export."""
-    text_stream = io.TextIOWrapper(file_stream, encoding="utf-8-sig")
-    rows = list(csv.reader(text_stream))
+    raw_bytes = file_stream.read()
+    try:
+        text = raw_bytes.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        # Some exports are encoded in the legacy Thai codepage instead of UTF-8.
+        text = raw_bytes.decode("cp874")
+    rows = list(csv.reader(io.StringIO(text)))
 
     account_number = None
     header_index = None
