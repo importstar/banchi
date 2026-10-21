@@ -1,3 +1,5 @@
+@Library('jenkins-notify') _
+
 def remote=[:]
 remote.name = 'binhla'
 remote.host = 'binhla2.importstar.dev'
@@ -29,6 +31,11 @@ pipeline {
     }
 
     stages {
+        stage('Notify') {
+            steps {
+                discordNotify('STARTED')
+            }
+        }
         stage('Setup System') {
             steps {
                 sh '''
@@ -91,6 +98,7 @@ pipeline {
 
     post {
         always {
+            discordNotify(currentBuild.currentResult)
             cleanWs(cleanWhenNotBuilt: false,
                     deleteDirs: true,
                     disableDeferredWipeout: true,
